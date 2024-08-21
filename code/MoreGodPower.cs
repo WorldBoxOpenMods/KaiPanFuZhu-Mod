@@ -10,7 +10,7 @@ using UnityEngine.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ReflectionUtility;
-using Diplomacy_Diplomacy;
+using Diplomacy_Army;
 
 namespace Diplomacy_Army
 {

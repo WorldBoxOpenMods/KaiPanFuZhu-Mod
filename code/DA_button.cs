@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Diplomacy_Army.Utils;
@@ -48,7 +49,7 @@ namespace Diplomacy_Army
                   PowerButtons.CreateButton("DA_modder1", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.other.modder.png"),
             "作者简介", "作者:空星漫漫", new Vector2(72, -18), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow(DA_modder.wid));
 
-                  newLine1.transform.localPosition = new Vector2(108f, newLine1.transform.localPosition.y - 6f);
+                  newLine1.transform.localPosition = new Vector2(108f, newLine1.transform.localPosition.y - 6f);update();update();
 
                   PowerButtons.CreateButton("DA_显示外交消息", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "显示外交消息" + ".jpg"),
             "显示外交消息", "显示外交消息", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
@@ -69,7 +70,7 @@ namespace Diplomacy_Army
 "debug", "debug", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, () => Windows.ShowWindow("debug")); update(); update(); ; update();
 
                   var newLine2 = GameObject.Instantiate(line, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform);
-                  newLine2.transform.localPosition = new Vector2(400f, newLine1.transform.localPosition.y - 6f);
+                  newLine2.transform.localPosition = new Vector2(420f, newLine1.transform.localPosition.y - 6f);
                   PowerButtons.CreateButton("资源设置", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "资源设置" + ".jpg"),
 "资源设置", "", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("Window_ResourcesSettings")); update();
 
@@ -85,15 +86,73 @@ namespace Diplomacy_Army
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "装备删除", "装备删除", "装备删除"); update(); update();
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "城市地块拓展开关", "城市地块拓展", "城市地块拓展开关"); update();
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "国家地块拓展开关", "国家地块拓展", "国家地块拓展开关"); update();
-                        PowerButtons.CreateButton("DA_装备禁止获取", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "装备禁止获取" + ".jpg"),
-                  "装备禁止获取", "打开装备禁止获取参数设置窗口", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("ProhibitgiveItem")); update();
-                        CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "装备禁止获取", "装备禁止获取", "点击城市或国家设置装备禁止获取的参数"); update();
+                  PowerButtons.CreateButton("DA_装备禁止获取", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "装备禁止获取" + ".jpg"),
+            "装备禁止获取", "打开装备禁止获取参数设置窗口", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("ProhibitgiveItem")); update();
+                  CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "装备禁止获取", "装备禁止获取", "点击城市或国家设置装备禁止获取的参数"); update();
+                  PowerButtons.CreateButton("保存", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "资源设置" + ".jpg"),
+"保存设置", "保存所有的设置", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => addToDASet()); update();
             }
             public static void update()
             {
                   index++;
                   x = 144f + 36 * (index / 2);
                   y = 18f - 36 * (index % 2);
+            }
+            public static void addToDASet()
+            {
+                  foreach (ItemAsset mod in AssetManager.items_modifiers.list)
+                  {
+                        if (Main.DASet.ContainsKey($"{mod.id}_modifier_DA")&&PowerButtons.ToggleValues.ContainsKey($"{mod.id}_modifier_DA"))
+                        {
+                              Main.DASet[$"{mod.id}_modifier_DA"] = PowerButtons.GetToggleValue($"{mod.id}_modifier_DA");
+                        }
+                        else if(PowerButtons.ToggleValues.ContainsKey($"{mod.id}_modifier_DA"))
+                        {
+                              Main.DASet.Add($"{mod.id}_modifier_DA", PowerButtons.GetToggleValue($"{mod.id}_modifier_DA"));
+                        }
+                  }
+                  foreach (ItemAsset item in AssetManager.items.list)
+                  {
+                        if (item.id[0] == '_' || NewWindow.wrongItems.Contains(item.id))
+                        {
+                              continue;
+                        }
+                        if (item.materials.Count <= 0)
+                        {
+                              if (Main.DASet.ContainsKey($"{item.id}_DA")&&PowerButtons.ToggleValues.ContainsKey($"{item.id}_DA"))
+                              {
+                                    Main.DASet[$"{item.id}_DA"] = PowerButtons.GetToggleValue($"{item.id}_DA");
+                              }
+                              else if(PowerButtons.ToggleValues.ContainsKey($"{item.id}_DA"))
+                              {
+                                    Main.DASet.Add($"{item.id}_DA", PowerButtons.GetToggleValue($"{item.id}_DA"));
+                              }
+
+
+                              continue;
+                        }
+                        foreach (string material in item.materials)
+                        {
+                              if (Main.DASet.ContainsKey($"{item.id}_DA_{material}")&&PowerButtons.ToggleValues.ContainsKey($"{item.id}_DA_{material}"))
+                              {
+                                    Main.DASet[$"{item.id}_DA_{material}"] = PowerButtons.GetToggleValue($"{item.id}_DA_{material}");
+                              }
+                              else if(PowerButtons.ToggleValues.ContainsKey($"{item.id}_DA_{material}"))
+                              {
+                                    Main.DASet.Add($"{item.id}_DA_{material}", PowerButtons.GetToggleValue($"{item.id}_DA_{material}"));
+                              }
+                        }
+                        foreach (var set in Main.DASet.Keys.ToList())
+                        {
+                              if (PowerButtons.ToggleValues.ContainsKey(set))
+                              {
+                                    Main.DASet[set] = PowerButtons.GetToggleValue(set);
+                              }
+                        }
+
+                  }
+                  DA_save.SaveDictionaryToFile(Main.DASet, Path.Combine(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Army", "Diplomacy_ArmySet.json"));
+                  Debug.Log("保存成功！");
             }
             public static bool clickTraitEditorRainButton(string pPowerId)
             {
@@ -216,7 +275,7 @@ namespace Diplomacy_Army
                   //       city.data.get("ZoneGrowth", out flag, true);
                   //       city.data.set("ZoneGrowth", !flag);
                   // }
-                  kingdom.data.get("ZoneGrowth", out bool flag,true);
+                  kingdom.data.get("ZoneGrowth", out bool flag, true);
                   kingdom.data.set("ZoneGrowth", !flag);
                   string text;
                   if (!flag)
@@ -370,12 +429,28 @@ namespace Diplomacy_Army
                                           {
                                                 ItemData data = ItemGenerator.generateItem(item, material, World.world.mapStats.year, act.kingdom, act.getName(), 1, act);
                                                 data.modifiers.Clear();
+                                                // if (NewWindow.itemModifiers.ContainsKey(key.ToString()))
+                                                // {
+                                                //       foreach (ItemAsset modifier in NewWindow.itemModifiers["1"])
+                                                //       {
+                                                //             // ItemGenerator.tryToAddMod(data, modifier);
+                                                //             data.modifiers.Add(modifier.id);
+                                                //       }
+                                                // }
+                                                foreach (ItemAsset mod in AssetManager.items_modifiers.list)
+                                                {
+                                                      if (PowerButtons.GetToggleValue($"{mod.id}_modifier_DA"))
+                                                      {
+                                                            data.modifiers.Add(mod.id);
+                                                      }
+                                                }
                                                 ActorEquipmentSlot slot = act.equipment.getSlot(item.equipmentType);
                                                 slot.setItem(data);
                                                 act.setStatsDirty();
                                                 act.startShake(0.3f, 0.1f, true, true);
                                                 act.startColorEffect(ActorColorEffect.White);
                                           }
+
                                     }
                               }
                         }

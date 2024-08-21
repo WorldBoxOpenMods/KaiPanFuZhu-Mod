@@ -15,7 +15,7 @@ using NCMS.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 using Diplomacy_Army.Utils;
-using Diplomacy_Diplomacy;
+using Diplomacy_Army;
 using Newtonsoft.Json;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -86,26 +86,57 @@ namespace Diplomacy_Army
         public static Dictionary<string, int> moreSettings = new() { { "村庄人口上限", 0 }, { "村庄人口下限", 0 }, { "村庄领土上限", 0 }, { "村庄资源上限", 0 } };
         public static Dictionary<string, int> resourceSettings = new();
         public static Dictionary<string, Text> resourceText = new();
-
-        [JsonObject(MemberSerialization.OptIn)]
-        public class DAStorage
+        public static Dictionary<string, bool> DASet = new()
         {
-            public Guid Id { get; set; }
-            [JsonProperty]
-            public string Name = "NewStorage";
-            public int nom = 1;
-            public int num = 0;
-            public int RS = 0;
-        }
+            { "ChooseKing", false },
+            { "ChooseLeader", false },
+            { "ChooseAllWarrior", true},
+            { "ChooseCityWarrior", false},
+            { "ChooseCityGeneral", false},
+            { "ChooseAllGeneral", false},
+            { "DA_自动内存清理", false},
+            { "DA_显示外交消息", false},
+            { "DA_显示交战", false},
+            { "DA_显示条约", false},
+            { "显示原版铭牌", false},
+            { "封锁边境", false},
+            { "异族占领", false},
+            { "领土完整", false},
+            { "国王装备禁用", false},
+            { "城市士兵装备禁用", false},
+            { "将军装备禁用", false},
+            { "领主装备禁用", false},
+            { "DAdebug", true}
+
+        };
+
+
         #endregion
 
         public void Awake()
         {
-            if (!System.IO.Directory.Exists(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Diplomacy"))
+
+            if (!System.IO.Directory.Exists(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Army"))
             {
-                System.IO.Directory.CreateDirectory(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Diplomacy");
+                System.IO.Directory.CreateDirectory(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Army");
             }
-            string text0 = Path.Combine(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Diplomacy", "numofyears.json");
+            string text1 = Path.Combine(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Army", "Diplomacy_ArmySet.json");
+            string text0 = Path.Combine(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Army", "numofyears.json");
+
+            Dictionary<string, bool> NewSet=DA_save.LoadDictionaryFromFile(text1);
+            foreach(var set in NewSet.Keys)
+            {
+                if(DASet.ContainsKey(set))
+                {
+                    DASet[set]=NewSet[set];
+                }
+                else
+                {
+                    DASet.Add(set,NewSet[set]);
+                }
+            }
+
+
             if (File.Exists(text0))
             {
                 DAStorage pStorage = JsonConvert.DeserializeObject<DAStorage>(File.ReadAllText(text0));
@@ -159,7 +190,14 @@ namespace Diplomacy_Army
             Harmony.CreateAndPatchAll(typeof(harmony_vassal));
             Personality();
 
-
+            foreach (var set in DASet.Keys)
+            {
+                if (PowerButtons.ToggleValues.ContainsKey(set))
+                {
+                    if(PowerButtons.GetToggleValue(set)!=DASet[set])
+                    PowerButtons.ToggleButton(set);
+                }
+            }
             OpinionAsset opinionAsset2 = new()
             {
                 id = "opinion_vassal",
@@ -217,7 +255,7 @@ namespace Diplomacy_Army
             //     pvz_ui.Button_Powers_Click("Diplomacy_Army");
             // }
         }
-        
+
 
 
         public static void GCGame()
@@ -323,7 +361,7 @@ namespace Diplomacy_Army
                 windowRect2 = GUI.Window(14, windowRect2, window2_Function, "世界外交局势");
             }
         }
-        
+
 
 
 
@@ -693,7 +731,7 @@ namespace Diplomacy_Army
             if (harmony_vassal.CheckVassal(pKingdom))
             {
                 pKingdom.data.get("suzerainID", out string str, "");
-                Kingdom pKingdom2 = World.world.kingdoms.getKingdomByID(str); 
+                Kingdom pKingdom2 = World.world.kingdoms.getKingdomByID(str);
                 if (pKingdom2 != null)
                 {
                     text = $"  {pKingdom2.name}  " + "\r\n" + pKingdom.name + "  " + pKingdom.getPopulationTotal().ToString();
@@ -883,7 +921,7 @@ namespace Diplomacy_Army
 
             return cityCenter;
         }
-        
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(CityBehProduceUnit), "isCityCanProduceUnits")]
         public static bool isCityCanProduceUnits(City pCity, ref bool __result)
@@ -1288,8 +1326,8 @@ namespace Diplomacy_Army
             {
                 __result = false;
                 return false;
-            } 
-            else if (flag2&&pActor.is_group_leader)
+            }
+            else if (flag2 && pActor.is_group_leader)
             {
                 __result = false;
                 return false;

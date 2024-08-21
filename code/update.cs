@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Diplomacy_Army;
 
-namespace Diplomacy_Diplomacy
+namespace Diplomacy_Army
 {
     public class update
     {

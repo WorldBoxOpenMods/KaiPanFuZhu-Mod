@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 using static Diplomacy_Army.Main;
 using System.IO;
 
-namespace Diplomacy_Diplomacy
+namespace Diplomacy_Army
 {
 	class DiplomacyPowerWindow
 	{
@@ -107,15 +107,6 @@ namespace Diplomacy_Diplomacy
 	  		null, null, BVC, ButtonType.Click, contentComponent.transform, () => SetSCGL(-1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
 			NCMS.Utils.PowerButtons.CreateButton("numofyearsXSRightButton", NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DARight.png"),
 			null, null, BVC2, ButtonType.Click, contentComponent.transform, () => SetSCGL(1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
-			// createTileButton(index++, content.transform, "局部进攻", "局部进攻", "指定一座城市的军队前往另一个城市", new UnityAction(tryToHideWindow2));
-			// createTileButton(index++, content.transform, "回防", "回防", "所有军队前往驻地城市", new UnityAction(tryToHideWindow3));
-			// createTileButton(index++, content.transform, "总动员", "总动员", "全国1/3成年人口获得青铜矛+皮革，并转职成战斗人员", new UnityAction(tryToHideWindow4));
-			// createTileButton(index++, content.transform, "局部动员", "局部动员", "指定城市2/3成年人口获得青铜矛+皮革，并转职成战斗人员", new UnityAction(tryToHideWindow5));
-			// createTileButton(index++, content.transform, "军团驻扎", "军团驻扎", "指定军团驻扎在某地", new UnityAction(tryToHideWindow6));
-			// createTileButton(index++, content.transform, "边境防守", "边境防守", "全国军团前往最近的边境城市", new UnityAction(tryToHideWindow7));
-			// createTileButton(index++, content.transform, "指定防守", "指定防守", "全国军团前往最近的与指定国家接壤的城市", new UnityAction(tryToHideWindow8));
-			// createTileButton(index++, content.transform, "全面进攻", "全面进攻", "全国军团前往最近的指定国家的城市", new UnityAction(tryToHideWindow9));
-			// createTileButton(index++, content.transform, "腐败的军队", "腐败的军队", "全国士兵战斗力大幅下降", new UnityAction(tryToHideWindow10));
 		}
 
 		private static void createTileButton(int index, Transform pParent, string powerID, string pSprite, string pDescription, UnityAction pCall = null)
@@ -340,6 +331,7 @@ namespace Diplomacy_Diplomacy
 			}
 			return true;
 		}
+
 		public static bool tryToVassal_Kingdom2(WorldTile pTile, string pPower)
 		{
 			if (pTile.zone.city == null)
@@ -450,7 +442,7 @@ namespace Diplomacy_Diplomacy
 			if (Main.numofyears < 0) { Main.numofyears = 0; }
 			// int numofyears = Main.numofyears;
 			// Main.numofyears = numofyears;
-			string text = Path.Combine(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Diplomacy", $"numofyears.json");
+			string text = Path.Combine(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Army", $"numofyears.json");
 			if (Application.platform == RuntimePlatform.WindowsPlayer) { text = text.Replace("\\", "/"); }
 			DAStorage NewStorage = new()
 			{

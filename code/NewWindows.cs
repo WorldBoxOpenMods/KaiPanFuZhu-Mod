@@ -10,6 +10,7 @@ using Diplomacy_Army.Utils;
 using static Diplomacy_Army.Main;
 using Newtonsoft.Json;
 using System.IO;
+using Diplomacy_Army;
 
 namespace Diplomacy_Army
 {
@@ -25,7 +26,7 @@ namespace Diplomacy_Army
         public static float NYJG;
         public static void init()
         {
-
+            ItemModWindow.init();
             KingdomWindow();
             MoreRules();
             MoreSettings();
@@ -44,7 +45,9 @@ namespace Diplomacy_Army
             "bite",
             "rocks",
             "snowball","Ballista_Arrows","stones"
-        }; private static Vector2 originalSize;
+        }; 
+        public static Dictionary<string, List<ItemAsset>> itemModifiers = new Dictionary<string, List<ItemAsset>>();
+        private static Vector2 originalSize;
         public static void ItemSettings()
         {
             int index = 0;
@@ -67,7 +70,7 @@ namespace Diplomacy_Army
             content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, AssetManager.items.list.Count / 16 * originalSize.y + 800f) + originalSize;
 
             // 设置初始位置
-            content.GetComponent<RectTransform>().localPosition = new Vector3(80f, -20f, 0);
+            content.GetComponent<RectTransform>().localPosition = new Vector3(80f, 40f, 0);
 
             // 确保 ScrollRect 正确配置
             ScrollRect scrollRect = scrollView.GetComponent<ScrollRect>();
@@ -131,6 +134,16 @@ namespace Diplomacy_Army
             ButtonType.Toggle,
             content.transform,
             () => toggle("ChooseAllGeneral")
+        ); index++;
+            button = PowerButtons.CreateButton(
+            "DA_itemEdit",
+            Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
+            "装备编辑",
+            "装备编辑",
+            new Vector3(-118, -108),
+            ButtonType.GodPower,
+            content.transform,
+            () => ItemModWindow.openWindow()
         ); index++;
             // 创建按钮
             foreach (ItemAsset item in AssetManager.items.list)
@@ -426,7 +439,7 @@ namespace Diplomacy_Army
             if (Input.GetKey(KeyCode.RightShift) || Input.GetKey(KeyCode.LeftShift)) { l = 100; }
             if (Main.moreSettings[id] + i * l < 1) { Main.moreSettings[id] = 0; }
             else { Main.moreSettings[id] += i * l; }
-            string text = Path.Combine(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Diplomacy", "moreSeting" + ".json");
+            string text = Path.Combine(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Army", "moreSeting" + ".json");
             if (Application.platform == RuntimePlatform.WindowsPlayer) { text = text.Replace("\\", "/"); }
             DAStorage NewStorage = new()
             {
@@ -471,7 +484,7 @@ namespace Diplomacy_Army
             if (Input.GetKey(KeyCode.RightControl) || Input.GetKey(KeyCode.LeftControl)) { l = 10; }
             if (Input.GetKey(KeyCode.RightShift) || Input.GetKey(KeyCode.LeftShift)) { l = 100; }
             Main.resourceSettings[id] += i * l;
-            string text = Path.Combine(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Diplomacy", "ResourcesSettings" + ".json");
+            string text = Path.Combine(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Army", "ResourcesSettings" + ".json");
             if (Application.platform == RuntimePlatform.WindowsPlayer) { text = text.Replace("\\", "/"); }
             DAStorage NewStorage = new()
             {

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Diplomacy_Army;
 using HarmonyLib;
 
-namespace Diplomacy_Diplomacy
+namespace Diplomacy_Army
 {
     public class harmony_vassal
     {
@@ -210,22 +210,11 @@ namespace Diplomacy_Diplomacy
                 float num = pKingdom.king.stats[S.personality_aggression];
                 if (pKingdom.power > pAttacker.power)
                 {
-                    if (pKingdom.cities.Count > pKingdom.getMaxCities())
-                    {
-                        num -= (pKingdom.cities.Count - pKingdom.getMaxCities()) * 0.07f;
-                    }
-                    else if (pKingdom.cities.Count < pKingdom.getMaxCities() && pKingdom.diceAgressionSuccess())
-                    {
-                        num += 0.1f;
-                    }
-                    if (!flag)
-                    {
-                        num += 0.05f;
-                    }
+                    num=0.7f;
                 }
                 if (pKingdom.power < pAttacker.power)
                 {
-                    return;
+                    num=0.4f;
                 }
                 if (Toolbox.randomChance(num + 0.2f))
                 {
