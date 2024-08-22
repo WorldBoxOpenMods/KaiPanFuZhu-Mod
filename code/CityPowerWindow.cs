@@ -10,63 +10,64 @@ using System.Reflection;
 using ReflectionUtility;
 
 namespace Diplomacy_Army
-{ 
-    class CityPowerWindow
-    {
-        public static string name = "CityControlWindow";
-        public static PowerButton powerButton;
+{
+	class CityPowerWindow
+	{
+		public static string name = "CityControlWindow";
+		public static PowerButton powerButton;
 
-        private static ScrollWindow window;
-        private static GameObject content;
-        private static GodPower power;
-        private static int index = 0;
+		private static ScrollWindow window;
+		private static GameObject content;
+		private static GodPower power;
+		private static int index = 0;
 
-        // Initializing Tiles Window
-        internal static PowerButtonSelector pbsInstance;
-        public static void init()
-        {
-            // Creating new window
-            window = Windows.CreateNewWindow(name, "Select Tile");
-
-            // Activating Scroll View object
-            var scrollView = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{window.name}/Background/Scroll View");
-            scrollView.gameObject.SetActive(true);
-
-
-            // Fixing size to fit
-            var viewport = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{window.name}/Background/Scroll View/Viewport");
-            var viewportRect = viewport.GetComponent<RectTransform>();
-            viewportRect.sizeDelta = new Vector2(0, 17);
-
-            // Getting Content object
-            content = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{window.name}/Background/Scroll View/Viewport/Content");
-
-            // Getting power button selector using reflections with ReflectionUtility
-            pbsInstance = Reflection.GetField(typeof(PowerButtonSelector), null, "instance") as PowerButtonSelector;
-
-            initCityGodpower();
-        }
-
-        private static void initCityGodpower()
-        {
-            createTileButton(index++, content.transform, "移交城市", "移交城市", "移交城市的主权", new UnityAction(tryToHideWindow));
-            createTileButton(index++, content.transform, "开发城市", "开发城市", "在指定城市的所有空地建造一栋一级住房", new UnityAction(tryToHideWindow2));
-            createTileButton(index++, content.transform, "升级城市", "升级城市", "指定城市的所有建筑提升一级", new UnityAction(tryToHideWindow3));
-            createTileButton(index++, content.transform, "扩张城市", "扩张城市", "将指定城市的领土向外扩张一圈", new UnityAction(tryToHideWindow4));
-            createTileButton(index++, content.transform, "建造城墙", "建造城墙", "在指定城市的外围建造一圈箭塔", new UnityAction(tryToHideWindow5));
-            createTileButton(index++, content.transform, "合并城市", "合并城市", "合并两座城市", new UnityAction(tryToHideWindow6));
-
-        }
-
-        private static void createTileButton(int index, Transform pParent, string powerID, string pSprite, string pDescription, UnityAction pCall = null)
+		// Initializing Tiles Window
+		internal static PowerButtonSelector pbsInstance;
+		public static void init()
 		{
-            GodPower godPower = new()
-            {
-                id = powerID,
-                name = powerID,
-                unselectWhenWindow = true
-            };
-            AssetManager.powers.add(godPower);
+			// Creating new window
+			window = Windows.CreateNewWindow(name, "Select Tile");
+
+			// Activating Scroll View object
+			var scrollView = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{window.name}/Background/Scroll View");
+			scrollView.gameObject.SetActive(true);
+
+
+			// Fixing size to fit
+			var viewport = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{window.name}/Background/Scroll View/Viewport");
+			var viewportRect = viewport.GetComponent<RectTransform>();
+			viewportRect.sizeDelta = new Vector2(0, 17);
+
+			// Getting Content object
+			content = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{window.name}/Background/Scroll View/Viewport/Content");
+
+			// Getting power button selector using reflections with ReflectionUtility
+			pbsInstance = Reflection.GetField(typeof(PowerButtonSelector), null, "instance") as PowerButtonSelector;
+
+			initCityGodpower();
+		}
+
+		private static void initCityGodpower()
+		{
+			createTileButton(index++, content.transform, "移交城市", "移交城市", "移交城市的主权", new UnityAction(tryToHideWindow));
+			createTileButton(index++, content.transform, "开发城市", "开发城市", "在指定城市的所有空地建造一栋一级住房", new UnityAction(tryToHideWindow2));
+			createTileButton(index++, content.transform, "升级城市", "升级城市", "指定城市的所有建筑提升一级", new UnityAction(tryToHideWindow3));
+			createTileButton(index++, content.transform, "扩张城市", "扩张城市", "将指定城市的领土向外扩张一圈", new UnityAction(tryToHideWindow4));
+			createTileButton(index++, content.transform, "建造城墙", "建造城墙", "在指定城市的外围建造一圈箭塔", new UnityAction(tryToHideWindow5));
+			createTileButton(index++, content.transform, "合并城市", "合并城市", "合并两座城市", new UnityAction(tryToHideWindow6));
+			createTileButton(index++, content.transform, "宣称城市", "宣称城市", "指定国家获得该城市的宣称", new UnityAction(tryToHideWindow7));
+
+		}
+
+		private static void createTileButton(int index, Transform pParent, string powerID, string pSprite, string pDescription, UnityAction pCall = null)
+		{
+			GodPower godPower = new()
+			{
+				id = powerID,
+				name = powerID,
+				unselectWhenWindow = true
+			};
+			AssetManager.powers.add(godPower);
 			NewFunction.CreateNewButtonOnWindow(NewFunction.getPositionByIndex(index), pParent, pSprite, godPower, pDescription, pCall, PowerButtonType.Active);
 		}
 
@@ -138,6 +139,9 @@ namespace Diplomacy_Army
 					break;
 				case "Arab":
 					buildings = "house_Arab";
+					break;
+				case "Russia":
+					buildings = "houseRussia";
 					break;
 				default:
 					return false;
@@ -425,6 +429,34 @@ namespace Diplomacy_Army
 			}
 			return true;
 		}
+		public static bool tryToDeclareCity(WorldTile pTile, string pPower)
+		{
+			if (pTile.zone.city == null)
+			{
+				return false;
+			}
+			City city = pTile.zone.city;
+			var kingdom = Reflection.GetField(pTile.zone.city.GetType(), pTile.zone.city, "kingdom") as Kingdom;
+			if (MoreGodPower.selected_city == null)
+			{
+				MoreGodPower.selected_city = city;
+				MoreGodPower.selected_kingdom = kingdom;
+				var data = MoreGodPower.selected_city.data;
+				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "国家", "想要宣称城市 " + data.name + " 的主权.....");
+			}
+			else if (MoreGodPower.selected_city != null)
+			{
+				if (kingdom == MoreGodPower.selected_kingdom)
+					return false;
+				var data = MoreGodPower.selected_city.data;
+				data.set("DeclareKingdomID",kingdom.data.id);
+				data.set("Declare",true);
+				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, kingdom, "国家", "的城市 " + data.name + " 被国家", "宣称了。");
+				MoreGodPower.selected_city = null;
+				MoreGodPower.selected_kingdom = null;
+			}
+			return true;
+		}
 
 		public static void tryToHideWindow()
 		{
@@ -459,12 +491,12 @@ namespace Diplomacy_Army
 			pbsInstance.clickPowerButton(powerButton);
 		}
 		public static void tryToHideWindow5()
-        {
-            power = Reflection.GetField(powerButton.GetType(), powerButton, "godPower") as GodPower;
+		{
+			power = Reflection.GetField(powerButton.GetType(), powerButton, "godPower") as GodPower;
 			power.click_action = null;
 			power.click_action = (PowerActionWithID)Delegate.Combine(power.click_action, new PowerActionWithID(tryToBuildWall));
-            ScrollWindow.get(name).clickHide();
-            pbsInstance.clickPowerButton(powerButton);
+			ScrollWindow.get(name).clickHide();
+			pbsInstance.clickPowerButton(powerButton);
 		}
 		public static void tryToHideWindow6()
 		{
@@ -474,14 +506,22 @@ namespace Diplomacy_Army
 			ScrollWindow.get(name).clickHide();
 			pbsInstance.clickPowerButton(powerButton);
 		}
-
-
-		public static void AddUnitOfCity(City city,int num)
+		public static void tryToHideWindow7()
 		{
-            if (city.getTile() == null)
-            {
+			power = Reflection.GetField(powerButton.GetType(), powerButton, "godPower") as GodPower;
+			power.click_action = null;
+			power.click_action = (PowerActionWithID)Delegate.Combine(power.click_action, new PowerActionWithID(tryToDeclareCity));
+			ScrollWindow.get(name).clickHide();
+			pbsInstance.clickPowerButton(powerButton);
+		}
+
+
+		public static void AddUnitOfCity(City city, int num)
+		{
+			if (city.getTile() == null)
+			{
 				return;
-            }
+			}
 			Actor actor;
 			for (int i = 0; i < num; i++)
 			{
@@ -502,14 +542,14 @@ namespace Diplomacy_Army
 			else if (MoreGodPower.selected_city != null)
 			{
 				if (kingdom == MoreGodPower.selected_kingdom)
-					return ;
+					return;
 				MoreGodPower.selected_city.joinAnotherKingdom(kingdom);
 				var data = MoreGodPower.selected_city.data;
 				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, kingdom, "国家", "将城市 " + data.name + " 移交给国家", "了。");
 				MoreGodPower.selected_city = null;
 				MoreGodPower.selected_kingdom = null;
 			}
-			return ;
+			return;
 		}
 		public static void DevelopCity(City city)
 		{
@@ -523,8 +563,8 @@ namespace Diplomacy_Army
 			}
 			List<WorldTile> worldTiles = new();
 			string buildings;
-			switch(((Race)Reflection.GetField(city.GetType(), city, "race")).id)
-            {
+			switch (((Race)Reflection.GetField(city.GetType(), city, "race")).id)
+			{
 				case "human":
 					buildings = SB.house_human_0;
 					break;
@@ -539,7 +579,7 @@ namespace Diplomacy_Army
 					break;
 				default:
 					return;
-            }
+			}
 			BuildingAsset buildingAsset = AssetManager.buildings.get(buildings);
 			foreach (TileZone tileZone in zones)
 			{

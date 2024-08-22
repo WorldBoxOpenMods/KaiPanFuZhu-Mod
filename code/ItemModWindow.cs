@@ -30,32 +30,28 @@ namespace Diplomacy_Army
             pvz_ui.NewWindow(wid, 0, "null", true);
             wid.RTF();
             content = pvz_ui.CustomWindowObjects["ItemMod"];
-            // 添加 GridLayoutGroup 并配置
-            GridLayoutGroup layoutGroup = content.AddComponent<GridLayoutGroup>();
-            layoutGroup.cellSize = new Vector2(30, 30);
-            layoutGroup.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            layoutGroup.constraintCount = 4;
-            layoutGroup.childAlignment = TextAnchor.UpperCenter;
-            layoutGroup.spacing = new Vector2(15, 5);
+            originalSize = content.GetComponent<RectTransform>().sizeDelta;
+            // // 设置 RectTransform 的大小
+            content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, AssetManager.items.list.Count / 16 * originalSize.y+200f) + originalSize;
+            // 设置 RectTransform 的大小
             GameObject scrollView = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{wid}/Background/Scroll View");
             scrollView.gameObject.SetActive(true);
-            // 设置 RectTransform 的大小
-            content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, AssetManager.items.list.Count / 16 * originalSize.y + 800f) + originalSize;
-
             // 设置初始位置
             content.GetComponent<RectTransform>().localPosition = new Vector3(80f, -20f, 0);
-            originalSize = content.GetComponent<RectTransform>().sizeDelta;
+            // 确保 ScrollRect 正确配置
+            ScrollRect scrollRect = scrollView.GetComponent<ScrollRect>();
+            scrollRect.content = content.GetComponent<RectTransform>();
 
-            PowerButton submitButton = PowerButtons.CreateButton(
-                "重置",
-                Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
-                "重置",
-                "重置装备修饰词条",
-                new Vector3(-118, 50),
-                ButtonType.Toggle,
-                content.transform,
-                clearToggleButtons
-            );
+            // PowerButton submitButton = PowerButtons.CreateButton(
+            //     "重置",
+            //     Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
+            //     "重置",
+            //     "重置装备修饰词条",
+            //     new Vector3(-118, -50),
+            //     ButtonType.Toggle,
+            //     content.transform,
+            //     clearToggleButtons
+            // );
             LoadItemMods();
         }
 
@@ -67,30 +63,30 @@ namespace Diplomacy_Army
             // }
             // content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, AssetManager.items_modifiers.list.Count/16*originalSize.y) + originalSize;
 
-            int index = 0;
-            int indexY = 0;
-            foreach(ItemAsset mod in AssetManager.items_modifiers.list)
+            // int index = 0;
+            // int indexY = 0;
+            foreach (ItemAsset mod in AssetManager.items_modifiers.list)
             {
                 if (PowerButtons.CustomButtons.ContainsKey($"{mod.id}_modifier_DA"))
                 {
                     PowerButtons.CustomButtons.Remove($"{mod.id}_modifier_DA");
                 }
                 Sprite iconSprite = Sprites.LoadSprite($"{Mod.Info.Path}/icon.png");
-                if(mod.mod_type != "mastery")
+                if (mod.mod_type != "mastery")
                 {
                     iconSprite = Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.Icons.ItemIcons.{mod.id}.png");
                 }
                 PowerButtons.CreateButton(
-                    $"{mod.id}_modifier_DA", 
-                    iconSprite, 
-                    mod.id, 
-                    mod.id, 
-                    new Vector2(index*35-40, indexY*-40+20), 
-                    ButtonType.Toggle, 
+                    $"{mod.id}_modifier_DA",
+                    iconSprite,
+                    mod.id,
+                    mod.id,
+                    new Vector2(0, 0),
+                    ButtonType.Toggle,
                     content.transform
-                    // () => onModClick(mod)
+                // () => onModClick(mod)
                 );
-                increaseIndex(ref index, ref indexY);
+                // increaseIndex(ref index, ref indexY);
             }
         }
 
@@ -123,7 +119,7 @@ namespace Diplomacy_Army
             }
             else
             {
-                NewWindow.itemModifiers.Add(currentButtonID.ToString(), new List<ItemAsset>{mod});
+                NewWindow.itemModifiers.Add(currentButtonID.ToString(), new List<ItemAsset> { mod });
             }
         }
 
@@ -151,7 +147,7 @@ namespace Diplomacy_Army
 
         private static void clearToggleButtons()
         {
-            foreach(KeyValuePair<string, PowerButton> kv in PowerButtons.CustomButtons)
+            foreach (KeyValuePair<string, PowerButton> kv in PowerButtons.CustomButtons)
             {
                 if (!kv.Key.Contains("_modifier_DA"))
                 {

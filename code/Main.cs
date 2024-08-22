@@ -106,7 +106,8 @@ namespace Diplomacy_Army
             { "城市士兵装备禁用", false},
             { "将军装备禁用", false},
             { "领主装备禁用", false},
-            { "DAdebug", true}
+            { "DAdebug", true},
+            { "DA_显示附庸", false}
 
         };
 
@@ -123,16 +124,16 @@ namespace Diplomacy_Army
             string text1 = Path.Combine(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Army", "Diplomacy_ArmySet.json");
             string text0 = Path.Combine(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Army", "numofyears.json");
 
-            Dictionary<string, bool> NewSet=DA_save.LoadDictionaryFromFile(text1);
-            foreach(var set in NewSet.Keys)
+            Dictionary<string, bool> NewSet = DA_save.LoadDictionaryFromFile(text1);
+            foreach (var set in NewSet.Keys)
             {
-                if(DASet.ContainsKey(set))
+                if (DASet.ContainsKey(set))
                 {
-                    DASet[set]=NewSet[set];
+                    DASet[set] = NewSet[set];
                 }
                 else
                 {
-                    DASet.Add(set,NewSet[set]);
+                    DASet.Add(set, NewSet[set]);
                 }
             }
 
@@ -194,8 +195,8 @@ namespace Diplomacy_Army
             {
                 if (PowerButtons.ToggleValues.ContainsKey(set))
                 {
-                    if(PowerButtons.GetToggleValue(set)!=DASet[set])
-                    PowerButtons.ToggleButton(set);
+                    if (PowerButtons.GetToggleValue(set) != DASet[set])
+                        PowerButtons.ToggleButton(set);
                 }
             }
             OpinionAsset opinionAsset2 = new()
@@ -239,9 +240,9 @@ namespace Diplomacy_Army
         public void Update()
         {
             if (!Config.gameLoaded) { return; }
-            update.updateTreaty();
-            update.updateCities();
-            update.updateVassal();
+            Diplomacy_Army.Update.updateTreaty();
+            Diplomacy_Army.Update.updateCities();
+            Diplomacy_Army.Update.UpdateVassals();
             if (DateTime.Compare(GCtime, DateTime.Now.ToLocalTime()) < 0 && PowerButtons.GetToggleValue("DA_自动内存清理"))
             {
                 GCGame();
@@ -822,6 +823,13 @@ namespace Diplomacy_Army
             {
                 __instance.text.color = pCity.kingdom.kingdomColor.getColorText();
             }
+            if (harmony_declare.CheckDeclare(pCity))
+            {
+                pCity.data.get("DeclareKingdomID", out str, "");
+                Kingdom kingdom = World.world.kingdoms.getKingdomByID(str);
+                text += "\r\n宣称国家:" + kingdom.name;
+            }
+
             __instance.setText(text, pCity.cityCenter);
             __instance.base_icon.sprite = SpriteTextureLoader.getSprite("ui/Icons/iconKingdom");
             if (pCity.kingdom.capital == pCity)

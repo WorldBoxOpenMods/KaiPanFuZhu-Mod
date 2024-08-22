@@ -14,29 +14,16 @@ namespace Diplomacy_Army
 {
       public class DA_button
       {
-            public static ToggleIcon PVZPublicIcon;
 
-            public static Dictionary<string, int> PlantSuns = new();
-            public static bool action_Unit(WorldTile pTile, GodPower pPower) { AssetManager.powers.CallMethod("spawnUnit", pTile, pPower); return true; }
-            public static bool action_Drop(WorldTile pTile, GodPower pPower) { AssetManager.powers.CallMethod("spawnDrops", pTile, pPower); return true; }
-            public static bool action_1(WorldTile pTile, GodPower pPower) { AssetManager.powers.CallMethod("loopWithCurrentBrushPower", pTile, pPower); return true; }
-            public static bool action_0(WorldTile pTile, GodPower pPower) { return true; }
-            public static bool action_Unit(WorldTile pTile, string pPower) { AssetManager.powers.CallMethod("spawnUnit", pTile, pPower); return true; }
-            public static bool action_Drop(WorldTile pTile, string pPower) { AssetManager.powers.CallMethod("spawnDrops", pTile, pPower); return true; }
-            public static bool action_1(WorldTile pTile, string pPower) { AssetManager.powers.CallMethod("loopWithCurrentBrushPower", pTile, pPower); return true; }
-            public static bool action_0(WorldTile pTile, string pPower) { return true; }
-            public static PowerActionWithID PWspawnUnit = new(action_Unit);
-            public static PowerActionWithID PWspawnDrops = new(action_Drop);
-            public static PowerActionWithID PWloopWithCurrentBrushPower = new(action_1);
-            public static PowerActionWithID PWfalse = new(action_0);
-            public static PowerAction PspawnUnit = new(action_Unit);
-            public static PowerAction PspawnDrops = new(action_Drop);
-            public static PowerAction PloopWithCurrentBrushPower = new(action_1);
-            public static PowerAction Pfalse = new(action_0);
             public static int index = 6;
             public static float x = 144f + 36 * (index / 2);
             public static float y = 18f - 36 * (index % 2);
             public static void init()
+            {
+                  GreateButton();
+                  GreateLine();
+            }
+            public static void GreateLine()
             {
                   GameObject line = new("DALine");
                   var lineRTF = line.AddComponent<RectTransform>();
@@ -44,121 +31,64 @@ namespace Diplomacy_Army
                   line.AddComponent<Image>().sprite = Resources.Load<Sprite>("ui/DAline.png");
                   lineRTF.sizeDelta = new Vector2(6, 86);
                   var newLine1 = GameObject.Instantiate(line, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform);
+                  newLine1.transform.localPosition = new Vector2(108f, newLine1.transform.localPosition.y - 6f);
+                  var newLine2 = GameObject.Instantiate(line, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform);
+                  newLine2.transform.localPosition = new Vector2(460f, newLine1.transform.localPosition.y - 6f);
+            }
+            public static void GreateButton()
+            {
                   PowerButtons.CreateButton("DA_modder2", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.贝伦帝国.jpg"),
-            "原作者", "原作者：贝伦帝国", new Vector2(72, 18), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform);
+                  "原作者", "原作者：贝伦帝国", new Vector2(72, 18), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform);
                   PowerButtons.CreateButton("DA_modder1", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.other.modder.png"),
-            "作者简介", "作者:空星漫漫", new Vector2(72, -18), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow(DA_modder.wid));
-
-                  newLine1.transform.localPosition = new Vector2(108f, newLine1.transform.localPosition.y - 6f);update();update();
+                  "作者简介", "作者:空星漫漫", new Vector2(72, -18), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow(DA_modder.wid)); 
+                  update(); update();
 
                   PowerButtons.CreateButton("DA_显示外交消息", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "显示外交消息" + ".jpg"),
-            "显示外交消息", "显示外交消息", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
-
+                  "显示外交消息", "显示外交消息", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
                   PowerButtons.CreateButton("DA_显示交战", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "关闭显示交战" + ".jpg"),
-            "关闭显示交战", "关闭显示交战", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
+                  "关闭显示交战", "关闭显示交战", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
+                  PowerButtons.CreateButton("DA_关闭显示附庸颜色", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "关闭显示附庸" + ".jpg"),
+                  "关闭显示附庸颜色", "关闭显示附庸颜色", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
                   PowerButtons.CreateButton("DA_显示条约", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "显示条约" + ".jpg"),
-            "显示条约", "显示条约", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
+                  "显示条约", "显示条约", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
                   PowerButtons.CreateButton("显示原版铭牌", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "显示原版铭牌" + ".jpg"),
-"显示原版铭牌", "显示原版铭牌", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
+                  "显示原版铭牌", "显示原版铭牌", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
                   PowerButtons.CreateButton("DA_更多法则", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "更多法则" + ".jpg"),
-            "更多法则", "打开更多法则", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("MoreRules")); update();
+                  "更多法则", "打开更多法则", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("MoreRules")); update();
                   PowerButtons.CreateButton("DA_更多设置", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "更多设置" + ".jpg"),
-            "全局设置", "打开全局设置", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("MoreSettings")); update();
+                  "全局设置", "打开全局设置", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("MoreSettings")); update();
                   PowerButtons.CreateButton("DA_自动内存清理", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.Icons.CleanMemorytoSave.png"),
-            "自动内存清理", "", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
+                  "自动内存清理", "", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
                   PowerButtons.CreateButton("DAdebug", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.Icons.iconDebug.png"),
-"debug", "debug", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, () => Windows.ShowWindow("debug")); update(); update(); ; update();
+                  "debug", "debug", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, () => Windows.ShowWindow("debug")); update();
+                  PowerButtons.CreateButton("保存", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "保存设置" + ".jpg"),
+                  "保存设置", "保存所有的设置", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => AddToDASet()); update(); 
 
-                  var newLine2 = GameObject.Instantiate(line, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform);
-                  newLine2.transform.localPosition = new Vector2(420f, newLine1.transform.localPosition.y - 6f);
+                  update();  update();
+
                   PowerButtons.CreateButton("资源设置", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "资源设置" + ".jpg"),
-"资源设置", "", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("Window_ResourcesSettings")); update();
-
+                  "资源设置", "", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("Window_ResourcesSettings")); update();
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "资源添加", "资源添加", "资源添加到全国每个城市"); update();
-
                   PowerButtons.CreateButton("特质设置", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.iconRainGammaEdit.png"),
-"特质设置", "", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, () => clickTraitEditorRainButton(PowerLibrary.traits_gamma_rain_edit.id)); update();
+                  "特质设置", "", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, () => clickTraitEditorRainButton(PowerLibrary.traits_gamma_rain_edit.id)); update();
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "特质添加", "特质添加", "特质添加到全国每个军人身上"); update();
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "特质删除", "特质删除", "特质从全国每个军人身上去除"); update(); update();
                   PowerButtons.CreateButton("装备设置", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.DAweapons.png"),
-"装备设置", "", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("ItemSettings")); update();
+                  "装备设置", "", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("ItemSettings")); update();
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "装备添加", "装备添加", "装备添加"); update();
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "装备删除", "装备删除", "装备删除"); update(); update();
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "城市地块拓展开关", "城市地块拓展", "城市地块拓展开关"); update();
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "国家地块拓展开关", "国家地块拓展", "国家地块拓展开关"); update();
                   PowerButtons.CreateButton("DA_装备禁止获取", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "装备禁止获取" + ".jpg"),
-            "装备禁止获取", "打开装备禁止获取参数设置窗口", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("ProhibitgiveItem")); update();
+                  "装备禁止获取", "打开装备禁止获取参数设置窗口", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("ProhibitgiveItem")); update();
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "装备禁止获取", "装备禁止获取", "点击城市或国家设置装备禁止获取的参数"); update();
-                  PowerButtons.CreateButton("保存", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "资源设置" + ".jpg"),
-"保存设置", "保存所有的设置", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => addToDASet()); update();
+
             }
             public static void update()
             {
                   index++;
                   x = 144f + 36 * (index / 2);
                   y = 18f - 36 * (index % 2);
-            }
-            public static void addToDASet()
-            {
-                  foreach (ItemAsset mod in AssetManager.items_modifiers.list)
-                  {
-                        if (Main.DASet.ContainsKey($"{mod.id}_modifier_DA")&&PowerButtons.ToggleValues.ContainsKey($"{mod.id}_modifier_DA"))
-                        {
-                              Main.DASet[$"{mod.id}_modifier_DA"] = PowerButtons.GetToggleValue($"{mod.id}_modifier_DA");
-                        }
-                        else if(PowerButtons.ToggleValues.ContainsKey($"{mod.id}_modifier_DA"))
-                        {
-                              Main.DASet.Add($"{mod.id}_modifier_DA", PowerButtons.GetToggleValue($"{mod.id}_modifier_DA"));
-                        }
-                  }
-                  foreach (ItemAsset item in AssetManager.items.list)
-                  {
-                        if (item.id[0] == '_' || NewWindow.wrongItems.Contains(item.id))
-                        {
-                              continue;
-                        }
-                        if (item.materials.Count <= 0)
-                        {
-                              if (Main.DASet.ContainsKey($"{item.id}_DA")&&PowerButtons.ToggleValues.ContainsKey($"{item.id}_DA"))
-                              {
-                                    Main.DASet[$"{item.id}_DA"] = PowerButtons.GetToggleValue($"{item.id}_DA");
-                              }
-                              else if(PowerButtons.ToggleValues.ContainsKey($"{item.id}_DA"))
-                              {
-                                    Main.DASet.Add($"{item.id}_DA", PowerButtons.GetToggleValue($"{item.id}_DA"));
-                              }
-
-
-                              continue;
-                        }
-                        foreach (string material in item.materials)
-                        {
-                              if (Main.DASet.ContainsKey($"{item.id}_DA_{material}")&&PowerButtons.ToggleValues.ContainsKey($"{item.id}_DA_{material}"))
-                              {
-                                    Main.DASet[$"{item.id}_DA_{material}"] = PowerButtons.GetToggleValue($"{item.id}_DA_{material}");
-                              }
-                              else if(PowerButtons.ToggleValues.ContainsKey($"{item.id}_DA_{material}"))
-                              {
-                                    Main.DASet.Add($"{item.id}_DA_{material}", PowerButtons.GetToggleValue($"{item.id}_DA_{material}"));
-                              }
-                        }
-                        foreach (var set in Main.DASet.Keys.ToList())
-                        {
-                              if (PowerButtons.ToggleValues.ContainsKey(set))
-                              {
-                                    Main.DASet[set] = PowerButtons.GetToggleValue(set);
-                              }
-                        }
-
-                  }
-                  DA_save.SaveDictionaryToFile(Main.DASet, Path.Combine(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Army", "Diplomacy_ArmySet.json"));
-                  Debug.Log("保存成功！");
-            }
-            public static bool clickTraitEditorRainButton(string pPowerId)
-            {
-                  Config.selected_trait_editor = pPowerId;
-                  ScrollWindow.showWindow("trait_rain_editor");
-                  return true;
             }
             public static void CreateNewActiveGodpower(Transform pParent, string powerID, string pSprite, string pDescription, UnityAction pCall = null)
             {
@@ -224,6 +154,69 @@ namespace Diplomacy_Army
                   NewFunction.localizedText.Add(pID.name + " Description", pDescription);
                   return gameObject2;
             }
+            public static void AddToDASet()
+            {
+                  foreach (ItemAsset mod in AssetManager.items_modifiers.list)
+                  {
+                        if (Main.DASet.ContainsKey($"{mod.id}_modifier_DA") && PowerButtons.ToggleValues.ContainsKey($"{mod.id}_modifier_DA"))
+                        {
+                              Main.DASet[$"{mod.id}_modifier_DA"] = PowerButtons.GetToggleValue($"{mod.id}_modifier_DA");
+                        }
+                        else if (PowerButtons.ToggleValues.ContainsKey($"{mod.id}_modifier_DA"))
+                        {
+                              Main.DASet.Add($"{mod.id}_modifier_DA", PowerButtons.GetToggleValue($"{mod.id}_modifier_DA"));
+                        }
+                  }
+                  foreach (ItemAsset item in AssetManager.items.list)
+                  {
+                        if (item.id[0] == '_' || NewWindow.wrongItems.Contains(item.id))
+                        {
+                              continue;
+                        }
+                        if (item.materials.Count <= 0)
+                        {
+                              if (Main.DASet.ContainsKey($"{item.id}_DA") && PowerButtons.ToggleValues.ContainsKey($"{item.id}_DA"))
+                              {
+                                    Main.DASet[$"{item.id}_DA"] = PowerButtons.GetToggleValue($"{item.id}_DA");
+                              }
+                              else if (PowerButtons.ToggleValues.ContainsKey($"{item.id}_DA"))
+                              {
+                                    Main.DASet.Add($"{item.id}_DA", PowerButtons.GetToggleValue($"{item.id}_DA"));
+                              }
+
+
+                              continue;
+                        }
+                        foreach (string material in item.materials)
+                        {
+                              if (Main.DASet.ContainsKey($"{item.id}_DA_{material}") && PowerButtons.ToggleValues.ContainsKey($"{item.id}_DA_{material}"))
+                              {
+                                    Main.DASet[$"{item.id}_DA_{material}"] = PowerButtons.GetToggleValue($"{item.id}_DA_{material}");
+                              }
+                              else if (PowerButtons.ToggleValues.ContainsKey($"{item.id}_DA_{material}"))
+                              {
+                                    Main.DASet.Add($"{item.id}_DA_{material}", PowerButtons.GetToggleValue($"{item.id}_DA_{material}"));
+                              }
+                        }
+                        foreach (var set in Main.DASet.Keys.ToList())
+                        {
+                              if (PowerButtons.ToggleValues.ContainsKey(set))
+                              {
+                                    Main.DASet[set] = PowerButtons.GetToggleValue(set);
+                              }
+                        }
+
+                  }
+                  DA_save.SaveDictionaryToFile(Main.DASet, Path.Combine(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Army", "Diplomacy_ArmySet.json"));
+                  Debug.Log("保存成功！");
+            }
+            public static bool clickTraitEditorRainButton(string pPowerId)
+            {
+                  Config.selected_trait_editor = pPowerId;
+                  ScrollWindow.showWindow("trait_rain_editor");
+                  return true;
+            }
+            
             public static bool CityZoneGrowth(WorldTile pTile, string pPower)
             {
                   City city = pTile.zone.city;

@@ -70,7 +70,7 @@ namespace Diplomacy_Army
             content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, AssetManager.items.list.Count / 16 * originalSize.y + 800f) + originalSize;
 
             // 设置初始位置
-            content.GetComponent<RectTransform>().localPosition = new Vector3(80f, 40f, 0);
+            content.GetComponent<RectTransform>().localPosition = new Vector3(80f, -1000f, 0);
 
             // 确保 ScrollRect 正确配置
             ScrollRect scrollRect = scrollView.GetComponent<ScrollRect>();
@@ -79,7 +79,7 @@ namespace Diplomacy_Army
             "ChooseKing",
             Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
             "选择国王",
-            "选择国王",
+            "装备将分配到国王对象",
             new Vector3(-118, 30),
             ButtonType.Toggle,
             content.transform,
@@ -89,7 +89,7 @@ namespace Diplomacy_Army
                 "ChooseLeader",
                 Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
                 "选择领主",
-                "选择领主",
+                "装备将分配到领主对象",
                 new Vector3(-118, 30),
                 ButtonType.Toggle,
                 content.transform,
@@ -99,7 +99,7 @@ namespace Diplomacy_Army
             "ChooseAllWarrior",
             Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
             "选择全国士兵",
-            "选择全国士兵",
+            "装备将分配到全国士兵",
             new Vector3(-118, -6),
             ButtonType.Toggle,
             content.transform,
@@ -109,7 +109,7 @@ namespace Diplomacy_Army
             "ChooseCityWarrior",
             Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
             "选择城市中的士兵",
-            "选择城市中的士兵",
+            "装备将分配到城市中的士兵",
             new Vector3(-118, -42),
             ButtonType.Toggle,
             content.transform,
@@ -119,7 +119,7 @@ namespace Diplomacy_Army
             "ChooseCityGeneral",
             Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
             "选择城市中的旗手",
-            "选择城市中的旗手",
+            "装备将分配到城市中的旗手",
             new Vector3(-118, -78),
             ButtonType.Toggle,
             content.transform,
@@ -129,7 +129,7 @@ namespace Diplomacy_Army
             "ChooseAllGeneral",
             Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
             "选择全国的旗手",
-            "选择全国的旗手",
+            "装备将分配到全国旗手",
             new Vector3(-118, -108),
             ButtonType.Toggle,
             content.transform,
@@ -137,9 +137,9 @@ namespace Diplomacy_Army
         ); index++;
             button = PowerButtons.CreateButton(
             "DA_itemEdit",
-            Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
+            Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "装备编辑" + ".jpg"),
             "装备编辑",
-            "装备编辑",
+            "编辑装备的词条",
             new Vector3(-118, -108),
             ButtonType.GodPower,
             content.transform,
@@ -253,8 +253,6 @@ namespace Diplomacy_Army
             "异族统治", "异族统治", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
             PowerButtons.CreateButton("领土完整", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
             "领土完整", "领土完整", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
-            // PowerButtons.CreateButton("强制改名", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
-            // "强制改名", "强制改名", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
         }
         public static void ProhibitgiveItem()
         {
@@ -268,7 +266,7 @@ namespace Diplomacy_Army
             PowerButtons.CreateButton("城市士兵装备禁用", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
             "城市士兵装备禁用", "点击一个城市，其的士兵装备将无法从城市中获取", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
             PowerButtons.CreateButton("将军装备禁用", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
-"城市将军装备禁用", "点击一个城市，其的将军装备将无法从城市中获取", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
+            "城市将军装备禁用", "点击一个城市，其的将军装备将无法从城市中获取", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
             PowerButtons.CreateButton("领主装备禁用", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
             "领主装备禁用", "点击一个城市，其的领主装备将无法从城市中获取", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
 

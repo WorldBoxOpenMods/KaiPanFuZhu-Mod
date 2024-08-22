@@ -210,13 +210,13 @@ namespace Diplomacy_Army
                 float num = pKingdom.king.stats[S.personality_aggression];
                 if (pKingdom.power > pAttacker.power)
                 {
-                    num=0.7f;
+                    num=1f;
                 }
                 if (pKingdom.power < pAttacker.power)
                 {
-                    num=0.4f;
+                    num=0.8f;
                 }
-                if (Toolbox.randomChance(num + 0.2f))
+                if (Toolbox.randomChance(num))
                 {
                     war.joinDefenders(pDefender);
                 }

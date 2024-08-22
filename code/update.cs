@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Diplomacy_Army;
+using NCMS.Utils;
 
 namespace Diplomacy_Army
 {
-    public class update
+    public static class Update
     {
-        // 
-        public static void updateVassal()
+        public static void UpdateVassals()
         {
             var vassalsToRemove = new HashSet<Kingdom>();
 
@@ -21,57 +22,91 @@ namespace Diplomacy_Army
                     continue;
                 }
 
-                UpdateKingdomVassals(kingdom, ref vassalsToRemove);
+                UpdateVassalColor(kingdom);
+                UpdateKingdomVassals(kingdom, vassalsToRemove);
             }
 
-            foreach (var kingdomToRemove in vassalsToRemove)
+            foreach (var kingdom in vassalsToRemove)
             {
-                RemoveVassals(kingdomToRemove);
+                RemoveVassals(kingdom);
             }
         }
 
-        private static void UpdateKingdomVassals(Kingdom kingdom, ref HashSet<Kingdom> vassalsToRemove)
+        private static void UpdateKingdomVassals(Kingdom kingdom, HashSet<Kingdom> vassalsToRemove)
         {
-            bool hasEnemies = kingdom.hasEnemies();
-            var vassals = MoreGodPower.Vassals[kingdom].ToList();
-
-            foreach (var vassal in vassals)
+            if (MoreGodPower.Vassals.TryGetValue(kingdom, out var vassals))
             {
-                if (vassal == null || vassal.data == null)
+                foreach (var vassal in vassals.ToList())
                 {
-                    MoreGodPower.Vassals[kingdom].Remove(vassal);
-                    continue;
+                    if (vassal == null || vassal.data == null)
+                    {
+                        vassals.Remove(vassal);
+                        continue;
+                    }
+
+                    UpdateVassalAlliance(vassal, kingdom);
                 }
 
-                UpdateVassalAlliance(vassal, kingdom, hasEnemies);
-            }
-
-            if (MoreGodPower.Vassals[kingdom].Count == 0)
-            {
-                vassalsToRemove.Add(kingdom);
+                if (vassals.Count == 0)
+                {
+                    vassalsToRemove.Add(kingdom);
+                }
             }
         }
 
-        private static void UpdateVassalAlliance(Kingdom vassal, Kingdom kingdom, bool hasEnemies)
+        private static void UpdateVassalAlliance(Kingdom vassal, Kingdom kingdom)
         {
+            var hasEnemies = kingdom.hasEnemies();
+
             if (hasEnemies)
             {
                 JoinVassalToWar(vassal, kingdom);
             }
 
-            var vassalAlliance = vassal.getAlliance();
+            var currentAlliance = vassal.getAlliance();
             var kingdomAlliance = kingdom.getAlliance();
 
-            if (vassalAlliance != kingdomAlliance)
+            if (currentAlliance != kingdomAlliance)
             {
                 ChangeVassalAlliance(vassal, kingdom);
             }
         }
 
+        private static void UpdateVassalColor(Kingdom kingdom)
+        {
+            var vassals = MoreGodPower.Vassals[kingdom].ToList();
+
+            foreach (var vassal in vassals)
+            {
+                if (PowerButtons.GetToggleValue("DA_关闭显示附庸颜色"))
+                {
+                    NewFunction.UpdateColor(vassal);
+                }
+                else
+                {
+                    UpdateVassalToKingdomColor(vassal, kingdom);
+                }
+            }
+        }
+
+        private static void UpdateVassalToKingdomColor(Kingdom vassal, Kingdom kingdom)
+        {
+            if (vassal.data.colorID != kingdom.data.colorID)
+            {
+                vassal.data.set("oldColorID", vassal.data.colorID);
+                vassal.data.set("oldColor", NewFunction.Serialize(vassal.getColor()));
+
+                vassal.data.colorID = kingdom.data.colorID;
+                vassal.updateColor(kingdom.getColor());
+                World.world.zoneCalculator.setDrawnZonesDirty();
+                World.world.zoneCalculator.redrawZones();
+            }
+        }
+
         private static void JoinVassalToWar(Kingdom vassal, Kingdom kingdom)
         {
-            ListPool<War> wars = kingdom.getWars();
-            foreach (War war in wars)
+            var wars = kingdom.getWars();
+            foreach (var war in wars)
             {
                 if (!war.hasKingdom(vassal))
                 {
@@ -89,45 +124,204 @@ namespace Diplomacy_Army
 
         private static void ChangeVassalAlliance(Kingdom vassal, Kingdom kingdom)
         {
-            if (vassal.getAlliance() != null && kingdom.getAlliance() == null)
+            var currentAlliance = vassal.getAlliance();
+            var kingdomAlliance = kingdom.getAlliance();
+
+            if (currentAlliance != null && kingdomAlliance != currentAlliance)
             {
-                var alliance = vassal.getAlliance();
-                alliance.kingdoms_hashset.Remove(vassal);
-                vassal.allianceLeave(vassal.getAlliance());
-                alliance.recalculate();
+                currentAlliance.kingdoms_hashset.Remove(vassal);
+                vassal.allianceLeave(currentAlliance);
+                currentAlliance.recalculate();
             }
-            else if (vassal.getAlliance() != null && kingdom.getAlliance() != vassal.getAlliance())
+
+            if (kingdomAlliance != null)
             {
-                var alliance2 = vassal.getAlliance();
-                alliance2.kingdoms_hashset.Remove(vassal);
-                vassal.allianceLeave(alliance2);
-                var alliance = kingdom.getAlliance();
-                alliance.kingdoms_hashset.Add(vassal);
-                vassal.allianceJoin(alliance);
-                alliance.recalculate();
-                alliance2.recalculate();
-                alliance.data.timestamp_member_joined = MapBox.instance.getCurWorldTime();
-            }
-            else if (vassal.getAlliance() == null && kingdom.getAlliance() != null)
-            {
-                var alliance = kingdom.getAlliance();
-                alliance.kingdoms_hashset.Add(vassal);
-                vassal.allianceJoin(alliance);
-                alliance.recalculate();
-                alliance.data.timestamp_member_joined = MapBox.instance.getCurWorldTime();
+                kingdomAlliance.kingdoms_hashset.Add(vassal);
+                vassal.allianceJoin(kingdomAlliance);
+                kingdomAlliance.recalculate();
+                kingdomAlliance.data.timestamp_member_joined = MapBox.instance.getCurWorldTime();
             }
         }
 
-        private static void RemoveVassals(Kingdom kingdomToRemove)
+        private static void RemoveVassals(Kingdom kingdom)
         {
-            var vassals = MoreGodPower.Vassals[kingdomToRemove].ToList();
-            foreach (var vassal in vassals)
+            foreach (var vassal in MoreGodPower.Vassals[kingdom])
             {
                 vassal.data.set("Vassal", false);
                 vassal.data.set("suzerainID", "");
             }
-            MoreGodPower.Vassals.Remove(kingdomToRemove);
+            MoreGodPower.Vassals.Remove(kingdom);
         }
+
+
+        // 
+        // public static void updateVassal()
+        // {
+        //     var vassalsToRemove = new HashSet<Kingdom>();
+
+        //     foreach (var kingdom in MoreGodPower.Vassals.Keys.ToList())
+        //     {
+        //         if (kingdom == null || !kingdom.isAlive() || kingdom.data == null)
+        //         {
+        //             vassalsToRemove.Add(kingdom);
+        //             UpdateVassalColor(kingdom, ref vassalsToRemove);
+        //             continue;
+        //         }
+        //         UpdateVassalColor(kingdom, ref vassalsToRemove);
+        //         UpdateKingdomVassals(kingdom, ref vassalsToRemove);
+        //     }
+
+        //     foreach (var kingdomToRemove in vassalsToRemove)
+        //     {
+        //         RemoveVassals(kingdomToRemove);
+        //     }
+        // }
+
+        // private static void UpdateKingdomVassals(Kingdom kingdom, ref HashSet<Kingdom> vassalsToRemove)
+        // {
+        //     bool hasEnemies = kingdom.hasEnemies();
+        //     var vassals = MoreGodPower.Vassals[kingdom].ToList();
+
+        //     foreach (var vassal in vassals)
+        //     {
+        //         if (vassal == null || vassal.data == null)
+        //         {
+        //             MoreGodPower.Vassals[kingdom].Remove(vassal);
+        //             continue;
+        //         }
+
+
+        //         UpdateVassalAlliance(vassal, kingdom, hasEnemies);
+        //     }
+
+        //     if (MoreGodPower.Vassals[kingdom].Count == 0)
+        //     {
+        //         vassalsToRemove.Add(kingdom);
+        //     }
+        // }
+
+        // private static void UpdateVassalAlliance(Kingdom vassal, Kingdom kingdom, bool hasEnemies)
+        // {
+        //     if (hasEnemies)
+        //     {
+        //         JoinVassalToWar(vassal, kingdom);
+        //     }
+
+        //     var vassalAlliance = vassal.getAlliance();
+        //     var kingdomAlliance = kingdom.getAlliance();
+
+        //     if (vassalAlliance != kingdomAlliance)
+        //     {
+        //         ChangeVassalAlliance(vassal, kingdom);
+        //     }
+        // }
+        // private static void UpdateVassalColor(Kingdom kingdom, ref HashSet<Kingdom> vassalsToRemove)
+        // {
+
+        //     var vassals = MoreGodPower.Vassals[kingdom].ToList();
+
+        //     foreach (var vassal in vassals)
+        //     {
+        //         if (kingdom == null || !kingdom.isAlive() || kingdom.data == null)
+        //         {
+        //             NewFunction.UpdateColor(vassal);
+        //             continue;
+        //         }
+        //         if (vassal == null || vassal.data == null)
+        //         {
+        //             MoreGodPower.Vassals[kingdom].Remove(vassal);
+        //             continue;
+        //         }
+        //         vassal.data.get("oldColorID", out int num);
+        //         if (PowerButtons.GetToggleValue("DA_关闭显示附庸颜色"))
+        //         {
+        //             NewFunction.UpdateColor(vassal);
+        //         }
+        //         else if(num==vassal.data.colorID)
+        //         {
+        //             vassal.data.set("oldColorID", vassal.data.colorID);
+        //             ColorAsset originalColor = vassal.getColor();
+        //             string oldColor = NewFunction.Serialize(originalColor);
+
+        //             vassal.data.set("oldColor", oldColor);
+
+        //             vassal.data.colorID = kingdom.data.colorID;
+        //             ColorAsset kingdomcolor = kingdom.getColor();
+        //             vassal.updateColor(kingdomcolor);
+        //             World.world.zoneCalculator.setDrawnZonesDirty();
+        //             World.world.zoneCalculator.clearCurrentDrawnZones(true);
+        //             World.world.zoneCalculator.redrawZones();
+        //         }
+
+
+        //     }
+
+        //     if (MoreGodPower.Vassals[kingdom].Count == 0)
+        //     {
+        //         vassalsToRemove.Add(kingdom);
+        //     }
+        // }
+
+        // private static void JoinVassalToWar(Kingdom vassal, Kingdom kingdom)
+        // {
+        //     ListPool<War> wars = kingdom.getWars();
+        //     foreach (War war in wars)
+        //     {
+        //         if (!war.hasKingdom(vassal))
+        //         {
+        //             if (war.data.list_defenders.Contains(kingdom.id))
+        //             {
+        //                 war.joinDefenders(vassal);
+        //             }
+        //             else if (war.data.list_attackers.Contains(kingdom.id))
+        //             {
+        //                 war.joinAttackers(vassal);
+        //             }
+        //         }
+        //     }
+        // }
+
+        // private static void ChangeVassalAlliance(Kingdom vassal, Kingdom kingdom)
+        // {
+        //     if (vassal.getAlliance() != null && kingdom.getAlliance() == null)
+        //     {
+        //         var alliance = vassal.getAlliance();
+        //         alliance.kingdoms_hashset.Remove(vassal);
+        //         vassal.allianceLeave(vassal.getAlliance());
+        //         alliance.recalculate();
+        //     }
+        //     else if (vassal.getAlliance() != null && kingdom.getAlliance() != vassal.getAlliance())
+        //     {
+        //         var alliance2 = vassal.getAlliance();
+        //         alliance2.kingdoms_hashset.Remove(vassal);
+        //         vassal.allianceLeave(alliance2);
+        //         var alliance = kingdom.getAlliance();
+        //         alliance.kingdoms_hashset.Add(vassal);
+        //         vassal.allianceJoin(alliance);
+        //         alliance.recalculate();
+        //         alliance2.recalculate();
+        //         alliance.data.timestamp_member_joined = MapBox.instance.getCurWorldTime();
+        //     }
+        //     else if (vassal.getAlliance() == null && kingdom.getAlliance() != null)
+        //     {
+        //         var alliance = kingdom.getAlliance();
+        //         alliance.kingdoms_hashset.Add(vassal);
+        //         vassal.allianceJoin(alliance);
+        //         alliance.recalculate();
+        //         alliance.data.timestamp_member_joined = MapBox.instance.getCurWorldTime();
+        //     }
+        // }
+
+        // private static void RemoveVassals(Kingdom kingdomToRemove)
+        // {
+        //     var vassals = MoreGodPower.Vassals[kingdomToRemove].ToList();
+        //     foreach (var vassal in vassals)
+        //     {
+        //         vassal.data.set("Vassal", false);
+        //         vassal.data.set("suzerainID", "");
+        //     }
+        //     MoreGodPower.Vassals.Remove(kingdomToRemove);
+        // }
         // public static void updateVassal()
         // {
         //     var vassalsToRemove = new List<Kingdom>();
@@ -211,5 +405,6 @@ namespace Diplomacy_Army
                 MoreGodPower.citiesCelebrate.Remove(Main.city);
             }
         }
+
     }
 }
