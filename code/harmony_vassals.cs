@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Diplomacy_Army;
 using HarmonyLib;
+using UnityEngine;
 
 namespace Diplomacy_Army
 {
@@ -19,11 +21,16 @@ namespace Diplomacy_Army
                 return false;
             }
 
+
             if (CheckVassal(pActor.kingdom))
             {
                 return false;
             }
-
+            if (harmony_declare.tryPlotDeclareWar(pActor, AssetManager.plots_library.get("new_declare_war")))
+            {
+                harmony_declare._timestamp_last_plot(__instance);
+                return false;
+            }
             return true;
         }
 
@@ -38,11 +45,11 @@ namespace Diplomacy_Army
 
                 if (suzerain != null)
                 {
-                    if(!MoreGodPower.Vassals.ContainsKey(suzerain))
+                    if (!MoreGodPower.Vassals.ContainsKey(suzerain))
                     {
-                        MoreGodPower.Vassals.Add(suzerain,new List<Kingdom> {kingdom});
+                        MoreGodPower.Vassals.Add(suzerain, new List<Kingdom> { kingdom });
                     }
-                    else if(!MoreGodPower.Vassals[suzerain].Contains(kingdom))
+                    else if (!MoreGodPower.Vassals[suzerain].Contains(kingdom))
                     {
                         MoreGodPower.Vassals[suzerain].Add(kingdom);
                     }
@@ -95,6 +102,7 @@ namespace Diplomacy_Army
         public static bool findKingdomToJoinAfterCapture(City __instance, Kingdom pKingdom, ListPool<War> pWars, ref Kingdom __result)
         {
             Kingdom kingdom = null;
+            War war1 = null;
             for (int i = 0; i < pWars.Count; i++)
             {
                 War war = pWars[i];
@@ -102,6 +110,7 @@ namespace Diplomacy_Army
                 {
                     if (war.main_attacker == pKingdom || war.main_defender == pKingdom)
                     {
+                        war1 = war;
                         break;
                     }
                     if (war.isAttacker(__instance.kingdom) && war.main_defender != null)
@@ -109,11 +118,13 @@ namespace Diplomacy_Army
                         if (__instance.neighbours_kingdoms.Contains(war.main_defender))
                         {
                             kingdom = war.main_defender;
+                            war1 = war;
                             break;
                         }
                         if (__instance.neighbours_kingdoms.Contains(pKingdom))
                         {
                             kingdom = pKingdom;
+                            war1 = war;
                             break;
                         }
                         kingdom = war.main_defender;
@@ -124,14 +135,17 @@ namespace Diplomacy_Army
                         if (__instance.neighbours_kingdoms.Contains(war.main_attacker))
                         {
                             kingdom = war.main_attacker;
+                            war1 = war;
                             break;
                         }
                         if (__instance.neighbours_kingdoms.Contains(pKingdom))
                         {
                             kingdom = pKingdom;
+                            war1 = war;
                             break;
                         }
                         kingdom = war.main_attacker;
+                        war1 = war;
                         break;
                     }
                 }
@@ -153,6 +167,24 @@ namespace Diplomacy_Army
                 if (pKingdom2 != null)
                 {
                     kingdom = pKingdom2;
+                }
+            }
+            if(war1._asset==AssetManager.war_types_library.get("Declare"))
+            {
+                if(war1.isInWarWith(pKingdom, __instance.kingdom)&&MoreGodPower.Declares.ContainsKey(pKingdom))
+                {
+                    int num=0;
+                    foreach(var city in MoreGodPower.Declares[pKingdom])
+                    {
+                        if(city.kingdom!=pKingdom&&city.kingdom==__instance.kingdom)
+                        {
+                            num++;
+                        }
+                    }
+                    if(num<=1)
+                    {
+                        MoreGodPower.endWar(pKingdom, __instance.kingdom);
+                    }
                 }
             }
             __result = kingdom;
@@ -206,15 +238,15 @@ namespace Diplomacy_Army
             if (CheckVassal(pDefender))
             {
                 pDefender.data.get("suzerainID", out string str, "");
-                Kingdom pKingdom = World.world.kingdoms.getKingdomByID(str); 
+                Kingdom pKingdom = World.world.kingdoms.getKingdomByID(str);
                 float num = pKingdom.king.stats[S.personality_aggression];
                 if (pKingdom.power > pAttacker.power)
                 {
-                    num=1f;
+                    num = 1f;
                 }
                 if (pKingdom.power < pAttacker.power)
                 {
-                    num=0.8f;
+                    num = 0.8f;
                 }
                 if (Toolbox.randomChance(num))
                 {

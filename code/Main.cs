@@ -189,7 +189,9 @@ namespace Diplomacy_Army
             NewFunction.localizedText = (Dictionary<string, string>)Reflection.GetField(LocalizedTextManager.instance.GetType(), LocalizedTextManager.instance, "localizedText");
             Harmony.CreateAndPatchAll(typeof(Main));
             Harmony.CreateAndPatchAll(typeof(harmony_vassal));
+            Harmony.CreateAndPatchAll(typeof(harmony_declare));
             Personality();
+            Plots();
 
             foreach (var set in DASet.Keys)
             {
@@ -215,6 +217,77 @@ namespace Diplomacy_Army
             };
             AssetManager.opinion_library.add(opinionAsset2);
             Localization.addLocalization("opinion_vassal", "谁会跟自己的附庸过不去呢");
+
+            WarTypeAsset Declare = new()
+            {
+                id = "Declare",
+                name_template = "war_conquest",
+                localized_type = "war_type_Declare",
+                path_icon = "wars/war_conquest",
+                kingdom_for_name_attacker = true,
+                forced_war = false,
+                total_war = false,
+                alliance_join = true
+            };
+            Localization.addLocalization("war_type_Declare", "宣称战争");
+
+            AssetManager.war_types_library.add(Declare);
+        }
+        public static void Plots()
+        {
+            PlotAsset plotAsset = new()
+            {
+                id = "new_declare_war",
+                translation_key = "plot_new_declare_war",
+                path_icon = "plots/icons/plot_new_war",
+                description = "plot_description_new_declare_war",
+                check_initiator_actor = true,
+                check_initiator_city = true,
+                check_initiator_kingdom = true,
+                check_target_kingdom = true,
+                check_supporters = new PlotActorPlotDelegate(PlotsLibrary.checkMembersToRemoveDefault),
+                check_launch = delegate (Actor pActor, Kingdom pKingdom)
+                {
+                    if (!DiplomacyPowerWindow.IsDeclareWarNeeded(pKingdom))
+                    {
+                        return false;
+                    }
+                    if (pKingdom.hasAlliance())
+                    {
+                        foreach (Kingdom kingdom in pKingdom.getAlliance().kingdoms_hashset)
+                        {
+                            if (kingdom != pKingdom && !(kingdom.king == null))
+                            {
+                                List<Plot> plotsFor = World.world.plots.getPlotsFor(kingdom.king, true);
+                                if (plotsFor != null)
+                                {
+                                    using (List<Plot>.Enumerator enumerator2 = plotsFor.GetEnumerator())
+                                    {
+                                        while (enumerator2.MoveNext())
+                                        {
+                                            if (enumerator2.Current.isSameType(AssetManager.plots_library.get("new_declare_war")))
+                                            {
+                                                return false;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        return true;
+                    }
+                    return true;
+                },
+                check_should_continue = (Plot pPlot) => pPlot.initiator_actor.isUnitOk() && (!pPlot.initiator_kingdom.hasAlliance() || pPlot.initiator_kingdom.getAlliance() != pPlot.target_kingdom.getAlliance()) && DiplomacyHelpers.isWarNeeded(pPlot.initiator_kingdom),
+                plot_power = (Actor pActor) => (int)pActor.stats[S.warfare],
+                action = delegate (Plot pPlot)
+                {
+                    World.world.diplomacy.startWar(pPlot.initiator_kingdom, pPlot.target_kingdom,AssetManager.war_types_library.get("Declare") , true);
+                    return true;
+                },
+                cost = 800
+            };
+            AssetManager.plots_library.add(plotAsset);
         }
         public static void Personality()
         {
@@ -243,6 +316,7 @@ namespace Diplomacy_Army
             Diplomacy_Army.Update.updateTreaty();
             Diplomacy_Army.Update.updateCities();
             Diplomacy_Army.Update.UpdateVassals();
+            Diplomacy_Army.Update.UpdateDeclare();
             if (DateTime.Compare(GCtime, DateTime.Now.ToLocalTime()) < 0 && PowerButtons.GetToggleValue("DA_自动内存清理"))
             {
                 GCGame();
@@ -710,8 +784,6 @@ namespace Diplomacy_Army
         public static bool showTextKingdom(MapText __instance, Kingdom pKingdom)
         {
 
-            // __instance.text = Instantiate(__instance.text, Vector3.zero, Quaternion.identity);
-            // __instance.text.transform.SetParent(canvasParent);
             if (PowerButtons.GetToggleValue("显示原版铭牌"))
             {
                 return true;
@@ -795,8 +867,6 @@ namespace Diplomacy_Army
             string text = pCity.getCityName() + "  " + pCity.getPopulationTotal(true).ToString();
             // if (DebugConfig.isOn(DebugOption.ShowWarriorsCityText))
             // {
-            __instance.text.fontStyle = FontStyle.Bold;
-            __instance.text.fontSize = 15;
             text = string.Concat(new string[]
             {
                 text,

@@ -118,20 +118,6 @@ namespace Diplomacy_Army.Utils
             }
             return list2;
         }
-        // public static Sprite GetItemSprite(this Actor a, string id)
-        // {
-        // 	Sprite sprite = null;
-        // 	Sprite renderedItem = a.getRenderedItem();
-        // 	if (AssetManager.items.get(id).equipmentType == EquipmentType.Weapon && renderedItem != null)
-        // 	{
-        // 		sprite = renderedItem;
-        // 	}
-        // 	else if (pvz_items.PVZItemIcons.ContainsKey(id))
-        // 	{
-        // 		sprite = Main.pvzitem.get(pvz_items.PVZItemIcons[id]).AddItem(a, id).sprite;
-        // 	}
-        // 	return sprite;
-        // }
         public static float GetSize(this Actor a)
         {
             return a.currentScale.xysd() * 1.8f;
@@ -143,17 +129,6 @@ namespace Diplomacy_Army.Utils
         public static float xysd(this Vector2 pos)
         {
             return Mathf.Abs(Mathf.Sqrt(pos.x * pos.x + pos.y * pos.y));
-        }
-        public static void ClearItemName(this string itemID, string RemoveNameID)
-        {
-            List<string> RINID = new();
-            if (AssetManager.items.get(itemID).name_templates == null) { return; }
-            if (!AssetManager.items.get(itemID).name_templates.Any()) { return; }
-            foreach (string template in AssetManager.items.get(itemID).name_templates)
-            {
-                if (template == RemoveNameID) { RINID.Add(template); }
-            }
-            foreach (string RN in RINID) { AssetManager.items.get(itemID).name_templates.Remove(RN); }
         }
         public static Sprite getItemSprite(this Actor a, string icon)
         {
@@ -182,23 +157,7 @@ namespace Diplomacy_Army.Utils
             return a.data.health < a.stats[S.health] * num;
         }
 
-        public static string dataId(this Building b)
-        {
-            if (b != null && b.data != null)
-            {
-                return b.data.id;
-            }
-            return "null";
-        }
-        public static List<string> dataId(this List<Building> builds)
-        {
-            List<string> list = new();
-            foreach (Building b in builds)
-            {
-                if (b != null && b.data != null) { list.Add(b.data.id); }
-            }
-            return list;
-        }
+    
         public static string dataId(this Actor a)
         {
             if (a.Any())
@@ -271,162 +230,7 @@ namespace Diplomacy_Army.Utils
             obj.setStatsDirty();
             obj.activeStatus_dict.Remove(pID);
         }
-        public static bool hasResource(this Actor act, string pID)
-        {
-            ResourceAsset pResource = AssetManager.resources.get(pID);
-            if (pResource == null) { return false; }
-            if (act.data != null && act.data.alive && !act.data.inventory.isEmpty())
-            {
-                if (act.data.inventory.dict.ContainsKey(pID) && act.data.inventory.dict[pID].amount > 0)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        public static void addResource(this Actor act, string pID, int SL)
-        {
-            ResourceAsset pResource = AssetManager.resources.get(pID);
-            if (pResource == null || SL < 1) { return; }
-            ResourceContainer RC = new()
-            {
-                id = pID,
-                amount = SL
-            };
-            if (act.data != null && act.data.alive && act.data.inventory != null)
-            {
-                if (act.data.inventory.dict == null)
-                {
-                    act.data.inventory.dict = new Dictionary<string, ResourceContainer>();
-                }
-                if (act.data.inventory.dict.ContainsKey(pID))
-                {
-                    act.data.inventory.dict[pID].amount += SL;
-                }
-                else { act.data.inventory.dict.Add(pID, RC); }
-                if (act.data.inventory.dict[pID].amount > pResource.storage_max)
-                {
-                    act.data.inventory.dict[pID].amount = pResource.storage_max;
-                }
-            }
-        }
-        public static void removeResource(this Actor act, string pID, int SL)
-        {
-            ResourceAsset pResource = AssetManager.resources.get(pID);
-            if (pResource == null || SL < 1) { return; }
-            if (act.data != null && act.data.alive && !act.data.inventory.isEmpty()
-            && act.data.inventory.dict.ContainsKey(pID))
-            {
-                act.data.inventory.dict[pID].amount -= SL;
-                if (act.data.inventory.dict[pID].amount <= 0)
-                {
-                    act.data.inventory.dict.Remove(pID);
-                }
-            }
-        }
-        public static bool hasResource(this City pCity, string pID)
-        {
-            ResourceAsset pResource = AssetManager.resources.get(pID);
-            if (pResource == null) { return false; }
-            if (pCity.data is not null and not null)
-            {
-                if (pCity.data.storage.resources.ContainsKey(pID) && pCity.data.storage.resources[pID].amount > 0)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-        public static void addResourceToCity(this Actor act, string pID, int SL, City pCity = null)
-        {
-            ResourceAsset pResource = AssetManager.resources.get(pID);
-            if (pResource == null || SL < 1) { return; }
-            if (pCity == null) { pCity = act.city; }
-            if (pCity != null && pCity.data != null && act.data != null && act.data.alive
-            && !act.data.inventory.isEmpty() && act.data.inventory.dict.ContainsKey(pID))
-            {
-                int num = SL;
-                if (act.data.inventory.dict[pID].amount <= SL)
-                {
-                    num = act.data.inventory.dict[pID].amount;
-                    act.data.inventory.dict.Remove(pID);
-                }
-                else
-                {
-                    act.data.inventory.dict[pID].amount -= SL;
-                }
-                pCity.data.storage.change(pID, num);
-            }
-        }
-        public static void addResourceToActor(this Actor act, string pID, int SL, City pCity = null)
-        {
-            ResourceAsset pResource = AssetManager.resources.get(pID);
-            if (pResource == null || SL < 1) { return; }
-            if (pCity == null) { pCity = act.city; }
-            if (pCity != null && pCity.data != null && pCity.data.storage.resources.ContainsKey(pID)
-            && act.data != null && act.data.alive && act.data.inventory != null)
-            {
-                int num = SL;
-                if (pCity.data.storage.resources[pID].amount <= SL)
-                {
-                    num = pCity.data.storage.resources[pID].amount;
-                    pCity.data.storage.resources.Remove(pID);
-                }
-                else
-                {
-                    pCity.data.storage.change(pID, -SL);
-                }
-                ResourceContainer RC = new()
-                {
-                    id = pID,
-                    amount = num
-                };
-                if (act.data.inventory.dict == null)
-                {
-                    act.data.inventory.dict = new Dictionary<string, ResourceContainer>();
-                }
-                if (act.data.inventory.dict.ContainsKey(pID))
-                {
-                    act.data.inventory.dict[pID].amount += num;
-                }
-                else { act.data.inventory.dict.Add(pID, RC); }
-                if (act.data.inventory.dict[pID].amount > pResource.storage_max)
-                {
-                    act.data.inventory.dict[pID].amount = pResource.storage_max;
-                }
-            }
-        }
-        public static bool hasItem(this Actor act, string pID)
-        {
-            if (act.equipment != null)
-            {
-                List<ActorEquipmentSlot> AESKList = ActorEquipment.getList(act.equipment);
-                if (AESKList != null && AESKList.Count > 0)
-                {
-                    foreach (ActorEquipmentSlot AE in AESKList)
-                    {
-                        if (AE.data != null && AE.data.id == pID) { return true; }
-                    }
-                }
-            }
-            return false;
-        }
-        public static ItemData addItem(this Actor a, string pID, string materials = null)
-        {
-            ItemData item_data = null;
-            if (a.equipment != null)
-            {
-                ItemAsset item_asset = AssetManager.items.get(pID);
-                if (item_asset != null)
-                {
-                    if (materials == null) { materials = Toolbox.getRandom<string>(item_asset.materials); }
-                    item_data = ItemGenerator.generateItem(item_asset, materials, World.world.mapStats.year, a.kingdom, a.getName(), 1, a);
-                    a.equipment.getSlot(item_asset.equipmentType).setItem(item_data);
-                }
-            }
-            a.setStatsDirty();
-            return item_data;
-        }
+
     }
 }
 

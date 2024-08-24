@@ -40,6 +40,7 @@ namespace Diplomacy_Army
 		public static Dictionary<Kingdom, Dictionary<Kingdom, int>> DefenceKingdoms = new();
 		public static Dictionary<Kingdom, Dictionary<Kingdom, int>> ArmyKingdoms = new();
 		public static Dictionary<Kingdom, List<Kingdom>> Vassals = new();
+		public static Dictionary<Kingdom, List<City>> Declares = new();
 		public static Dictionary<Kingdom, List<Kingdom>> KingdomsTryArmy = new();
 		public static List<City> citiesCelebrate = new();
 		public static List<Kingdom> KingdomsOwnedByPlayer = new();

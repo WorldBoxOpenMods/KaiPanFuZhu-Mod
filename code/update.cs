@@ -78,11 +78,11 @@ namespace Diplomacy_Army
 
             foreach (var vassal in vassals)
             {
-                if (PowerButtons.GetToggleValue("DA_关闭显示附庸颜色"))
+                if (PowerButtons.GetToggleValue("DA_关闭显示附庸颜色") && vassal.data.colorID == kingdom.data.colorID)
                 {
                     NewFunction.UpdateColor(vassal);
                 }
-                else
+                else if (!PowerButtons.GetToggleValue("DA_关闭显示附庸颜色")&&vassal.data.colorID != kingdom.data.colorID)
                 {
                     UpdateVassalToKingdomColor(vassal, kingdom);
                 }
@@ -91,16 +91,20 @@ namespace Diplomacy_Army
 
         private static void UpdateVassalToKingdomColor(Kingdom vassal, Kingdom kingdom)
         {
-            if (vassal.data.colorID != kingdom.data.colorID)
-            {
-                vassal.data.set("oldColorID", vassal.data.colorID);
-                vassal.data.set("oldColor", NewFunction.Serialize(vassal.getColor()));
 
-                vassal.data.colorID = kingdom.data.colorID;
-                vassal.updateColor(kingdom.getColor());
-                World.world.zoneCalculator.setDrawnZonesDirty();
-                World.world.zoneCalculator.redrawZones();
-            }
+            vassal.data.set("oldColorID", vassal.data.colorID);
+            ColorAsset originalColor = vassal.getColor();
+            string oldColor = NewFunction.Serialize(originalColor);
+
+            vassal.data.set("oldColor", oldColor);
+
+            vassal.data.colorID = kingdom.data.colorID;
+            ColorAsset kingdomcolor = kingdom.getColor();
+            vassal.updateColor(kingdomcolor);
+            World.world.zoneCalculator.setDrawnZonesDirty();
+            World.world.zoneCalculator.clearCurrentDrawnZones(true);
+            World.world.zoneCalculator.redrawZones();
+
         }
 
         private static void JoinVassalToWar(Kingdom vassal, Kingdom kingdom)
@@ -152,7 +156,57 @@ namespace Diplomacy_Army
             }
             MoreGodPower.Vassals.Remove(kingdom);
         }
+        public static void UpdateDeclare()
+        {
+            var DeclareToRemove = new HashSet<Kingdom>();
 
+            foreach (var kingdom in MoreGodPower.Declares.Keys.ToList())
+            {
+                if (kingdom == null || !kingdom.isAlive() || kingdom.data == null)
+                {
+                    DeclareToRemove.Add(kingdom);
+                    continue;
+                }
+
+                // UpdateVassalColor(kingdom);
+                UpdateKingdomDeclares(kingdom, DeclareToRemove);
+            }
+
+            foreach (var kingdom in DeclareToRemove)
+            {
+                RemoveDeclare(kingdom);
+            }
+        }
+        private static void RemoveDeclare(Kingdom kingdom)
+        {
+            foreach (var city in MoreGodPower.Declares[kingdom])
+            {
+                city.data.set("Declare", false);
+                city.data.set("DeclareKingdomID", "");
+            }
+            MoreGodPower.Declares.Remove(kingdom);
+        }
+        private static void UpdateKingdomDeclares(Kingdom kingdom, HashSet<Kingdom> DeclareToRemove)
+        {
+            if (MoreGodPower.Declares.TryGetValue(kingdom, out var Declares))
+            {
+                foreach (var city in Declares.ToList())
+                {
+                    if (city == null || city.data == null)
+                    {
+                        Declares.Remove(city);
+                        continue;
+                    }
+
+                    // UpdateVassalAlliance(vassal, kingdom);
+                }
+
+                if (Declares.Count == 0)
+                {
+                    DeclareToRemove.Add(kingdom);
+                }
+            }
+        }
 
         // 
         // public static void updateVassal()

@@ -24,6 +24,10 @@ namespace Diplomacy_Army
             easyTranslate("en", "DAqq", "加入qq群聊");
             easyTranslate("cz", "DAmodderDescription", "modder");
             easyTranslate("en", "DAmodderDescription", "modder");
+            easyTranslate("cz", "plot_description_new_declare_war","准备进攻宣称城市");
+            easyTranslate("en", "plot_description_new_declare_war","准备进攻宣称城市");
+            easyTranslate("cz", "plot_new_declare_war","准备进攻宣称城市");
+            easyTranslate("en", "plot_new_declare_war","准备进攻宣称城市");
             // easyTranslate("cz", "tab_Diplomacy_Army Description", "Diplomacy_Army");
             // easyTranslate("en", "tab_Diplomacy_Army Description", "Diplomacy_Army");
             // easyTranslate("cz", "tab_Diplomacy_Army Description2", "mod by 空星漫漫");

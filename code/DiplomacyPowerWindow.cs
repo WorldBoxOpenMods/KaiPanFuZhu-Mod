@@ -453,5 +453,66 @@ namespace Diplomacy_Army
 			translate.init();
 			RSText.text = LocalizedTextManager.getText($"numofyears", null);
 		}
+		public static bool IsDeclareWarNeeded(Kingdom pKingdom)
+		{
+			if (pKingdom.cities.Count == 0)
+			{
+				return false;
+			}
+			if (pKingdom.capital == null)
+			{
+				return false;
+			}
+
+			// if (pKingdom.data.timestamp_last_war != -1.0 && World.world.getYearsSince(pKingdom.data.timestamp_last_war) <= SimGlobals.m.diplomacy_years_war_timeout)
+			// {
+			// 	return false;
+			// }
+			if (DiplomacyHelpers.wars.hasWars(pKingdom))
+			{
+				return false;
+			}
+			if (pKingdom.getArmy() <= SimGlobals.m.diplomacy_years_war_min_warriors)
+			{
+				return false;
+			}
+			if (!MoreGodPower.Declares.ContainsKey(pKingdom))
+			{
+				return false;
+			}
+			bool flag = false;
+			foreach (City city in MoreGodPower.Declares[pKingdom])
+			{
+				if (city == null || city.data == null)
+				{
+					MoreGodPower.Declares[pKingdom].Remove(city);
+				}
+				else if (city.kingdom != pKingdom)
+				{
+					flag = true;
+				}
+			}
+			float num = pKingdom.getPopulationTotal();
+			float num2 = pKingdom.getPopulationTotalPossible();
+			CityPlaceFinder city_place_finder = World.world.city_zone_helper.city_place_finder;
+			if (pKingdom.cities.Count < 4)
+			{
+				if (flag && !city_place_finder.hasPossibleZones())
+				{
+					return true;
+				}
+				// if (city_place_finder.zones.Count > 200)
+				// {
+				// 	return false;
+				// }
+				if (num < num2 * 0.6f)
+				{
+					return false;
+				}
+			}
+			if (flag)
+			{ return true; }
+			return false;
+		}
 	}
 }

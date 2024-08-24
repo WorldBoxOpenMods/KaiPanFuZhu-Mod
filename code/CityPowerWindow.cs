@@ -442,15 +442,24 @@ namespace Diplomacy_Army
 				MoreGodPower.selected_city = city;
 				MoreGodPower.selected_kingdom = kingdom;
 				var data = MoreGodPower.selected_city.data;
-				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "国家", "想要宣称城市 " + data.name + " 的主权.....");
+				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "国家", "想要转移城市 " + data.name + " 的宣称.....");
 			}
 			else if (MoreGodPower.selected_city != null)
 			{
 				if (kingdom == MoreGodPower.selected_kingdom)
 					return false;
 				var data = MoreGodPower.selected_city.data;
-				data.set("DeclareKingdomID",kingdom.data.id);
-				data.set("Declare",true);
+				data.set("DeclareKingdomID", kingdom.data.id);
+				data.set("Declare", true);
+				kingdom.data.set("DeclareCity", true);
+				if (MoreGodPower.Declares.ContainsKey(kingdom))
+				{
+					MoreGodPower.Declares[kingdom].Add(city);
+				}
+				else
+				{
+					MoreGodPower.Declares.Add(kingdom, new List<City>(){city});
+				}
 				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, kingdom, "国家", "的城市 " + data.name + " 被国家", "宣称了。");
 				MoreGodPower.selected_city = null;
 				MoreGodPower.selected_kingdom = null;
@@ -458,7 +467,7 @@ namespace Diplomacy_Army
 			return true;
 		}
 
-		public static void tryToHideWindow()
+        public static void tryToHideWindow()
 		{
 			power = Reflection.GetField(powerButton.GetType(), powerButton, "godPower") as GodPower;
 			power.click_action = null;
