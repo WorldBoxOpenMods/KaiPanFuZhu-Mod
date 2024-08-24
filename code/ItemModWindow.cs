@@ -32,7 +32,14 @@ namespace Diplomacy_Army
             content = pvz_ui.CustomWindowObjects["ItemMod"];
             originalSize = content.GetComponent<RectTransform>().sizeDelta;
             // // 设置 RectTransform 的大小
-            content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, AssetManager.items.list.Count / 16 * originalSize.y+200f) + originalSize;
+            content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, AssetManager.items.list.Count / 16 * originalSize.y + 240f) + originalSize;
+            // 添加 GridLayoutGroup 并配置
+            GridLayoutGroup layoutGroup = content.AddComponent<GridLayoutGroup>();
+            layoutGroup.cellSize = new Vector2(30, 30);
+            layoutGroup.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            layoutGroup.constraintCount = 4;
+            layoutGroup.childAlignment = TextAnchor.UpperCenter;
+            layoutGroup.spacing = new Vector2(15, 5);
             // 设置 RectTransform 的大小
             GameObject scrollView = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{wid}/Background/Scroll View");
             scrollView.gameObject.SetActive(true);

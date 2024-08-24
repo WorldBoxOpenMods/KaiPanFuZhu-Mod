@@ -40,7 +40,7 @@ namespace Diplomacy_Army
                   PowerButtons.CreateButton("DA_modder2", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.贝伦帝国.jpg"),
                   "原作者", "原作者：贝伦帝国", new Vector2(72, 18), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform);
                   PowerButtons.CreateButton("DA_modder1", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.other.modder.png"),
-                  "作者简介", "作者:空星漫漫", new Vector2(72, -18), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow(DA_modder.wid)); 
+                  "作者简介", "作者:空星漫漫", new Vector2(72, -18), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow(DA_modder.wid));
                   update(); update();
 
                   PowerButtons.CreateButton("DA_显示外交消息", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "显示外交消息" + ".jpg"),
@@ -62,9 +62,9 @@ namespace Diplomacy_Army
                   PowerButtons.CreateButton("DAdebug", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.Icons.iconDebug.png"),
                   "debug", "debug", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, () => Windows.ShowWindow("debug")); update();
                   PowerButtons.CreateButton("保存", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "保存设置" + ".jpg"),
-                  "保存设置", "保存所有的设置", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => AddToDASet()); update(); 
+                  "保存设置", "保存所有的设置", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => AddToDASet()); update();
 
-                  update();  update();
+                  update(); update();
 
                   PowerButtons.CreateButton("资源设置", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "资源设置" + ".jpg"),
                   "资源设置", "", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("Window_ResourcesSettings")); update();
@@ -72,11 +72,11 @@ namespace Diplomacy_Army
                   PowerButtons.CreateButton("特质设置", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.iconRainGammaEdit.png"),
                   "特质设置", "", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, () => clickTraitEditorRainButton(PowerLibrary.traits_gamma_rain_edit.id)); update();
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "特质添加", "特质添加", "特质添加到全国每个军人身上"); update();
-                  CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "特质删除", "特质删除", "特质从全国每个军人身上去除"); update(); update();
                   PowerButtons.CreateButton("装备设置", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.DAweapons.png"),
                   "装备设置", "", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("ItemSettings")); update();
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "装备添加", "装备添加", "装备添加"); update();
-                  CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "装备删除", "装备删除", "装备删除"); update(); update();
+                  CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "特质删除", "特质删除", "特质从全国每个军人身上去除"); update();
+                  CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "装备删除", "装备删除", "装备删除"); update(); 
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "城市地块拓展开关", "城市地块拓展", "城市地块拓展开关"); update();
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "国家地块拓展开关", "国家地块拓展", "国家地块拓展开关"); update();
                   PowerButtons.CreateButton("DA_装备禁止获取", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "装备禁止获取" + ".jpg"),
@@ -216,7 +216,7 @@ namespace Diplomacy_Army
                   ScrollWindow.showWindow("trait_rain_editor");
                   return true;
             }
-            
+
             public static bool CityZoneGrowth(WorldTile pTile, string pPower)
             {
                   City city = pTile.zone.city;

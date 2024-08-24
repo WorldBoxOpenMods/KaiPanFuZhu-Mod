@@ -67,7 +67,7 @@ namespace Diplomacy_Army
             GameObject scrollView = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{wid}/Background/Scroll View");
             scrollView.gameObject.SetActive(true);
             // 设置 RectTransform 的大小
-            content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, AssetManager.items.list.Count / 16 * originalSize.y + 800f) + originalSize;
+            content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, AssetManager.items.list.Count / 16 * originalSize.y + 860f) + originalSize;
 
             // 设置初始位置
             content.GetComponent<RectTransform>().localPosition = new Vector3(80f, -1000f, 0);

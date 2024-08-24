@@ -788,12 +788,12 @@ namespace Diplomacy_Army
             {
                 return true;
             }
-            if (__instance.text.gameObject.GetComponent<Outline>() == null)
-            {
-                Outline outline = __instance.text.gameObject.AddComponent<Outline>();
-                outline.effectColor = outlineColor;
-                outline.effectDistance = new Vector2(outlineWidth, -outlineWidth);
-            }
+            // if (__instance.text.gameObject.GetComponent<Outline>() == null)
+            // {
+            //     Outline outline = __instance.text.gameObject.AddComponent<Outline>();
+            //     outline.effectColor = outlineColor;
+            //     outline.effectDistance = new Vector2(outlineWidth, -outlineWidth);
+            // }
 
             __instance.text.fontStyle = FontStyle.Bold;
             __instance.text.color = Color.white;

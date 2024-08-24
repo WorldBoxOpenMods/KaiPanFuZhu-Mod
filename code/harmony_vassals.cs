@@ -169,7 +169,7 @@ namespace Diplomacy_Army
                     kingdom = pKingdom2;
                 }
             }
-            if(war1._asset==AssetManager.war_types_library.get("Declare"))
+            if(war1!=null&&war1._asset==AssetManager.war_types_library.get("Declare"))
             {
                 if(war1.isInWarWith(pKingdom, __instance.kingdom)&&MoreGodPower.Declares.ContainsKey(pKingdom))
                 {
