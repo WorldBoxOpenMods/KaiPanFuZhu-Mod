@@ -137,7 +137,7 @@ namespace Diplomacy_Army
         ); index++;
             button = PowerButtons.CreateButton(
             "DA_itemEdit",
-            Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu Mod-main\\Sprites\\" + "装备编辑" + ".jpg"),
+            Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu-Mod-main\\Sprites\\" + "装备编辑" + ".jpg"),
             "装备编辑",
             "编辑装备的词条",
             new Vector3(-118, -108),

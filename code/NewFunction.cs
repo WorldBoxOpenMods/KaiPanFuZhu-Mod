@@ -101,7 +101,7 @@ namespace Diplomacy_Army
 			((Dictionary<string, string>)Reflection.GetField(LocalizedTextManager.instance.GetType(), LocalizedTextManager.instance, "localizedText")).Add(pID.name + " Description", pDescription);
 			float x = 108f + 36 * (index / 2);
 			float y = 18f - 36 * (index % 2);
-			Sprite sprite = Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu Mod-main\\Sprites\\" + pSprite + ".jpg");
+			Sprite sprite = Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu-Mod-main\\Sprites\\" + pSprite + ".jpg");
 			GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(GameObject.Find("SettingsButton"), pParent);
 			gameObject2.GetComponent<PowerButton>().type = type;
 			Reflection.SetField<GodPower>(gameObject2.GetComponent<PowerButton>(), "godPower", pID);
@@ -126,7 +126,7 @@ namespace Diplomacy_Army
 			((Dictionary<string, string>)Reflection.GetField(LocalizedTextManager.instance.GetType(), LocalizedTextManager.instance, "localizedText")).Add(pID.name, pID.name);
 			((Dictionary<string, string>)Reflection.GetField(LocalizedTextManager.instance.GetType(), LocalizedTextManager.instance, "localizedText")).Add(pID.name + " Description", pDescription);
 
-			Sprite sprite = Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu Mod-main\\Sprites\\" + pSprite + ".jpg");
+			Sprite sprite = Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu-Mod-main\\Sprites\\" + pSprite + ".jpg");
 			GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(GameObject.Find("SettingsButton"), pParent);
 			gameObject2.GetComponent<PowerButton>().type = type;
 			Reflection.SetField<GodPower>(gameObject2.GetComponent<PowerButton>(), "godPower", pID);

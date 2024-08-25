@@ -66,7 +66,7 @@ namespace Diplomacy_Army
 			createTileButton(index++, content.transform, "共同防御", "共同防御", "共同防御", new UnityAction(tryToHideWindow6));
 			createTileButton(index++, content.transform, "附庸", "附庸", "附庸", new UnityAction(tryToHideWindow7));
 			createTileButton(index++, content.transform, "取消附庸", "取消附庸", "取消附庸", new UnityAction(tryToHideWindow8));
-			PowerButtons.CreateButton("签订条约或撕毁", Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu Mod-main\\Sprites\\" + "签订或撕毁条约" + ".jpg"),
+			PowerButtons.CreateButton("签订条约或撕毁", Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu-Mod-main\\Sprites\\" + "签订或撕毁条约" + ".jpg"),
 "签订条约或撕毁", "当按钮打开时是撕毁条约，关闭是签订条约,", NewFunction.getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
 
 
