@@ -43,30 +43,30 @@ namespace Diplomacy_Army
                   "作者简介", "作者:空星漫漫", new Vector2(72, -18), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow(DA_modder.wid));
                   update(); update();
 
-                  PowerButtons.CreateButton("DA_显示外交消息", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "显示外交消息" + ".jpg"),
+                  PowerButtons.CreateButton("DA_显示外交消息", Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu Mod-main\\Sprites\\" + "显示外交消息" + ".jpg"),
                   "显示外交消息", "显示外交消息", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
-                  PowerButtons.CreateButton("DA_显示交战", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "关闭显示交战" + ".jpg"),
+                  PowerButtons.CreateButton("DA_显示交战", Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu Mod-main\\Sprites\\" + "关闭显示交战" + ".jpg"),
                   "关闭显示交战", "关闭显示交战", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
-                  PowerButtons.CreateButton("DA_关闭显示附庸颜色", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "关闭显示附庸" + ".jpg"),
+                  PowerButtons.CreateButton("DA_关闭显示附庸颜色", Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu Mod-main\\Sprites\\" + "关闭显示附庸" + ".jpg"),
                   "关闭显示附庸颜色", "关闭显示附庸颜色", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
-                  PowerButtons.CreateButton("DA_显示条约", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "显示条约" + ".jpg"),
+                  PowerButtons.CreateButton("DA_显示条约", Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu Mod-main\\Sprites\\" + "显示条约" + ".jpg"),
                   "显示条约", "显示条约", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
-                  PowerButtons.CreateButton("显示原版铭牌", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "显示原版铭牌" + ".jpg"),
+                  PowerButtons.CreateButton("显示原版铭牌", Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu Mod-main\\Sprites\\" + "显示原版铭牌" + ".jpg"),
                   "显示原版铭牌", "显示原版铭牌", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
-                  PowerButtons.CreateButton("DA_更多法则", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "更多法则" + ".jpg"),
+                  PowerButtons.CreateButton("DA_更多法则", Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu Mod-main\\Sprites\\" + "更多法则" + ".jpg"),
                   "更多法则", "打开更多法则", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("MoreRules")); update();
-                  PowerButtons.CreateButton("DA_更多设置", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "更多设置" + ".jpg"),
+                  PowerButtons.CreateButton("DA_更多设置", Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu Mod-main\\Sprites\\" + "更多设置" + ".jpg"),
                   "全局设置", "打开全局设置", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("MoreSettings")); update();
                   PowerButtons.CreateButton("DA_自动内存清理", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.Icons.CleanMemorytoSave.png"),
                   "自动内存清理", "", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
                   PowerButtons.CreateButton("DAdebug", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.Icons.iconDebug.png"),
                   "debug", "debug", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, () => Windows.ShowWindow("debug")); update();
-                  PowerButtons.CreateButton("保存", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "保存设置" + ".jpg"),
+                  PowerButtons.CreateButton("保存", Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu Mod-main\\Sprites\\" + "保存设置" + ".jpg"),
                   "保存设置", "保存所有的设置", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => AddToDASet()); update();
 
                   update(); update();
 
-                  PowerButtons.CreateButton("资源设置", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "资源设置" + ".jpg"),
+                  PowerButtons.CreateButton("资源设置", Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu Mod-main\\Sprites\\" + "资源设置" + ".jpg"),
                   "资源设置", "", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("Window_ResourcesSettings")); update();
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "资源添加", "资源添加", "资源添加到全国每个城市"); update();
                   PowerButtons.CreateButton("特质设置", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.iconRainGammaEdit.png"),
@@ -79,7 +79,7 @@ namespace Diplomacy_Army
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "装备删除", "装备删除", "装备删除"); update(); 
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "城市地块拓展开关", "城市地块拓展", "城市地块拓展开关"); update();
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "国家地块拓展开关", "国家地块拓展", "国家地块拓展开关"); update();
-                  PowerButtons.CreateButton("DA_装备禁止获取", Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + "装备禁止获取" + ".jpg"),
+                  PowerButtons.CreateButton("DA_装备禁止获取", Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu Mod-main\\Sprites\\" + "装备禁止获取" + ".jpg"),
                   "装备禁止获取", "打开装备禁止获取参数设置窗口", new Vector2(x, y), ButtonType.Click, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => Windows.ShowWindow("ProhibitgiveItem")); update();
                   CreateNewActiveGodpower(pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, "装备禁止获取", "装备禁止获取", "点击城市或国家设置装备禁止获取的参数"); update();
 
@@ -136,7 +136,7 @@ namespace Diplomacy_Army
                   ((Dictionary<string, string>)Reflection.GetField(LocalizedTextManager.instance.GetType(), LocalizedTextManager.instance, "localizedText")).Add(pID.name + " Description", pDescription);
                   // float x = 144f + 36 * (index / 2);
                   // float y = 18f - 36 * (index % 2);
-                  Sprite sprite = Sprites.LoadSprite(".\\Mods\\KaiPanFuZhu Mod\\Sprites\\" + pSprite + ".jpg");
+                  Sprite sprite = Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu Mod-main\\Sprites\\" + pSprite + ".jpg");
                   GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(GameObject.Find("SettingsButton"), pParent);
                   gameObject2.GetComponent<PowerButton>().type = type;
                   Reflection.SetField<GodPower>(gameObject2.GetComponent<PowerButton>(), "godPower", pID);
