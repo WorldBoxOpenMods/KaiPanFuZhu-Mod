@@ -248,11 +248,13 @@ namespace Diplomacy_Army
             PowerButtons.CreateButton("封锁边境", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
             "封锁边境", "封锁边境", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
             PowerButtons.CreateButton("异族占领", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
-            "异族占领", "异族占领", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
+            "异族占领", "异族可以相互", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
             PowerButtons.CreateButton("异族统治", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
-            "异族统治", "异族统治", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
+            "异族统治", "异族占领时不会伤害平民或者破坏房屋", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
             PowerButtons.CreateButton("领土完整", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
-            "领土完整", "领土完整", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
+            "领土完整", "暂时没有效果", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
+            PowerButtons.CreateButton("禁止自主联盟", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
+            "禁止自主联盟", "禁止自主联盟", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
         }
         public static void ProhibitgiveItem()
         {
@@ -296,23 +298,23 @@ namespace Diplomacy_Army
             button = PowerButtons.CreateButton(
                 "CorruptArmy",
                 Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.腐败的军队.png"),
-                "全国军队腐败",
-                "全国军队腐败",
+                "军队腐败",
+                "士兵减少40%伤害 25%防御 20%移速,军费支出增加\r\n对战斗力削弱较大,适合大清大宋等国",
                 getPositionByIndex(index),
                 ButtonType.Toggle,
                 content.transform,
-                () => toggleCorruptArmyActive(kingdom)
+                () => ToggleCorruptArmyActive(kingdom)
             );
             index++;
             button = PowerButtons.CreateButton(
                 "SteelFortress",
                 Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.钢铁堡垒.png"),
                 "钢铁堡垒",
-                "增加200%防御和200%抗击退 减少80%伤害 20%移速 拥有60%动员率",
+                "增加200%防御和200%抗击退 减少60%伤害 20%移速的军队 拥有65%动员率",
                 getPositionByIndex(index),
                 ButtonType.Toggle,
                 content.transform,
-                () => toggleSteelFortressActive(kingdom)
+                () => ToggleSteelFortressActive(kingdom)
             );
             index++;
             button = PowerButtons.CreateButton(
@@ -323,7 +325,29 @@ namespace Diplomacy_Army
                 getPositionByIndex(index),
                 ButtonType.Toggle,
                 content.transform,
-                () => toggleEliteLegionActive(kingdom)
+                () => ToggleEliteLegionActive(kingdom)
+            );
+            index++;
+            button = PowerButtons.CreateButton(
+                "CivilianConscripts",
+                Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.平民征召兵.png"),
+                "民兵军团",
+                "减少10%伤害 50%防御 的军队 但拥有95%的动员率",
+                getPositionByIndex(index),
+                ButtonType.Toggle,
+                content.transform,
+                () => ToggleButtonActive("CivilianConscripts")
+            );
+            index++;
+            button = PowerButtons.CreateButton(
+                "IndustrialKingdom",
+                Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
+                "工业国",
+                "每城市增加50额外人口上限,每年额外收入100金,20面包。但是如果村庄被其他国家占领则会失去效果",
+                getPositionByIndex(index),
+                ButtonType.Toggle,
+                content.transform,
+                () => ToggleButtonActive("IndustrialKingdom")
             );
             index++;
             // button.gameObject.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(20, 20);
@@ -341,20 +365,25 @@ namespace Diplomacy_Army
 
 
         }
-        public static void toggleCorruptArmyActive(Kingdom kingdom)
+        public static void ToggleCorruptArmyActive(Kingdom kingdom)
         {
             kingdom.data.get("CorruptArmy", out bool flag, false);
             kingdom.data.set("CorruptArmy", !flag);
         }
-        public static void toggleSteelFortressActive(Kingdom kingdom)
+        public static void ToggleSteelFortressActive(Kingdom kingdom)
         {
             kingdom.data.get("SteelFortress", out bool flag, false);
             kingdom.data.set("SteelFortress", !flag);
         }
-        public static void toggleEliteLegionActive(Kingdom kingdom)
+        public static void ToggleEliteLegionActive(Kingdom kingdom)
         {
             kingdom.data.get("EliteLegion", out bool flag, false);
             kingdom.data.set("EliteLegion", !flag);
+        }
+        public static void ToggleButtonActive(string str)
+        {
+            kingdom.data.get(str, out bool flag, false);
+            kingdom.data.set(str, !flag);
         }
         public static void toggle(string choice)
         {
