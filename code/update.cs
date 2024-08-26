@@ -169,7 +169,7 @@ namespace Diplomacy_Army
                 }
 
                 // UpdateVassalColor(kingdom);
-                UpdateKingdomDeclares(kingdom, DeclareToRemove);
+                UpdateKingdomDeclares(kingdom, ref DeclareToRemove);
             }
 
             foreach (var kingdom in DeclareToRemove)
@@ -186,7 +186,7 @@ namespace Diplomacy_Army
             }
             MoreGodPower.Declares.Remove(kingdom);
         }
-        private static void UpdateKingdomDeclares(Kingdom kingdom, HashSet<Kingdom> DeclareToRemove)
+        private static void UpdateKingdomDeclares(Kingdom kingdom, ref HashSet<Kingdom> DeclareToRemove)
         {
             if (MoreGodPower.Declares.TryGetValue(kingdom, out var Declares))
             {

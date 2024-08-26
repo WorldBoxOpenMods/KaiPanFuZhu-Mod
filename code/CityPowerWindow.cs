@@ -56,6 +56,7 @@ namespace Diplomacy_Army
 			createTileButton(index++, content.transform, "建造城墙", "建造城墙", "在指定城市的外围建造一圈箭塔", new UnityAction(tryToHideWindow5));
 			createTileButton(index++, content.transform, "合并城市", "合并城市", "合并两座城市", new UnityAction(tryToHideWindow6));
 			createTileButton(index++, content.transform, "宣称城市", "宣称城市", "指定国家获得该城市的宣称", new UnityAction(tryToHideWindow7));
+			createTileButton(index++, content.transform, "取消宣称", "取消宣称", "指定取消该城市的宣称", new UnityAction(tryToHideWindow8));
 
 		}
 
@@ -458,7 +459,7 @@ namespace Diplomacy_Army
 				}
 				else
 				{
-					MoreGodPower.Declares.Add(kingdom, new List<City>(){city});
+					MoreGodPower.Declares.Add(kingdom, new List<City>() { city });
 				}
 				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, kingdom, "国家", "的城市 " + data.name + " 被国家", "宣称了。");
 				MoreGodPower.selected_city = null;
@@ -466,8 +467,35 @@ namespace Diplomacy_Army
 			}
 			return true;
 		}
+		public static bool tryToRemoveDeclareCity(WorldTile pTile, string pPower)
+		{
+			if (pTile.zone.city == null)
+			{
+				return false;
+			}
+			City city = pTile.zone.city;
+			MoreGodPower.selected_city = city;
+			MoreGodPower.selected_kingdom = Reflection.GetField(MoreGodPower.selected_city.GetType(), MoreGodPower.selected_city, "kingdom") as Kingdom;
+			var data = MoreGodPower.selected_city.data;
 
-        public static void tryToHideWindow()
+			if (MoreGodPower.selected_city != null)
+			{
+				Kingdom kingdom=harmony_declare.GetDeclareKingdom(city);
+				
+				data.set("DeclareKingdomID", "");
+				data.set("Declare", false);
+				if (MoreGodPower.Declares.ContainsKey(kingdom))
+				{
+					MoreGodPower.Declares[kingdom].Remove(city);
+				}
+				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom,  "的城市 " + data.name + " 取消宣称");
+				MoreGodPower.selected_city = null;
+				MoreGodPower.selected_kingdom = null;
+			}
+			return true;
+		}
+
+		public static void tryToHideWindow()
 		{
 			power = Reflection.GetField(powerButton.GetType(), powerButton, "godPower") as GodPower;
 			power.click_action = null;
@@ -520,6 +548,14 @@ namespace Diplomacy_Army
 			power = Reflection.GetField(powerButton.GetType(), powerButton, "godPower") as GodPower;
 			power.click_action = null;
 			power.click_action = (PowerActionWithID)Delegate.Combine(power.click_action, new PowerActionWithID(tryToDeclareCity));
+			ScrollWindow.get(name).clickHide();
+			pbsInstance.clickPowerButton(powerButton);
+		}
+		public static void tryToHideWindow8()
+		{
+			power = Reflection.GetField(powerButton.GetType(), powerButton, "godPower") as GodPower;
+			power.click_action = null;
+			power.click_action = (PowerActionWithID)Delegate.Combine(power.click_action, new PowerActionWithID(tryToRemoveDeclareCity));
 			ScrollWindow.get(name).clickHide();
 			pbsInstance.clickPowerButton(powerButton);
 		}

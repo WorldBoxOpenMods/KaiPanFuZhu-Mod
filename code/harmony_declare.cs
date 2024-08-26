@@ -161,8 +161,32 @@ namespace Diplomacy_Army
                     return true;
                 }
             }
-
             return false;
+        }
+        public static Kingdom GetDeclareKingdom(City city)
+        {
+            city.data.get("Declare", out bool flag);
+
+            if (flag)
+            {
+                city.data.get("DeclareKingdomID", out string str, "");
+                Kingdom kingdom = World.world.kingdoms.getKingdomByID(str);
+
+                if (kingdom != null)
+                {
+                    if (!MoreGodPower.Declares.ContainsKey(kingdom))
+                    {
+                        MoreGodPower.Declares.Add(kingdom, new List<City> { city });
+                    }
+                    else if (!MoreGodPower.Declares[kingdom].Contains(city))
+                    {
+                        MoreGodPower.Declares[kingdom].Add(city);
+                    }
+                    return kingdom;
+                }
+            }
+
+            return null;
         }
     }
 }

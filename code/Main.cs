@@ -201,7 +201,7 @@ namespace Diplomacy_Army
                         PowerButtons.ToggleButton(set);
                 }
             }
-            OpinionAsset opinionAsset2 = new()
+            OpinionAsset opinionAsset = new()
             {
                 id = "opinion_vassal",
                 translation_key = "opinion_vassal",
@@ -210,13 +210,35 @@ namespace Diplomacy_Army
                     int result = 0;
                     if (MoreGodPower.Vassals.ContainsKey(pMain) && MoreGodPower.Vassals[pMain].Contains(pTarget))
                     {
-                        result = 500;
+                        result = 100;
                     }
                     return result;
                 }
             };
-            AssetManager.opinion_library.add(opinionAsset2);
+            AssetManager.opinion_library.add(opinionAsset);
             Localization.addLocalization("opinion_vassal", "谁会跟自己的附庸过不去呢");
+            opinionAsset = new()
+            {
+                id = "opinion_vassal",
+                translation_key = "opinion_vassal",
+                calc = delegate (Kingdom pMain, Kingdom pTarget)
+                {
+                    int result = 0;
+                    if (MoreGodPower.Declares.ContainsKey(pMain))
+                    {
+                        foreach (var city in MoreGodPower.Declares[pMain])
+                        {
+                            if (city.kingdom != kingdom&&city.kingdom==pTarget)
+                            {
+                                result -= 75;
+                            }   
+                        }
+                    }
+                    return result;
+                }
+            };
+            AssetManager.opinion_library.add(opinionAsset);
+            Localization.addLocalization("opinion_vassal", "占着我宣称的城市");
 
             WarTypeAsset Declare = new()
             {
@@ -261,14 +283,12 @@ namespace Diplomacy_Army
                                 List<Plot> plotsFor = World.world.plots.getPlotsFor(kingdom.king, true);
                                 if (plotsFor != null)
                                 {
-                                    using (List<Plot>.Enumerator enumerator2 = plotsFor.GetEnumerator())
+                                    using List<Plot>.Enumerator enumerator2 = plotsFor.GetEnumerator();
+                                    while (enumerator2.MoveNext())
                                     {
-                                        while (enumerator2.MoveNext())
+                                        if (enumerator2.Current.isSameType(AssetManager.plots_library.get("new_declare_war")))
                                         {
-                                            if (enumerator2.Current.isSameType(AssetManager.plots_library.get("new_declare_war")))
-                                            {
-                                                return false;
-                                            }
+                                            return false;
                                         }
                                     }
                                 }
@@ -282,10 +302,10 @@ namespace Diplomacy_Army
                 plot_power = (Actor pActor) => (int)pActor.stats[S.warfare],
                 action = delegate (Plot pPlot)
                 {
-                    World.world.diplomacy.startWar(pPlot.initiator_kingdom, pPlot.target_kingdom,AssetManager.war_types_library.get("Declare") , true);
+                    World.world.diplomacy.startWar(pPlot.initiator_kingdom, pPlot.target_kingdom, AssetManager.war_types_library.get("Declare"), true);
                     return true;
                 },
-                cost = 800
+                cost = 200
             };
             AssetManager.plots_library.add(plotAsset);
         }
