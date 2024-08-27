@@ -24,10 +24,10 @@ namespace Diplomacy_Army
             easyTranslate("en", "DAqq", "加入qq群聊");
             easyTranslate("cz", "DAmodderDescription", "modder");
             easyTranslate("en", "DAmodderDescription", "modder");
-            easyTranslate("cz", "plot_description_new_declare_war","准备进攻宣称城市");
-            easyTranslate("en", "plot_description_new_declare_war","准备进攻宣称城市");
-            easyTranslate("cz", "plot_new_declare_war","准备进攻宣称城市");
-            easyTranslate("en", "plot_new_declare_war","准备进攻宣称城市");
+            easyTranslate("cz", "plot_description_new_declare_war", "准备进攻宣称城市");
+            easyTranslate("en", "plot_description_new_declare_war", "准备进攻宣称城市");
+            easyTranslate("cz", "plot_new_declare_war", "准备进攻宣称城市");
+            easyTranslate("en", "plot_new_declare_war", "准备进攻宣称城市");
             // easyTranslate("cz", "tab_Diplomacy_Army Description", "Diplomacy_Army");
             // easyTranslate("en", "tab_Diplomacy_Army Description", "Diplomacy_Army");
             // easyTranslate("cz", "tab_Diplomacy_Army Description2", "mod by 空星漫漫");
@@ -51,6 +51,9 @@ namespace Diplomacy_Army
                 ButtonTranslate(resource.id + "RSTLeftButton", "数值 - 1", "按住Ctrl - 10,按住Shift - 100");
                 ButtonTranslate(resource.id + "RSTRightButton", "数值 + 1", "按住Ctrl + 10,按住Shift + 100");
             }
+            // easyTranslate($"{setting}MS", $"{setting} #" + Main.moreSettings[setting]);
+            // ButtonTranslate("numofyearsXSLeftButton", "概率 - 1%", "按住Ctrl - 10,按住Shift ÷ 10");
+            // ButtonTranslate("numofyearsXSRightButton", "概率 + 1%", "按住Ctrl + 10,按住Shift × 10");
 
 
         }

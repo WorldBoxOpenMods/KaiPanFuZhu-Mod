@@ -45,8 +45,8 @@ namespace Diplomacy_Army
             "bite",
             "rocks",
             "snowball","Ballista_Arrows","stones"
-        }; 
-        public static Dictionary<string, List<ItemAsset>> itemModifiers = new Dictionary<string, List<ItemAsset>>();
+        };
+        public static Dictionary<string, List<ItemAsset>> itemModifiers = new();
         private static Vector2 originalSize;
         public static void ItemSettings()
         {
@@ -83,7 +83,7 @@ namespace Diplomacy_Army
             new Vector3(-118, 30),
             ButtonType.Toggle,
             content.transform,
-            () => toggle("ChooseKing")
+            () => Toggle("ChooseKing")
         ); index++;
             button = PowerButtons.CreateButton(
                 "ChooseLeader",
@@ -93,7 +93,7 @@ namespace Diplomacy_Army
                 new Vector3(-118, 30),
                 ButtonType.Toggle,
                 content.transform,
-                () => toggle("ChooseLeader")
+                () => Toggle("ChooseLeader")
             ); index++;
             button = PowerButtons.CreateButton(
             "ChooseAllWarrior",
@@ -103,7 +103,7 @@ namespace Diplomacy_Army
             new Vector3(-118, -6),
             ButtonType.Toggle,
             content.transform,
-            () => toggle("ChooseAllWarrior")
+            () => Toggle("ChooseAllWarrior")
         ); index++;
             button = PowerButtons.CreateButton(
             "ChooseCityWarrior",
@@ -113,7 +113,7 @@ namespace Diplomacy_Army
             new Vector3(-118, -42),
             ButtonType.Toggle,
             content.transform,
-            () => toggle("ChooseCityWarrior")
+            () => Toggle("ChooseCityWarrior")
         ); index++;
             button = PowerButtons.CreateButton(
             "ChooseCityGeneral",
@@ -123,7 +123,7 @@ namespace Diplomacy_Army
             new Vector3(-118, -78),
             ButtonType.Toggle,
             content.transform,
-            () => toggle("ChooseCityGeneral")
+            () => Toggle("ChooseCityGeneral")
         ); index++;
             button = PowerButtons.CreateButton(
             "ChooseAllGeneral",
@@ -133,7 +133,7 @@ namespace Diplomacy_Army
             new Vector3(-118, -108),
             ButtonType.Toggle,
             content.transform,
-            () => toggle("ChooseAllGeneral")
+            () => Toggle("ChooseAllGeneral")
         ); index++;
             button = PowerButtons.CreateButton(
             "DA_itemEdit",
@@ -291,101 +291,52 @@ namespace Diplomacy_Army
                 new Vector3(-118, -80),
                 ButtonType.Click,
                 GameObject.Find($"Canvas Container Main/Canvas - Windows/windows/kingdom").transform,
-                () => openWindow()
+                () => openWindow("NewKingdomWindow")
             );
             button.gameObject.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(20, 20);
             button.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(20, 20);
+            foreach (var key in Main.NationalTraits.Keys)
+            {
+                button = PowerButtons.CreateButton(
+                    key,
+                    Mod.EmbededResources.LoadSprite(Main.NationalTraits[key].path),
+                    Main.NationalTraits[key].name,
+                    Main.NationalTraits[key].Description,
+                    getPositionByIndex(index),
+                    ButtonType.Toggle,
+                    content.transform,
+                    () => ToggleButtonActive(key)
+                );
+                index++;
+            }
             button = PowerButtons.CreateButton(
-                "CorruptArmy",
-                Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.腐败的军队.png"),
-                "军队腐败",
-                "士兵减少40%伤害 25%防御 20%移速,军费支出增加\r\n对战斗力削弱较大,适合大清大宋等国",
-                getPositionByIndex(index),
-                ButtonType.Toggle,
-                content.transform,
-                () => ToggleCorruptArmyActive(kingdom)
-            );
-            index++;
-            button = PowerButtons.CreateButton(
-                "SteelFortress",
-                Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.钢铁堡垒.png"),
-                "钢铁堡垒",
-                "增加200%防御和200%抗击退 减少60%伤害 20%移速的军队 拥有65%动员率",
-                getPositionByIndex(index),
-                ButtonType.Toggle,
-                content.transform,
-                () => ToggleSteelFortressActive(kingdom)
-            );
-            index++;
-            button = PowerButtons.CreateButton(
-                "EliteLegion",
-                Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.精锐军团.png"),
-                "精锐军团",
-                "增加50%伤害 50%防御 30%血量的军队 但仅有40%的动员率",
-                getPositionByIndex(index),
-                ButtonType.Toggle,
-                content.transform,
-                () => ToggleEliteLegionActive(kingdom)
-            );
-            index++;
-            button = PowerButtons.CreateButton(
-                "CivilianConscripts",
-                Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.平民征召兵.png"),
-                "民兵军团",
-                "减少10%伤害 50%防御 的军队 但拥有95%的动员率",
-                getPositionByIndex(index),
-                ButtonType.Toggle,
-                content.transform,
-                () => ToggleButtonActive("CivilianConscripts")
-            );
-            index++;
-            button = PowerButtons.CreateButton(
-                "IndustrialKingdom",
+                "NationalTraitsWindow",
                 Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
-                "工业国",
-                "每城市增加50额外人口上限,每年额外收入100金,20面包。但是如果村庄被其他国家占领则会失去效果",
-                getPositionByIndex(index),
-                ButtonType.Toggle,
+                "添加国家特质",
+                "添加国家特质,重启游戏就会生效",
+                new Vector3(-118, -80),
+                ButtonType.Click,
                 content.transform,
-                () => ToggleButtonActive("IndustrialKingdom")
+                () => openWindow("NationalTraitsWindow")
             );
-            index++;
-            // button.gameObject.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(20, 20);
-            // button.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(20, 20);
-            // Image buttonBG = button.gameObject.GetComponent<Image>();
-            // buttonBG.sprite = Mod.EmbededResources.LoadSprite(
-            //     $"{Mod.Info.Name}.Resources.UI.backgroundTabButton.png"
-            // );
-            // Button buttonButton = button.gameObject.GetComponent<Button>();
-            // buttonBG.rectTransform.localScale = Vector3.one;
-        }
-        public static void openWindow()
-        {
-            Windows.ShowWindow("NewKingdomWindow");
+            button.gameObject.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = new Vector2(20, 20);
+            button.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(20, 20);
+
 
 
         }
-        public static void ToggleCorruptArmyActive(Kingdom kingdom)
+        public static void openWindow(string wid)
         {
-            kingdom.data.get("CorruptArmy", out bool flag, false);
-            kingdom.data.set("CorruptArmy", !flag);
-        }
-        public static void ToggleSteelFortressActive(Kingdom kingdom)
-        {
-            kingdom.data.get("SteelFortress", out bool flag, false);
-            kingdom.data.set("SteelFortress", !flag);
-        }
-        public static void ToggleEliteLegionActive(Kingdom kingdom)
-        {
-            kingdom.data.get("EliteLegion", out bool flag, false);
-            kingdom.data.set("EliteLegion", !flag);
+            Windows.ShowWindow(wid);
+
+
         }
         public static void ToggleButtonActive(string str)
         {
             kingdom.data.get(str, out bool flag, false);
             kingdom.data.set(str, !flag);
         }
-        public static void toggle(string choice)
+        public static void Toggle(string choice)
         {
             switch (choice)
             {

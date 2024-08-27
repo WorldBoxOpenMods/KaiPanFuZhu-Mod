@@ -40,30 +40,16 @@ namespace Diplomacy_Army
         [HarmonyPatch(typeof(City), "getArmyMaxTotalPercentage")]
         public static bool getArmyMaxTotalPercentage(City __instance, ref float __result)
         {
-            __instance.kingdom.data.get("CorruptArmy", out bool flag, false);
 
-            if (flag)
+            foreach (var key in Main.NationalTraits.Keys)
             {
-                __result = 0.75f;
-                return false;
-            }
-            __instance.kingdom.data.get("SteelFortress", out flag, false);
-            if (flag)
-            {
-                __result = 0.65f;
-                return false;
-            }
-            __instance.kingdom.data.get("EliteLegion", out flag, false);
-            if (flag)
-            {
-                __result = 0.4f;
-                return false;
-            }
-            __instance.kingdom.data.get("CivilianConscripts", out flag, false);
-            if (flag)
-            {
-                __result = 0.95f;
-                return false;
+                __instance.kingdom.data.get(key, out bool flag, false);
+
+                if (flag)
+                {
+                    __result = Main.NationalTraits[key].MobilizationRate;
+                    return false;
+                }
             }
 
             float num = 0f + __instance.race.civ_base_army_mod;
@@ -93,28 +79,22 @@ namespace Diplomacy_Army
                 }
             }
 
-            __instance.kingdom.data.get("CorruptArmy", out bool flag, false);
+            foreach (var key in Main.NationalTraits.Keys)
+            {
+                __instance.kingdom.data.get(key, out bool flag, false);
 
-            if (flag)
-            {
-                __instance.gold_out_army += __instance.gold_out_army * 2;
-                __instance.gold_change -= __instance.gold_out_army * 2;
-                __instance.data.storage.change("gold", -(int)(__instance.gold_out_army * 2));
+                if (flag)
+                {
+                    __instance.gold_out_army += (int)(__instance.gold_out_army * Main.NationalTraits[key].mod_gold_out_army);
+                    __instance.gold_change -= (int)(__instance.gold_out_army * Main.NationalTraits[key].mod_gold_out_army);
+                    __instance.data.storage.change("gold", -(int)(__instance.gold_out_army * Main.NationalTraits[key].mod_gold_out_army));
+                    __instance.gold_change += Main.NationalTraits[key].gold;
+                    __instance.data.storage.change("gold", Main.NationalTraits[key].gold);
+                    __instance.data.storage.change("bread", Main.NationalTraits[key].bread);
+                }
             }
-            __instance.kingdom.data.get("EliteLegion", out flag, false);
-            if (flag)
-            {
-                __instance.gold_out_army += (int)(__instance.gold_out_army * 0.1);
-                __instance.gold_change -= (int)(__instance.gold_out_army * 0.1);
-                __instance.data.storage.change("gold", -(int)(__instance.gold_out_army * 0.1));
-            }
-            __instance.kingdom.data.get("IndustrialKingdom", out flag, false);
-            if (flag)
-            {
-                __instance.gold_change += 100;
-                __instance.data.storage.change("gold", 100);
-                __instance.data.storage.change("bread", 20);
-            }
+
+
 
             return true;
         }
@@ -129,35 +109,19 @@ namespace Diplomacy_Army
                 return;
             }
 
-            __instance.kingdom.data.get("CorruptArmy", out bool flag, false);
+            foreach (var key in Main.NationalTraits.Keys)
+            {
+                __instance.kingdom.data.get(key, out bool flag, false);
 
-            if (flag)
-            {
-                __instance.stats[S.damage] -= (float)(__instance.stats[S.damage] * 0.4);
-                __instance.stats[S.armor] -= (float)(__instance.stats[S.armor] * 0.25);
-                __instance.stats[S.speed] -= (float)(__instance.stats[S.speed] * 0.3);
-            }
-            __instance.kingdom.data.get("SteelFortress", out flag, false);
-            if (flag)
-            {
-                __instance.stats[S.damage] -= (float)(__instance.stats[S.damage] * 0.6);
-                __instance.stats[S.armor] += (float)(__instance.stats[S.armor] * 2);
-                __instance.stats[S.knockback_reduction] += (float)(__instance.stats[S.knockback_reduction] * 2);
-                __instance.stats[S.speed] -= (float)(__instance.stats[S.speed] * 0.2);
-            }
-            __instance.kingdom.data.get("EliteLegion", out flag, false);
-            if (flag)
-            {
-                __instance.stats[S.damage] += (float)(__instance.stats[S.damage] * 0.5);
-                __instance.stats[S.armor] += (float)(__instance.stats[S.armor] * 0.5);
-                __instance.stats[S.health] += (float)(__instance.stats[S.health] * 0.3);
-                __instance.data.health += (int)(__instance.stats[S.health] * 0.3);
-            }
-            __instance.kingdom.data.get("CivilianConscripts", out flag, false);
-            if (flag)
-            {
-                __instance.stats[S.damage] -= (float)(__instance.stats[S.damage] * 0.1);
-                __instance.stats[S.armor] -= (float)(__instance.stats[S.armor] * 0.5);
+                if (flag)
+                {
+                    __instance.stats[S.damage] += __instance.stats[S.damage]*Main.NationalTraits[key].mod_damage;
+                    __instance.stats[S.speed] += __instance.stats[S.speed]*Main.NationalTraits[key].mod_speed;
+                    __instance.stats[S.armor] += Main.NationalTraits[key].armor;
+                    __instance.stats[S.knockback_reduction] += (float)(__instance.stats[S.knockback_reduction] * Main.NationalTraits[key].mod_knockback_reduction);
+                    __instance.stats[S.health] += (float)(__instance.stats[S.health] * Main.NationalTraits[key].mod_health);
+                    __instance.data.health += (int)(__instance.stats[S.health] * Main.NationalTraits[key].mod_health);
+                }
             }
             if (__instance.asset.unit)
             {
@@ -208,21 +172,13 @@ namespace Diplomacy_Army
         public static bool KingdomOnEnable_Prefix(KingdomWindow __instance)
         {
             NewWindow.kingdom = __instance.kingdom;
-            __instance.kingdom.data.get("CorruptArmy", out bool flag, false);
-            if (flag != PowerButtons.GetToggleValue("CorruptArmy"))
-                PowerButtons.ToggleButton("CorruptArmy");
-            __instance.kingdom.data.get("EliteLegion", out flag, false);
-            if (flag != PowerButtons.GetToggleValue("EliteLegion"))
-                PowerButtons.ToggleButton("EliteLegion");
-            __instance.kingdom.data.get("SteelFortress", out flag, false);
-            if (flag != PowerButtons.GetToggleValue("SteelFortress"))
-                PowerButtons.ToggleButton("SteelFortress");
-            __instance.kingdom.data.get("CivilianConscripts", out flag, false);
-            if (flag != PowerButtons.GetToggleValue("CivilianConscripts"))
-                PowerButtons.ToggleButton("CivilianConscripts");
-            __instance.kingdom.data.get("IndustrialKingdom", out flag, false);
-            if (flag != PowerButtons.GetToggleValue("IndustrialKingdom"))
-                PowerButtons.ToggleButton("IndustrialKingdom");
+
+            foreach (var key in Main.NationalTraits.Keys)
+            {
+                __instance.kingdom.data.get(key, out bool flag, false);
+                if (flag != PowerButtons.GetToggleValue(key))
+                    PowerButtons.ToggleButton(key);
+            }
             return true;
         }
         #endregion
@@ -581,10 +537,14 @@ namespace Diplomacy_Army
             {
                 __instance.status.housingTotal = Main.moreSettings["村庄人口下限"];
             }
-            __instance.kingdom.data.get("IndustrialKingdom", out bool flag, false);
-            if (flag)
+            foreach (var key in Main.NationalTraits.Keys)
             {
-                __instance.status.housingTotal += 50;
+                __instance.kingdom.data.get(key, out bool flag, false);
+
+                if (flag)
+                {
+                    __instance.status.housingTotal += Main.NationalTraits[key].housing;
+                }
             }
 
             if (__instance.status.population > __instance.status.housingTotal)

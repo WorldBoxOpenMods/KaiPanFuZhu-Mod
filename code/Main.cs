@@ -76,8 +76,10 @@ namespace Diplomacy_Army
         public static int numofyears = 1;
         public static Dictionary<string, Text> SettingsText = new();
         public static Dictionary<string, int> moreSettings = new() { { "村庄人口上限", 0 }, { "村庄人口下限", 0 }, { "村庄领土上限", 0 }, { "村庄资源上限", 0 } };
+        
         public static Dictionary<string, int> resourceSettings = new();
         public static Dictionary<string, Text> resourceText = new();
+        public static Dictionary<string, NationalTraits> NationalTraits = new();
         public static Dictionary<string, bool> DASet = new()
         {
             { "ChooseKing", false },
@@ -94,6 +96,7 @@ namespace Diplomacy_Army
             { "封锁边境", false},
             { "异族占领", false},
             { "领土完整", false},
+            { "禁止自主联盟", false},
             { "国王装备禁用", false},
             { "城市士兵装备禁用", false},
             { "将军装备禁用", false},
@@ -147,6 +150,11 @@ namespace Diplomacy_Army
                 };
                 File.WriteAllText(text0, JsonConvert.SerializeObject(NewStorage, Formatting.Indented));
             }
+            string filePath = $".\\Mods\\KaiPanFuZhu-Mod-main\\NationalTraits\\NationalTraits.json";
+
+            NationalTraits=DA_save.LoadFromFile(filePath);
+
+
             Windows.CreateNewWindow("DAHelper", "");
             GameObject.Find("/Canvas Container Main/Canvas - Windows/windows/DAHelper/Background/Scroll View").SetActive(true);
             GameObject UIG = new("DA_UIG");
@@ -164,6 +172,7 @@ namespace Diplomacy_Army
             harmony = new Harmony("10011011");
             translate.init();
             pvz_ui.NewTab("Diplomacy_Army", "icon", 150f);
+            NationalTraitsWindow.init();
             NewWindow.init();
             DA_modder.init();
             DA_button.init();
@@ -221,10 +230,10 @@ namespace Diplomacy_Army
                     {
                         foreach (var city in MoreGodPower.Declares[pMain])
                         {
-                            if (city.kingdom != kingdom&&city.kingdom==pTarget)
+                            if (city.kingdom != kingdom && city.kingdom == pTarget)
                             {
                                 result -= 75;
-                            }   
+                            }
                         }
                     }
                     return result;
@@ -343,7 +352,6 @@ namespace Diplomacy_Army
             //     pvz_ui.Button_Powers_Click("Diplomacy_Army");
             // }
         }
-
 
 
         public static void GCGame()
@@ -610,7 +618,7 @@ namespace Diplomacy_Army
             PVZTools.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(CityStorage), "change"), AccessTools.Method(typeof(Main), "change_Prefix"));
             Debug.Log("Prefix: Citystorage.change");
         }
-        
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(Actor), "setProfession")]
         public static bool setProfession(Actor __instance, UnitProfession pType, bool pCancelBeh = true)

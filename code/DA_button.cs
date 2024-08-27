@@ -346,7 +346,7 @@ namespace Diplomacy_Army
 
                   Kingdom kingdom = Reflection.GetField(city.GetType(), city, "kingdom") as Kingdom;
 
-                  List<Actor> actorsToAddItems = new List<Actor>();
+                  List<Actor> actorsToAddItems = new();
                   if (PowerButtons.GetToggleValue("ChooseCityWarrior"))
                   {
                         actorsToAddItems.AddRange(city.professionsDict[UnitProfession.Warrior]);
@@ -496,7 +496,7 @@ namespace Diplomacy_Army
                         return false;
                   }
                   var kingdom = Reflection.GetField(pTile.zone.city.GetType(), pTile.zone.city, "kingdom") as Kingdom;
-                  List<Actor> actorsToAddItems = new List<Actor>();
+                  List<Actor> actorsToAddItems = new();
                   if (PowerButtons.GetToggleValue("ChooseCityWarrior"))
                   {
                         actorsToAddItems.AddRange(city.professionsDict[UnitProfession.Warrior]);
