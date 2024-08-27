@@ -38,6 +38,18 @@ namespace Diplomacy_Army
             ButtonTranslate("numofyearsXSRightButton", "概率 + 1%", "按住Ctrl + 10,按住Shift × 10");
             easyTranslate("en", "numofyears", $"签订期限{SCGL}");
             easyTranslate("cz", "numofyears", $"签订期限{SCGL}");
+            easyTranslate("en", "honey", "蜂蜜");
+            easyTranslate("cz", "honey", "蜂蜜");
+            easyTranslate("en", "MobilizationRate", "动员率");
+            easyTranslate("cz", "MobilizationRate", "动员率");
+            easyTranslate("en", "mod_gold_out_army", "军费增加百分比");
+            easyTranslate("cz", "mod_gold_out_army", "军费增加百分比");
+            easyTranslate("en", "mod_health", "血量增加百分比");
+            easyTranslate("cz", "mod_health", "血量增加百分比");
+            easyTranslate("en", "mod_damage", "攻击增加百分比");
+            easyTranslate("cz", "mod_damage", "攻击增加百分比");
+            easyTranslate("en", "mod_knockback_reduction", "抗击退增加百分比");
+            easyTranslate("cz", "mod_knockback_reduction", "抗击退增加百分比");
             foreach (string setting in Main.moreSettings.Keys)
             {
                 easyTranslate($"{setting}MS", $"{setting} #" + Main.moreSettings[setting]);
@@ -50,6 +62,33 @@ namespace Diplomacy_Army
                 easyTranslate($"{resource.id}RS", $"{LocalizedTextManager.getText(resource.id, null)} #" + Main.resourceSettings[resource.id]);
                 ButtonTranslate(resource.id + "RSTLeftButton", "数值 - 1", "按住Ctrl - 10,按住Shift - 100");
                 ButtonTranslate(resource.id + "RSTRightButton", "数值 + 1", "按住Ctrl + 10,按住Shift + 100");
+            }
+            foreach (string setting in NationalTraitsWindow.NTSet.Keys)
+            {
+                string str = setting;
+                if (LocalizedTextManager.getText(setting, null) != null)
+                {
+                    str = LocalizedTextManager.getText(setting, null);
+                }
+                if (setting == "bread" || setting == "gold")
+                {
+                    easyTranslate($"{setting}NT", $"每年城市额外增加{str} #" + NationalTraitsWindow.NTSet[setting]);
+                    ButtonTranslate(setting + "NTLeftButton", "数值 - 1", "按住Ctrl - 10,按住Shift - 100");
+                    ButtonTranslate(setting + "NTRightButton", "数值 + 1", "按住Ctrl + 10,按住Shift + 100");
+                }
+                else if (setting == "housing")
+                {
+                    easyTranslate($"{setting}NT", $"增加额外人口#" + NationalTraitsWindow.NTSet[setting]);
+                    ButtonTranslate(setting + "NTLeftButton", "数值 - 1%", "按住Ctrl - 10%,按住Shift - 100%");
+                    ButtonTranslate(setting + "NTRightButton", "数值 + 1%", "按住Ctrl + 10%,按住Shift + 100%");
+                }
+                else
+                {
+                    easyTranslate($"{setting}NT", $"{str} #" + NationalTraitsWindow.NTSet[setting] + "%");
+                    ButtonTranslate(setting + "NTLeftButton", "数值 - 1%", "按住Ctrl - 10%,按住Shift - 100%");
+                    ButtonTranslate(setting + "NTRightButton", "数值 + 1%", "按住Ctrl + 10%,按住Shift + 100%");
+                }
+                // if (RaceText.ContainsKey(race) && RaceText[race] != null) { RaceText[race].text = LocalizedTextManager.getText($"#{race}BLSZ", null); }
             }
             // easyTranslate($"{setting}MS", $"{setting} #" + Main.moreSettings[setting]);
             // ButtonTranslate("numofyearsXSLeftButton", "概率 - 1%", "按住Ctrl - 10,按住Shift ÷ 10");
