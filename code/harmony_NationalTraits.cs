@@ -15,14 +15,14 @@ namespace Diplomacy_Army
     public class harmony_NationalTraits
     {
         #region 政治意识形态及国家特性
-        [HarmonyPrefix]
+        [HarmonyPostfix]
         [HarmonyPatch(typeof(ClanManager), "tryPlotJoinAlliance")]
-        public static bool tryPlotJoinAlliance(Actor pActor, PlotAsset pPlotAsset, ref bool __result)
+        public static void tryPlotJoinAlliance(Actor pActor, PlotAsset pPlotAsset, ref bool __result)
         {
             if (PowerButtons.GetToggleValue("禁止自主联盟"))
             {
                 __result = false;
-                return false;
+                return;
             }
             string personality = pActor.kingdom.king.s_personality.id;
             if (personality == "Conservatism")
@@ -30,11 +30,10 @@ namespace Diplomacy_Army
                 if (Toolbox.randomChance(0.3f))
                 {
                     __result = false;
-                    return false;
+                    return;
                 }
             }
 
-            return true;
         }
         [HarmonyPrefix]
         [HarmonyPatch(typeof(City), "getArmyMaxTotalPercentage")]
@@ -45,7 +44,7 @@ namespace Diplomacy_Army
             {
                 __instance.kingdom.data.get(key, out bool flag, false);
 
-                if (flag)
+                if (flag&& Main.NationalTraits[key].MobilizationRate>0)
                 {
                     __result = Main.NationalTraits[key].MobilizationRate;
                     return false;
@@ -237,7 +236,7 @@ namespace Diplomacy_Army
             {
                 text = text + " | w" + pKingdom.countWeapons().ToString();
             }
-            if (pKingdom.king != null)
+            if (pKingdom.king != null&&pKingdom.king.s_personality!=null)
             {
                 text += "\r\n" + pKingdom.king.getName() + "国王";
                 int yearsSince = World.world.getYearsSince(pKingdom.data.timestamp_king_rule);

@@ -82,7 +82,7 @@ namespace Diplomacy_Army
                 {
                     NewFunction.UpdateColor(vassal);
                 }
-                else if (!PowerButtons.GetToggleValue("DA_关闭显示附庸颜色")&&vassal.data.colorID != kingdom.data.colorID)
+                else if (!PowerButtons.GetToggleValue("DA_关闭显示附庸颜色") && vassal.data.colorID != kingdom.data.colorID)
                 {
                     UpdateVassalToKingdomColor(vassal, kingdom);
                 }

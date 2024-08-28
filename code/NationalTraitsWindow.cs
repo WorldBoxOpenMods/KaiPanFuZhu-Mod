@@ -124,9 +124,9 @@ namespace Diplomacy_Army
             RSObjRTF.localPosition = new Vector3(0f, NYJG * -0.5431562f - (NTbutton * 40f) - 140f);
             NTText.Add(id, MSText);
             NCMS.Utils.PowerButtons.CreateButton(id + "NTTLeftButton", NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DALeft.png"),
-            null, null, BVC, ButtonType.Click, CT.transform, () => SetNT(id, -1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
+            "数值 - 1", "按住Ctrl - 10,按住Shift - 100", BVC, ButtonType.Click, CT.transform, () => SetNT(id, -1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
             NCMS.Utils.PowerButtons.CreateButton(id + "NTTRightButton", NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DARight.png"),
-            null, null, BVC2, ButtonType.Click, CT.transform, () => SetNT(id, 1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
+            "数值 + 1", "按住Ctrl + 10,按住Shift + 100", BVC2, ButtonType.Click, CT.transform, () => SetNT(id, 1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
             var UIGRTF = UIG.GetComponent<RectTransform>();
             UIGRTF.position = new Vector3(0, 0, 0);
             UIGRTF.localPosition = new Vector3(0, NYJG * -0.5431562f - (NTbutton * 40f) - 140f);

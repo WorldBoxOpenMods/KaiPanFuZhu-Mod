@@ -13,9 +13,9 @@ namespace Diplomacy_Army
         public static void init()
         {
             int SCGL = Main.numofyears;
-            easyTranslate("cz", "tab_Diplomacy_Army", "Diplomacy_Army");
-            easyTranslate("en", "tab_Diplomacy_Army", "Diplomacy_Army");
-            TipTranslate("tab_Diplomacy_Army", "Diplomacy_Army", "mod by 空星漫漫", "热键 : [Tab + K]".Replace("Tab + K", "<color=#00ff00><b>Tab + K</b></color>"));
+            easyTranslate("cz", "tab_Diplomacy_Army", "开盘辅助");
+            easyTranslate("en", "tab_Diplomacy_Army", "开盘辅助");
+            TipTranslate("tab_Diplomacy_Army", "开盘辅助", "mod by 空星漫漫", "热键 : [Tab + K]".Replace("Tab + K", "<color=#00ff00><b>Tab + K</b></color>"));
             easyTranslate("cz", "modder", "modder");
             easyTranslate("en", "modder", "modder");
             easyTranslate("cz", "DAbilibili", "bilibili");
@@ -53,8 +53,8 @@ namespace Diplomacy_Army
             foreach (string setting in Main.moreSettings.Keys)
             {
                 easyTranslate($"{setting}MS", $"{setting} #" + Main.moreSettings[setting]);
-                ButtonTranslate(setting + "RSLeftButton", "数值 - 1", "按住Ctrl - 10,按住Shift - 100");
-                ButtonTranslate(setting + "RSRightButton", "数值 + 1", "按住Ctrl + 10,按住Shift + 100");
+                ButtonTranslate(setting + "MSLeftButton", "数值 - 1", "按住Ctrl - 10,按住Shift - 100");
+                ButtonTranslate(setting + "MSRightButton", "数值 + 1", "按住Ctrl + 10,按住Shift + 100");
                 // if (RaceText.ContainsKey(race) && RaceText[race] != null) { RaceText[race].text = LocalizedTextManager.getText($"#{race}BLSZ", null); }
             }
             foreach (ResourceAsset resource in AssetManager.resources.list)

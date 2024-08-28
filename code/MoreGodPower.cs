@@ -216,6 +216,35 @@ namespace Diplomacy_Army
 
 			return true;
 		}
+		public static bool tryToStartDeclareWar(WorldTile pTile, string pPower)
+		{
+			if (pTile.zone.city == null)
+			{
+				return false;
+			}
+			var kingdom = Reflection.GetField(pTile.zone.city.GetType(), pTile.zone.city, "kingdom") as Kingdom;
+			if (selected_kingdom == null)
+			{
+				selected_kingdom = kingdom;
+				NewFunction.LogNewMessage(kingdom, "国家", "想要发动一场战争......");
+			}
+			else
+			{
+				if (kingdom == selected_kingdom)
+				{
+					return false;
+				}
+				War war = MapBox.instance.wars.getWar(selected_kingdom, kingdom, false);
+				if (war != null)
+				{
+					NewFunction.LogNewMessage(selected_kingdom, kingdom, "国家", "和国家", "正在交战");
+					return false;
+				}
+				MapBox.instance.diplomacy.CallMethod("startWar", selected_kingdom, kingdom, AssetManager.war_types_library.get("Declare"), true);
+				selected_kingdom = null;
+			}
+			return true;
+		}
 
 		public static bool tryToCombineCulture(WorldTile pTile, string pPower)
 		{

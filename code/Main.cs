@@ -95,8 +95,10 @@ namespace Diplomacy_Army
             { "显示原版铭牌", false},
             { "封锁边境", false},
             { "异族占领", false},
+            { "异族统治", false},
             { "领土完整", false},
             { "禁止自主联盟", false},
+            // { "种族寿命统一70岁", false},
             { "国王装备禁用", false},
             { "城市士兵装备禁用", false},
             { "将军装备禁用", false},
@@ -171,7 +173,7 @@ namespace Diplomacy_Army
             foreach (ResourceAsset resource in AssetManager.resources.list) { resourceSettings.Add(resource.id, 0); }
             harmony = new Harmony("10011011");
             translate.init();
-            pvz_ui.NewTab("Diplomacy_Army", "icon", 150f);
+            pvz_ui.NewTab("Diplomacy_Army", "icon", -462);
             NationalTraitsWindow.init();
             NewWindow.init();
             DA_modder.init();
@@ -191,6 +193,7 @@ namespace Diplomacy_Army
             Harmony.CreateAndPatchAll(typeof(Main));
             Harmony.CreateAndPatchAll(typeof(harmony_vassal));
             Harmony.CreateAndPatchAll(typeof(harmony_declare));
+            Harmony.CreateAndPatchAll(typeof(harmony_saves));
             Harmony.CreateAndPatchAll(typeof(harmony_NationalTraits));
             Personality();
             Plots();
@@ -212,7 +215,7 @@ namespace Diplomacy_Army
                     int result = 0;
                     if (MoreGodPower.Vassals.ContainsKey(pMain) && MoreGodPower.Vassals[pMain].Contains(pTarget))
                     {
-                        result = 100;
+                        result = 300;
                     }
                     return result;
                 }

@@ -80,6 +80,10 @@ namespace Diplomacy_Army
                 // MoreGodPower.DefenceKingdoms[pDefender].Remove(pAttacker);
 
             }
+            if(pAsset.id=="Declare")
+            {
+                NewFunction.LogNewMessage(pAttacker, pDefender, "", "发动", "宣称战争");
+            }
             if (MoreGodPower.AllianceKingdoms.ContainsKey(pAttacker) && MoreGodPower.AllianceKingdoms[pAttacker].ContainsKey(pDefender))
             {
                 if (Toolbox.randomChance(0.2f))
@@ -169,7 +173,7 @@ namespace Diplomacy_Army
                     kingdom = pKingdom2;
                 }
             }
-            if(war1!=null&&war1._asset==AssetManager.war_types_library.get("Declare"))
+            if(war1!=null&&war1._asset.id=="Declare")
             {
                 if(war1.isInWarWith(pKingdom, __instance.kingdom)&&MoreGodPower.Declares.ContainsKey(pKingdom))
                 {

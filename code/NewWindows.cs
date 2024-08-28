@@ -255,6 +255,8 @@ namespace Diplomacy_Army
             "领土完整", "暂时没有效果", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
             PowerButtons.CreateButton("禁止自主联盟", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
             "禁止自主联盟", "禁止自主联盟", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
+            // PowerButtons.CreateButton("种族寿命统一70岁", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
+            // "种族寿命统一70岁", "种族寿命统一70岁", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
         }
         public static void ProhibitgiveItem()
         {
@@ -407,9 +409,9 @@ namespace Diplomacy_Army
             RSObjRTF.localPosition = new Vector3(20f, NYJG * -0.5431562f - (Settingsbutton * 40f));
             Main.SettingsText.Add(id, MSText);
             NCMS.Utils.PowerButtons.CreateButton(id + "MSLeftButton", NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DALeft.png"),
-            null, null, BVC, ButtonType.Click, CT.transform, () => SetRSZ(id, -1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
+            "数值 - 1", "按住Ctrl - 10,按住Shift - 100", BVC, ButtonType.Click, CT.transform, () => SetRSZ(id, -1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
             NCMS.Utils.PowerButtons.CreateButton(id + "MSRightButton", NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DARight.png"),
-            null, null, BVC2, ButtonType.Click, CT.transform, () => SetRSZ(id, 1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
+            "数值 + 1", "按住Ctrl + 10,按住Shift + 100", BVC2, ButtonType.Click, CT.transform, () => SetRSZ(id, 1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
         }
         public static void SetRSZ(string id, int i, int l = 1)
         {
@@ -449,9 +451,9 @@ namespace Diplomacy_Army
             RSObjRTF.localPosition = new Vector3(20f, NYJG * -0.5431562f - (RSbutton * 40f));
             Main.resourceText.Add(resource.id, MSText);
             NCMS.Utils.PowerButtons.CreateButton(resource.id + "RSTLeftButton", NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DALeft.png"),
-            null, null, BVC, ButtonType.Click, CT.transform, () => SetRST(resource.id, -1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
+            "数值 - 1", "按住Ctrl - 10,按住Shift - 100", BVC, ButtonType.Click, CT.transform, () => SetRST(resource.id, -1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
             NCMS.Utils.PowerButtons.CreateButton(resource.id + "RSTRightButton", NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DARight.png"),
-            null, null, BVC2, ButtonType.Click, CT.transform, () => SetRST(resource.id, 1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
+            "数值 + 1", "按住Ctrl + 10,按住Shift + 100", BVC2, ButtonType.Click, CT.transform, () => SetRST(resource.id, 1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
             var UIGRTF = UIG.GetComponent<RectTransform>();
             UIGRTF.position = new Vector3(0, 0, 0);
             UIGRTF.localPosition = new Vector3(0, NYJG * -0.5431562f - (RSbutton * 40f));

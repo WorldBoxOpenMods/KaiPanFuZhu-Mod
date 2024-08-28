@@ -105,7 +105,7 @@ namespace Diplomacy_Army
         }
         public static bool tryPlotDeclareWar(Actor pActor, PlotAsset pPlotAsset)
         {
-            if (!basePlotChecks(pActor, pPlotAsset))
+            if (!BasePlotChecks(pActor, pPlotAsset))
             {
                 return false;
             }
@@ -128,7 +128,7 @@ namespace Diplomacy_Army
 
             return true;
         }
-        private static bool basePlotChecks(Actor pActor, PlotAsset pPlotAsset)
+        private static bool BasePlotChecks(Actor pActor, PlotAsset pPlotAsset)
         {
             if (pActor == null || pPlotAsset == null)
             {

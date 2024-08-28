@@ -11,7 +11,7 @@
     "mod_health": 0.0,
     "mod_knockback_reduction": 0.0,
     "mod_gold_out_army": 2.0,
-    "gold": 0,
+    "gold": -30,
     "bread": 0,
     "housing": 0
   },
@@ -36,7 +36,7 @@
     "name": "精锐军团",
     "Description": "增加50%伤害 50%防御 30%血量的军队 但仅有40%的动员率",
     "path": "KaiPanFuZhu Mod.Resources.精锐军团.png",
-    "MobilizationRate": 0.0,
+    "MobilizationRate": 0.4,
     "mod_damage": 0.5,
     "armor": 0.5,
     "mod_speed": 0.0,

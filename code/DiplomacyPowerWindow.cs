@@ -66,6 +66,7 @@ namespace Diplomacy_Army
 			createTileButton(index++, content.transform, "共同防御", "共同防御", "共同防御", new UnityAction(tryToHideWindow6));
 			createTileButton(index++, content.transform, "附庸", "附庸", "附庸", new UnityAction(tryToHideWindow7));
 			createTileButton(index++, content.transform, "取消附庸", "取消附庸", "取消附庸", new UnityAction(tryToHideWindow8));
+			createTileButton(index++, content.transform, "宣称战争", "宣称战争", "发动宣称战争,宣称战争将持续到拥有所宣称城市并且至少占领对方一座城市", new UnityAction(tryToHideWindow9));
 			PowerButtons.CreateButton("签订条约或撕毁", Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu-Mod-main\\Sprites\\" + "签订或撕毁条约" + ".jpg"),
 "签订条约或撕毁", "当按钮打开时是撕毁条约，关闭是签订条约,", NewFunction.getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
 
@@ -185,6 +186,14 @@ namespace Diplomacy_Army
 			power = Reflection.GetField(powerButton.GetType(), powerButton, "godPower") as GodPower;
 			power.click_action = null;
 			power.click_action = (PowerActionWithID)Delegate.Combine(power.click_action, new PowerActionWithID(tryToVassal_Kingdom2));
+			ScrollWindow.get(name).clickHide();
+			pbsInstance.clickPowerButton(powerButton);
+		}
+		public static void tryToHideWindow9()
+		{
+			power = Reflection.GetField(powerButton.GetType(), powerButton, "godPower") as GodPower;
+			power.click_action = null;
+			power.click_action = (PowerActionWithID)Delegate.Combine(power.click_action, new PowerActionWithID(MoreGodPower.tryToStartDeclareWar));
 			ScrollWindow.get(name).clickHide();
 			pbsInstance.clickPowerButton(powerButton);
 		}

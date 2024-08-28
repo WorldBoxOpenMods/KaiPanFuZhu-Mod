@@ -484,6 +484,7 @@ namespace Diplomacy_Army
 				
 				data.set("DeclareKingdomID", "");
 				data.set("Declare", false);
+				if(kingdom != null)
 				if (MoreGodPower.Declares.ContainsKey(kingdom))
 				{
 					MoreGodPower.Declares[kingdom].Remove(city);
