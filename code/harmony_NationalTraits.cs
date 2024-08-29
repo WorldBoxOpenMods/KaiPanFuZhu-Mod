@@ -15,14 +15,14 @@ namespace Diplomacy_Army
     public class harmony_NationalTraits
     {
         #region 政治意识形态及国家特性
-        [HarmonyPostfix]
+        [HarmonyPrefix]
         [HarmonyPatch(typeof(ClanManager), "tryPlotJoinAlliance")]
-        public static void tryPlotJoinAlliance(Actor pActor, PlotAsset pPlotAsset, ref bool __result)
+        public static bool tryPlotJoinAlliance_Prefix(Actor pActor, PlotAsset pPlotAsset, ref bool __result)
         {
             if (PowerButtons.GetToggleValue("禁止自主联盟"))
             {
                 __result = false;
-                return;
+                return false;
             }
             string personality = pActor.kingdom.king.s_personality.id;
             if (personality == "Conservatism")
@@ -30,14 +30,24 @@ namespace Diplomacy_Army
                 if (Toolbox.randomChance(0.3f))
                 {
                     __result = false;
-                    return;
+                    return false;
                 }
             }
-
+            return true;
+        }
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ClanManager), "tryPlotNewAlliance")]
+        public static bool tryPlotNewAlliance_Prefix(Actor pActor, PlotAsset pPlotAsset)
+        {
+            if (PowerButtons.GetToggleValue("禁止自主联盟"))
+            {
+                return false;
+            }
+            return true;
         }
         [HarmonyPrefix]
         [HarmonyPatch(typeof(City), "getArmyMaxTotalPercentage")]
-        public static bool getArmyMaxTotalPercentage(City __instance, ref float __result)
+        public static bool getArmyMaxTotalPercentage_Prefix(City __instance, ref float __result)
         {
 
             foreach (var key in Main.NationalTraits.Keys)
@@ -65,7 +75,7 @@ namespace Diplomacy_Army
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(City), "updateAge")]
-        public static bool updateAge_Postfix(City __instance)
+        public static bool updateAge_Prefix(City __instance)
         {
             if (__instance.kingdom.king != null)
             {
@@ -183,7 +193,7 @@ namespace Diplomacy_Army
         #endregion
         [HarmonyPrefix]
         [HarmonyPatch(typeof(MapText), "showTextKingdom")]
-        public static bool showTextKingdom(MapText __instance, Kingdom pKingdom)
+        public static bool showTextKingdom_Prefix(MapText __instance, Kingdom pKingdom)
         {
 
             if (PowerButtons.GetToggleValue("显示原版铭牌"))
