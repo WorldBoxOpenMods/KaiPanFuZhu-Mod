@@ -9,6 +9,7 @@ using HarmonyLib;
 using NCMS.Utils;
 using UnityEngine;
 using UnityEngine.UI;
+using Diplomacy_Army.Utils;
 
 namespace Diplomacy_Army
 {
@@ -77,7 +78,11 @@ namespace Diplomacy_Army
         [HarmonyPatch(typeof(City), "updateAge")]
         public static bool updateAge_Prefix(City __instance)
         {
-            if (__instance.kingdom.king != null)
+            if (__instance==null||__instance.kingdom==null)
+            {
+                return false;
+            }
+            if(__instance.kingdom.king.Any()&&__instance.kingdom.king.s_personality!=null)
             {
                 string personality = __instance.kingdom.king.s_personality.id;
                 if (personality == "militarist")

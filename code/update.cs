@@ -22,7 +22,7 @@ namespace Diplomacy_Army
                     continue;
                 }
 
-                UpdateVassalColor(kingdom);
+
                 UpdateKingdomVassals(kingdom, vassalsToRemove);
             }
 
@@ -43,7 +43,7 @@ namespace Diplomacy_Army
                         vassals.Remove(vassal);
                         continue;
                     }
-
+                    UpdateVassalColor(kingdom);
                     UpdateVassalAlliance(vassal, kingdom);
                 }
 
@@ -71,13 +71,25 @@ namespace Diplomacy_Army
                 ChangeVassalAlliance(vassal, kingdom);
             }
         }
-
         private static void UpdateVassalColor(Kingdom kingdom)
         {
             var vassals = MoreGodPower.Vassals[kingdom].ToList();
 
-            foreach (var vassal in vassals)
+            for (int i = 0; i < vassals.Count; i++)
             {
+                var vassal = vassals[i];
+                if (vassal == null || vassal.data == null)
+                {
+                    MoreGodPower.Vassals[kingdom].Remove(vassal);
+                    continue;
+                }
+
+                // int oldColorID;
+                // if (!vassal.data.get("oldColorID", out oldColorID))
+                // {
+                //     oldColorID = -1;
+                // }
+
                 if (PowerButtons.GetToggleValue("DA_关闭显示附庸颜色") && vassal.data.colorID == kingdom.data.colorID)
                 {
                     NewFunction.UpdateColor(vassal);
@@ -88,6 +100,7 @@ namespace Diplomacy_Army
                 }
             }
         }
+
 
         private static void UpdateVassalToKingdomColor(Kingdom vassal, Kingdom kingdom)
         {
@@ -186,15 +199,38 @@ namespace Diplomacy_Army
             }
             MoreGodPower.Declares.Remove(kingdom);
         }
+        // private static void UpdateKingdomDeclares(Kingdom kingdom, ref HashSet<Kingdom> DeclareToRemove)
+        // {
+        //     if (MoreGodPower.Declares.TryGetValue(kingdom, out var Declares))
+        //     {
+        //         foreach (var city in Declares.ToList())
+        //         {
+        //             if (city == null || city.data == null)
+        //             {
+        //                 Declares.Remove(city);
+        //                 continue;
+        //             }
+
+        //             // UpdateVassalAlliance(vassal, kingdom);
+        //         }
+
+        //         if (Declares.Count == 0)
+        //         {
+        //             DeclareToRemove.Add(kingdom);
+        //         }
+        //     }
+        // }
         private static void UpdateKingdomDeclares(Kingdom kingdom, ref HashSet<Kingdom> DeclareToRemove)
         {
             if (MoreGodPower.Declares.TryGetValue(kingdom, out var Declares))
             {
-                foreach (var city in Declares.ToList())
+                for (int i = 0; i < Declares.Count; i++)
                 {
+                    var city = Declares[i];
                     if (city == null || city.data == null)
                     {
-                        Declares.Remove(city);
+                        Declares.RemoveAt(i);
+                        i--;
                         continue;
                     }
 

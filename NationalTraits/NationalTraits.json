@@ -78,5 +78,21 @@
     "gold": 100,
     "bread": 20,
     "housing": 50
+  },
+  "西俄革命战线": {
+    "id": "西俄革命战线",
+    "name": "西俄革命战线",
+    "Description": "西俄革命战线",
+    "path": "KaiPanFuZhu Mod.Resources.UI.default.png",
+    "MobilizationRate": 0.0,
+    "mod_damage": 0.0,
+    "armor": 0.0,
+    "mod_speed": 0.0,
+    "mod_health": 0.0,
+    "mod_knockback_reduction": 0.0,
+    "mod_gold_out_army": 0.0,
+    "gold": 0,
+    "bread": 0,
+    "housing": 0
   }
 }

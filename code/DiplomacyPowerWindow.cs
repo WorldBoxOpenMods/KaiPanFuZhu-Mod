@@ -58,8 +58,6 @@ namespace Diplomacy_Army
 
 		private static void initDiplomacyGodpower()
 		{
-			// createTileButton(index++, content.transform, "指定宣战", "指定宣战", "强制国家之间开战", new UnityAction(tryToHideWindow4));
-			// createTileButton(index++, content.transform, "指定和平", "指定和平", "强制国家之间和平", new UnityAction(tryToHideWindow3));
 			createTileButton(index++, content.transform, "结盟", "结盟", "让国与国之间结盟", new UnityAction(tryToHideWindow));
 			createTileButton(index++, content.transform, "互不侵犯", "互不侵犯", "互不侵犯", new UnityAction(tryToHideWindow2));
 			createTileButton(index++, content.transform, "军事通行", "军事通行", "军事通行", new UnityAction(tryToHideWindow5));
