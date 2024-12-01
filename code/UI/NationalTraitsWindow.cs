@@ -36,7 +36,7 @@ namespace Diplomacy_Army
         private static readonly string wid = "NationalTraitsWindow";
         public static void init()
         {
-            ScrollWindow Window = pvz_ui.NewWindow(wid, 0, "null", true);
+            ScrollWindow Window = pvz_ui.NewWindows(wid, 0, "null", true);
             Window.transform.Find("Background").Find("Scroll View").gameObject.SetActive(true);
             wid.RTF();
             content = pvz_ui.CustomWindowObjects[wid];
@@ -70,13 +70,13 @@ namespace Diplomacy_Army
                 new Vector3(-60, -60),
                 ButtonType.Click,
                 content.transform,
-                ()=>CreateNationalTraits()
+                () => CreateNationalTraits()
             );
             foreach (var trait in NTSet.Keys) { NTSetB(trait, content); }
         }
         public static void CreateNationalTraits()
         {
-            if(NameInputs["id"].inputField.text==""||NameInputs["name"].inputField.text=="")
+            if (NameInputs["id"].inputField.text == "" || NameInputs["name"].inputField.text == "")
             {
                 WorldTip.showNow("id或名字未填写", true, "top", 5f);
                 return;

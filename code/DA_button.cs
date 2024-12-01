@@ -169,7 +169,7 @@ namespace Diplomacy_Army
                   }
                   foreach (ItemAsset item in AssetManager.items.list)
                   {
-                        if (item.id[0] == '_' || NewWindow.wrongItems.Contains(item.id))
+                        if (item.id[0] == '_' || ItemSettingsWindow.wrongItems.Contains(item.id))
                         {
                               continue;
                         }
@@ -410,7 +410,7 @@ namespace Diplomacy_Army
                         {
                               foreach (ItemAsset item in AssetManager.items.list)
                               {
-                                    if (item.id[0] == '_' || NewWindow.wrongItems.Contains(item.id) || item.materials.Count <= 0)
+                                    if (item.id[0] == '_' || ItemSettingsWindow.wrongItems.Contains(item.id) || item.materials.Count <= 0)
                                     {
                                           continue;
                                     }
@@ -422,9 +422,9 @@ namespace Diplomacy_Army
                                           {
                                                 ItemData data = ItemGenerator.generateItem(item, material, World.world.mapStats.year, act.kingdom, act.getName(), 1, act);
                                                 data.modifiers.Clear();
-                                                // if (NewWindow.itemModifiers.ContainsKey(key.ToString()))
+                                                // if (MoreWindows.itemModifiers.ContainsKey(key.ToString()))
                                                 // {
-                                                //       foreach (ItemAsset modifier in NewWindow.itemModifiers["1"])
+                                                //       foreach (ItemAsset modifier in MoreWindows.itemModifiers["1"])
                                                 //       {
                                                 //             // ItemGenerator.tryToAddMod(data, modifier);
                                                 //             data.modifiers.Add(modifier.id);

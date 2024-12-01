@@ -27,7 +27,7 @@ namespace Diplomacy_Army
         public static void init()
         {
             string wid = "ItemMod";
-            pvz_ui.NewWindow(wid, 0, "null", true);
+            pvz_ui.NewWindows(wid, 0, "null", true);
             wid.RTF();
             content = pvz_ui.CustomWindowObjects["ItemMod"];
             originalSize = content.GetComponent<RectTransform>().sizeDelta;
@@ -116,17 +116,17 @@ namespace Diplomacy_Army
 
         private static void onModClick(ItemAsset mod)
         {
-            if (!PowerButtons.GetToggleValue($"{mod.id}_modifier_DA") && NewWindow.itemModifiers.ContainsKey(currentButtonID.ToString()))
+            if (!PowerButtons.GetToggleValue($"{mod.id}_modifier_DA") && MoreWindows.itemModifiers.ContainsKey(currentButtonID.ToString()))
             {
-                NewWindow.itemModifiers[currentButtonID.ToString()].Remove(mod);
+                MoreWindows.itemModifiers[currentButtonID.ToString()].Remove(mod);
             }
-            else if (NewWindow.itemModifiers.ContainsKey(currentButtonID.ToString()))
+            else if (MoreWindows.itemModifiers.ContainsKey(currentButtonID.ToString()))
             {
-                NewWindow.itemModifiers[currentButtonID.ToString()].Add(mod);
+                MoreWindows.itemModifiers[currentButtonID.ToString()].Add(mod);
             }
             else
             {
-                NewWindow.itemModifiers.Add(currentButtonID.ToString(), new List<ItemAsset> { mod });
+                MoreWindows.itemModifiers.Add(currentButtonID.ToString(), new List<ItemAsset> { mod });
             }
         }
 
@@ -140,11 +140,11 @@ namespace Diplomacy_Army
         //         }
         //         string itemID = kv.Key.Remove(kv.Key.IndexOf("_modifier_DA"));
         //         ItemAsset asset = AssetManager.items_modifiers.get(itemID);
-        //         if (!PowerButtons.GetToggleValue(kv.Key) && !NewWindow.itemModifiers[currentButtonID.ToString()].Contains(asset))
+        //         if (!PowerButtons.GetToggleValue(kv.Key) && !MoreWindows.itemModifiers[currentButtonID.ToString()].Contains(asset))
         //         {
         //             continue;
         //         }
-        //         if (PowerButtons.GetToggleValue(kv.Key) && NewWindow.itemModifiers[currentButtonID.ToString()].Contains(asset))
+        //         if (PowerButtons.GetToggleValue(kv.Key) && MoreWindows.itemModifiers[currentButtonID.ToString()].Contains(asset))
         //         {
         //             continue;
         //         }
@@ -166,7 +166,7 @@ namespace Diplomacy_Army
                 }
                 string itemID = kv.Key.Remove(kv.Key.IndexOf("_modifier_DA"));
                 ItemAsset asset = AssetManager.items_modifiers.get(itemID);
-                NewWindow.itemModifiers[currentButtonID.ToString()].Remove(asset);
+                MoreWindows.itemModifiers[currentButtonID.ToString()].Remove(asset);
                 PowerButtons.ToggleButton(kv.Key);
             }
         }

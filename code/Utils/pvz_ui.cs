@@ -114,7 +114,7 @@ namespace Diplomacy_Army
       CustomIconIds.Add(id);
       return Icon;
     }
-    public static ScrollWindow NewWindow(string id, float height = 0f, string text = "null", bool textHeight = false, string iconId = "null", string icon = "null", float pos3Dx = 0f, float pos3Dy = 0f, float sizex = 0f, float sizey = 0f)
+    public static ScrollWindow NewWindows(string id, float height = 0f, string text = "null", bool textHeight = false, string iconId = "null", string icon = "null", float pos3Dx = 0f, float pos3Dy = 0f, float sizex = 0f, float sizey = 0f)
     {
       CustomWindowsHeight.Add(id, height);
       ScrollWindow Window = Windows.CreateNewWindow(id, id);

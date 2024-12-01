@@ -15,7 +15,7 @@ namespace Diplomacy_Army
         public static string wid = "DAWindow_modder";
         public static void init()
         {
-            pvz_ui.NewWindow(wid, 0, "DA_MContentText", true);
+            pvz_ui.NewWindows(wid, 0, "DA_MContentText", true);
             pvz_ui.CustomTextColors.Add(wid, "#FFFFFF");
             NewLJTZ("bilibili", "https://space.bilibili.com/3493140006701370");
             NewLJTZ("qq", "https://qm.qq.com/q/qtnN1CyApO");

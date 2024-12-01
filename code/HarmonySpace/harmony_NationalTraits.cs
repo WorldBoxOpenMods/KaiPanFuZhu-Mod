@@ -185,7 +185,7 @@ namespace Diplomacy_Army
         [HarmonyPatch(typeof(KingdomWindow), "OnEnable")]
         public static bool KingdomOnEnable_Prefix(KingdomWindow __instance)
         {
-            NewWindow.kingdom = __instance.kingdom;
+            MoreWindows.kingdom = __instance.kingdom;
 
             foreach (var key in Main.NationalTraits.Keys)
             {

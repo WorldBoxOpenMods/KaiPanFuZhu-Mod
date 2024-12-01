@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Reflection;
 using ReflectionUtility;
+using Diplomacy_Army;
+using Diplomacy_Army.Utils;
 
 namespace Diplomacy_Army
 {

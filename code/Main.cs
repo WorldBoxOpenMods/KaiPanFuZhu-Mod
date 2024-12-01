@@ -68,7 +68,6 @@ namespace Diplomacy_Army
 
         public static bool showWorldLow = false;
 
-        #region 急了和空星漫漫新增变量
 
         public static Color outlineColor = Color.black;
         public static float outlineWidth = 1.5f;
@@ -109,7 +108,6 @@ namespace Diplomacy_Army
         };
 
 
-        #endregion
 
         public void Awake()
         {
@@ -175,7 +173,7 @@ namespace Diplomacy_Army
             translate.init();
             pvz_ui.NewTab("Diplomacy_Army", "icon", -462);
             NationalTraitsWindow.init();
-            NewWindow.init();
+            MoreWindows.init();
             DA_modder.init();
             DA_button.init();
             DiplomacyPowerWindow.init();
