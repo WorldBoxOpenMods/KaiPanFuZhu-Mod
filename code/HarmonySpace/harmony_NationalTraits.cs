@@ -16,6 +16,7 @@ namespace Diplomacy_Army
     public class harmony_NationalTraits
     {
         #region 政治意识形态及国家特性
+        //禁止自主联盟功能
         [HarmonyPrefix]
         [HarmonyPatch(typeof(ClanManager), "tryPlotJoinAlliance")]
         public static bool tryPlotJoinAlliance_Prefix(Actor pActor, PlotAsset pPlotAsset, ref bool __result)
@@ -25,6 +26,7 @@ namespace Diplomacy_Army
                 __result = false;
                 return false;
             }
+            //保守主义者的效果，30%概率不向他人联盟
             string personality = pActor.kingdom.king.s_personality.id;
             if (personality == "Conservatism")
             {
@@ -46,11 +48,12 @@ namespace Diplomacy_Army
             }
             return true;
         }
+        //改变军队的征招数量上限
         [HarmonyPrefix]
         [HarmonyPatch(typeof(City), "getArmyMaxTotalPercentage")]
         public static bool getArmyMaxTotalPercentage_Prefix(City __instance, ref float __result)
         {
-
+            //政策效果
             foreach (var key in Main.NationalTraits.Keys)
             {
                 __instance.kingdom.data.get(key, out bool flag, false);
@@ -78,10 +81,12 @@ namespace Diplomacy_Army
         [HarmonyPatch(typeof(City), "updateAge")]
         public static bool updateAge_Prefix(City __instance)
         {
+            //进行检查
             if (__instance==null||__instance.kingdom==null)
             {
                 return false;
             }
+            //检查国王是否存活，执行军国主义的额外支出效果
             if(__instance.kingdom.king.Any()&&__instance.kingdom.king.s_personality!=null)
             {
                 string personality = __instance.kingdom.king.s_personality.id;
@@ -92,7 +97,7 @@ namespace Diplomacy_Army
                     __instance.data.storage.change("gold", -(int)(__instance.gold_out_army * 0.1));
                 }
             }
-
+            //循环调用政策，执行政策效果，但这个政策实在过于简陋，直接加东西
             foreach (var key in Main.NationalTraits.Keys)
             {
                 __instance.kingdom.data.get(key, out bool flag, false);
@@ -114,6 +119,7 @@ namespace Diplomacy_Army
         }
         #endregion
         #region 国家特性
+        //更新人物属性的函数，这里用来处理政策效果
         [HarmonyPostfix]
         [HarmonyPatch(typeof(ActorBase), "updateStats")]
         public static void UpdateStats_Postfix(ActorBase __instance)
@@ -137,6 +143,7 @@ namespace Diplomacy_Army
                     __instance.data.health += (int)(__instance.stats[S.health] * Main.NationalTraits[key].mod_health);
                 }
             }
+            //各种主义的效果
             if (__instance.asset.unit)
             {
                 __instance.s_personality = null;
@@ -181,6 +188,7 @@ namespace Diplomacy_Army
             }
 
         }
+        //王国界面放政策按钮
         [HarmonyPrefix]
         [HarmonyPatch(typeof(KingdomWindow), "OnEnable")]
         public static bool KingdomOnEnable_Prefix(KingdomWindow __instance)
@@ -196,6 +204,7 @@ namespace Diplomacy_Army
             return true;
         }
         #endregion
+        //修改原版铭牌-王国
         [HarmonyPrefix]
         [HarmonyPatch(typeof(MapText), "showTextKingdom")]
         public static bool showTextKingdom_Prefix(MapText __instance, Kingdom pKingdom)
@@ -273,6 +282,7 @@ namespace Diplomacy_Army
             // BannerContainer bannerContainer = BannerGenerator.dict[pKingdom.race.banner_id];
             return false;
         }
+        //修改原版铭牌-村庄
         [HarmonyPrefix]
         [HarmonyPatch(typeof(MapText), "showTextCity")]
         public static bool showTextCity(MapText __instance, City pCity)

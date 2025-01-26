@@ -11,11 +11,13 @@ using UnityEngine.Events;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ReflectionUtility;
+using HarmonyLib;
+using System.Reflection;
 
 namespace Diplomacy_Army
 {
 	[ModEntry]
-	public class NewFunction
+	public static class NewFunction
 	{
 		private static string path = ".\\players.json";
 		public static Color color1 = new(1f, 0.1f, 0.1f, 0.2f);
@@ -101,7 +103,7 @@ namespace Diplomacy_Army
 			((Dictionary<string, string>)Reflection.GetField(LocalizedTextManager.instance.GetType(), LocalizedTextManager.instance, "localizedText")).Add(pID.name + " Description", pDescription);
 			float x = 108f + 36 * (index / 2);
 			float y = 18f - 36 * (index % 2);
-			Sprite sprite = Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu_Mod_main\\Sprites\\" + pSprite + ".jpg");
+			Sprite sprite = Sprites.LoadSprite($"{Mod.Info.Path}/Sprites/" + pSprite + ".jpg");
 			GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(GameObject.Find("SettingsButton"), pParent);
 			gameObject2.GetComponent<PowerButton>().type = type;
 			Reflection.SetField<GodPower>(gameObject2.GetComponent<PowerButton>(), "godPower", pID);
@@ -126,7 +128,7 @@ namespace Diplomacy_Army
 			((Dictionary<string, string>)Reflection.GetField(LocalizedTextManager.instance.GetType(), LocalizedTextManager.instance, "localizedText")).Add(pID.name, pID.name);
 			((Dictionary<string, string>)Reflection.GetField(LocalizedTextManager.instance.GetType(), LocalizedTextManager.instance, "localizedText")).Add(pID.name + " Description", pDescription);
 
-			Sprite sprite = Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu_Mod_main\\Sprites\\" + pSprite + ".jpg");
+			Sprite sprite = Sprites.LoadSprite($"{Mod.Info.Path}/Sprites/" + pSprite + ".jpg");
 			GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(GameObject.Find("SettingsButton"), pParent);
 			gameObject2.GetComponent<PowerButton>().type = type;
 			Reflection.SetField<GodPower>(gameObject2.GetComponent<PowerButton>(), "godPower", pID);
@@ -855,9 +857,9 @@ namespace Diplomacy_Army
 				World.world.zoneCalculator.redrawZones();
 			}
 
-            // 获取并检查原始颜色ID
-            kingdom.data.get("oldColorID", out int oldColorID);
-            if (oldColorID != -1)
+			// 获取并检查原始颜色ID
+			kingdom.data.get("oldColorID", out int oldColorID);
+			if (oldColorID != -1)
 			{
 				kingdom.data.colorID = oldColorID;
 			}
@@ -883,9 +885,82 @@ namespace Diplomacy_Army
 			return result;
 		}
 		public static string Serialize(ColorAsset colorAsset)
-        {
-            return $"{colorAsset.color_main},{colorAsset.color_main_2},{colorAsset.color_banner},{colorAsset.index_id}";
-        }
+		{
+			return $"{colorAsset.color_main},{colorAsset.color_main_2},{colorAsset.color_banner},{colorAsset.index_id}";
+		}
+		public static void HarmonyPatching(Harmony harmony, string type, MethodInfo original, MethodInfo patch)
+		{
+			switch (type)
+			{
+				case "prefix":
+					harmony.Patch(original, prefix: new HarmonyMethod(patch));
+					break;
+				case "postfix":
+					harmony.Patch(original, postfix: new HarmonyMethod(patch));
+					break;
+			}
+		}
+		public static bool Any(this Actor a)
+		{
+			return a != null && a.isAlive() && a.data != null && a.data.alive;
+		}
+		public static bool Any(this City c)
+		{
+			return c != null && c.isAlive() && c.data != null && c.data.alive;
+		}
+
+
+
+		public static int Min(this int num, int num2)
+		{
+			if (num < num2) { return num2; }
+			return num;
+		}
+
+
+		public static void RTF(this string id)
+		{
+			if (pvz_ui.CustomWindowIds.Contains(id))
+			{
+				float pHeight = pvz_ui.CustomWindowsHeight[id];
+				if (pvz_ui.CustomTextWindowIds.Contains(id))
+				{
+					pHeight = pvz_ui.CustomWindowTexts[id].preferredHeight;
+					if (id == "Window_PVZachievements")
+					{
+						MonoBehaviour.print(pHeight.ToString());
+					}
+				}
+				GameObject contentComponent = pvz_ui.CustomWindowObjects[id];
+				GameObject Content = GameObject.Find($"/Canvas Container Main/Canvas - Windows/windows/{id}/Background/Scroll View/Viewport/Content");
+				RectTransform rect = contentComponent.GetComponent<RectTransform>();
+				rect.anchorMin = new Vector2(0.5f, 1);
+				rect.anchorMax = new Vector2(0.5f, 1);
+				rect.offsetMin = new Vector2(-90f, pHeight * -1);
+				rect.offsetMax = new Vector2(90f, -17);
+				rect.sizeDelta = new Vector2(180, pHeight + 50);
+				Content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, pHeight + 50);
+				contentComponent.transform.localPosition = new Vector2(contentComponent.transform.localPosition.x, ((pHeight / 2) + 30) * -1);
+			}
+		}
+		public static GameObject GetIcon(this string id)
+		{
+			GameObject obj = null;
+			if (pvz_ui.CustomWindowIcons.ContainsKey(id)) { obj = pvz_ui.CustomWindowIcons[id]; }
+			return obj;
+		}
+		public static GameObject GetObj(this string id)
+		{
+			GameObject obj = null;
+			if (pvz_ui.CustomWindowObjects.ContainsKey(id)) { obj = pvz_ui.CustomWindowObjects[id]; }
+			return obj;
+		}
+		public static Text GetText(this string id)
+		{
+			Text text = null;
+			if (pvz_ui.CustomWindowTexts.ContainsKey(id)) { text = pvz_ui.CustomWindowTexts[id]; }
+			return text;
+		}
 
 	}
 }

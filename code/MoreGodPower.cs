@@ -11,6 +11,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ReflectionUtility;
 using Diplomacy_Army;
+using NCMS.Utils;
+using System.Linq;
 
 namespace Diplomacy_Army
 {
@@ -375,6 +377,453 @@ namespace Diplomacy_Army
 			NewFunction.AddNewText("1", Color.black, null);
 			Alliance alliance = MapBox.instance.alliances.newAlliance(kingdom1, kingdom2);
 			alliance.data.name = allianceName;
+		}
+		public static void AddToDASet()
+		{
+			foreach (ItemAsset mod in AssetManager.items_modifiers.list)
+			{
+				if (Main.DASet.ContainsKey($"{mod.id}_modifier_DA") && PowerButtons.ToggleValues.ContainsKey($"{mod.id}_modifier_DA"))
+				{
+					Main.DASet[$"{mod.id}_modifier_DA"] = PowerButtons.GetToggleValue($"{mod.id}_modifier_DA");
+				}
+				else if (PowerButtons.ToggleValues.ContainsKey($"{mod.id}_modifier_DA"))
+				{
+					Main.DASet.Add($"{mod.id}_modifier_DA", PowerButtons.GetToggleValue($"{mod.id}_modifier_DA"));
+				}
+			}
+			foreach (ItemAsset item in AssetManager.items.list)
+			{
+				if (item.id[0] == '_' || ItemSettingsWindow.wrongItems.Contains(item.id))
+				{
+					continue;
+				}
+				if (item.materials.Count <= 0)
+				{
+					if (Main.DASet.ContainsKey($"{item.id}_DA") && PowerButtons.ToggleValues.ContainsKey($"{item.id}_DA"))
+					{
+						Main.DASet[$"{item.id}_DA"] = PowerButtons.GetToggleValue($"{item.id}_DA");
+					}
+					else if (PowerButtons.ToggleValues.ContainsKey($"{item.id}_DA"))
+					{
+						Main.DASet.Add($"{item.id}_DA", PowerButtons.GetToggleValue($"{item.id}_DA"));
+					}
+
+
+					continue;
+				}
+				foreach (string material in item.materials)
+				{
+					if (Main.DASet.ContainsKey($"{item.id}_DA_{material}") && PowerButtons.ToggleValues.ContainsKey($"{item.id}_DA_{material}"))
+					{
+						Main.DASet[$"{item.id}_DA_{material}"] = PowerButtons.GetToggleValue($"{item.id}_DA_{material}");
+					}
+					else if (PowerButtons.ToggleValues.ContainsKey($"{item.id}_DA_{material}"))
+					{
+						Main.DASet.Add($"{item.id}_DA_{material}", PowerButtons.GetToggleValue($"{item.id}_DA_{material}"));
+					}
+				}
+				foreach (var set in Main.DASet.Keys.ToList())
+				{
+					if (PowerButtons.ToggleValues.ContainsKey(set))
+					{
+						Main.DASet[set] = PowerButtons.GetToggleValue(set);
+					}
+				}
+
+			}
+			DA_save.SaveDictionaryToFile(Main.DASet, Path.Combine(Application.streamingAssetsPath + "/mods/emtystarvast/Diplomacy_Army", "Diplomacy_ArmySet.json"));
+			Debug.Log("保存成功！");
+		}
+		public static bool clickTraitEditorRainButton(string pPowerId)
+		{
+			Config.selected_trait_editor = pPowerId;
+			ScrollWindow.showWindow("trait_rain_editor");
+			return true;
+		}
+
+		public static bool CityZoneGrowth(WorldTile pTile, string pPower)
+		{
+			City city = pTile.zone.city;
+			if (city == null)
+			{
+				return true;
+			}
+			var kingdom = Reflection.GetField(pTile.zone.city.GetType(), pTile.zone.city, "kingdom") as Kingdom;
+			city.data.get("ZoneGrowth", out bool flag, true);
+			city.data.set("ZoneGrowth", !flag);
+
+			string text;
+			if (!flag)
+			{
+				text = "开启";
+			}
+			else
+			{
+				text = "关闭";
+			}
+			NewFunction.LogNewMessage(kingdom, $"城市{city.data.name}", "地块拓展开关状态：" + text);
+			return true;
+		}
+		public static bool GetItemSwitch(WorldTile pTile, string pPower)
+		{
+			City city = pTile.zone.city;
+			if (city == null)
+			{
+				return false;
+			}
+			var kingdom = Reflection.GetField(pTile.zone.city.GetType(), pTile.zone.city, "kingdom") as Kingdom;
+			kingdom.data.set("ProhibitgiveItemKing", PowerButtons.GetToggleValue("国王装备禁用"));
+			kingdom.data.set("ProhibitgiveItemLeader", PowerButtons.GetToggleValue("领主装备禁用"));
+			kingdom.data.set("ProhibitgiveItemWarrior", PowerButtons.GetToggleValue("城市士兵装备禁用"));
+			kingdom.data.set("ProhibitgiveItemGroupLeader", PowerButtons.GetToggleValue("将军装备禁用"));
+			kingdom.data.set("ProhibitgiveItemGroupLeader", true);
+			NewFunction.LogNewMessage(kingdom, "国家", "装备禁止获取的参数已设置");
+			return true;
+		}
+		public static bool KingdomZoneGrowth(WorldTile pTile, string pPower)
+		{
+			if (pTile.zone.city == null)
+			{
+				return false;
+			}
+			var kingdom = Reflection.GetField(pTile.zone.city.GetType(), pTile.zone.city, "kingdom") as Kingdom;
+			// foreach (City city in kingdom.cities)
+			// {
+			//       city.data.get("ZoneGrowth", out flag, true);
+			//       city.data.set("ZoneGrowth", !flag);
+			// }
+			kingdom.data.get("ZoneGrowth", out bool flag, true);
+			kingdom.data.set("ZoneGrowth", !flag);
+			string text;
+			if (!flag)
+			{
+				text = "开启";
+			}
+			else
+			{
+				text = "关闭";
+			}
+			NewFunction.LogNewMessage(kingdom, "国家", "地块拓展开关状态：" + text);
+			return true;
+		}
+		public static bool tryToAddResources(WorldTile pTile, string pPower)
+		{
+			if (pTile.zone.city == null)
+			{
+				return false;
+			}
+			var kingdom = Reflection.GetField(pTile.zone.city.GetType(), pTile.zone.city, "kingdom") as Kingdom;
+			foreach (City city in kingdom.cities)
+			{
+				foreach (var resource in Main.resourceSettings.Keys)
+				{
+					city.data.storage.change(resource, Main.resourceSettings[resource]);
+				}
+			}
+			NewFunction.LogNewMessage(kingdom, "国家", "成功添加资源");
+			return true;
+		}
+		public static bool tryToAddTraits(WorldTile pTile, string pPower)
+		{
+			if (pTile.zone.city == null)
+			{
+				return false;
+			}
+			var kingdom = Reflection.GetField(pTile.zone.city.GetType(), pTile.zone.city, "kingdom") as Kingdom;
+			List<string> pList = PlayerConfig.instance.data.trait_editor_gamma;
+			foreach (City city in kingdom.cities)
+			{
+				foreach (Actor act in city.professionsDict[UnitProfession.Warrior])
+				{
+					if (act.Any())
+					{
+						if (pList.Count == 0) { return false; }
+						int i = 0;
+						while (i < pList.Count)
+						{
+							string pID = pList[i];
+							if (AssetManager.traits.get(pID) == null) { pList.RemoveAt(i); }
+							else { i++; }
+						}
+						if (act.asset.can_edit_traits)
+						{
+							foreach (string pTrait in pList)
+							{
+								act.addTrait(pTrait);
+							}
+							act.startShake(0.3f, 0.1f, true, true);
+							act.startColorEffect(ActorColorEffect.White);
+						}
+					}
+				}
+			}
+			NewFunction.LogNewMessage(kingdom, "国家军队", "成功添加特质");
+			return true;
+		}
+		public static bool tryToAddItems(WorldTile pTile, string pPower)
+		{
+			City city = pTile.zone.city;
+			if (city == null)
+			{
+				return false;
+			}
+
+			Kingdom kingdom = Reflection.GetField(city.GetType(), city, "kingdom") as Kingdom;
+
+			List<Actor> actorsToAddItems = new();
+			if (PowerButtons.GetToggleValue("ChooseCityWarrior"))
+			{
+				actorsToAddItems.AddRange(city.professionsDict[UnitProfession.Warrior]);
+				NewFunction.LogNewMessage(kingdom, $"城市{city.data.name}装备已到达... ", "士兵成功添加装备！");
+			}
+			else if (PowerButtons.GetToggleValue("ChooseAllWarrior"))
+			{
+				foreach (City c in kingdom.cities)
+				{
+					actorsToAddItems.AddRange(c.professionsDict[UnitProfession.Warrior]);
+				}
+				NewFunction.LogNewMessage(kingdom, "装备已到达...", "士兵成功添加装备");
+			}
+			else if (PowerButtons.GetToggleValue("ChooseCityGeneral"))
+			{
+				City c = pTile.zone.city;
+				if (c.army != null && c.army.alive && c.army.countUnits() > 0 && c.army.groupLeader != null)
+				{
+					actorsToAddItems.Add(c.army.groupLeader);
+					NewFunction.LogNewMessage(kingdom, $"城市{c.data.name}装备已到达... ", "将军成功添加装备");
+				}
+				else
+				{
+					NewFunction.LogNewMessage(kingdom, $"城市{c.data.name}装备已到达... ", "将军添加装备失败");
+				}
+
+			}
+			else if (PowerButtons.GetToggleValue("ChooseAllGeneral"))
+			{
+				foreach (City c in kingdom.cities)
+				{
+					if (c.army != null && c.army.alive && c.army.countUnits() > 0 && c.army.groupLeader != null)
+					{
+						actorsToAddItems.Add(c.army.groupLeader);
+					}
+				}
+				NewFunction.LogNewMessage(kingdom, "装备已到达... ", " 将军成功添加装备");
+			}
+			else if (PowerButtons.GetToggleValue("ChooseKing"))
+			{
+				if (kingdom.king != null && kingdom.king.Any())
+				{
+					actorsToAddItems.Add(kingdom.king);
+					NewFunction.LogNewMessage(kingdom, "装备已到达...", " 国王成功添加装备");
+				}
+
+			}
+			else if (PowerButtons.GetToggleValue("ChooseLeader"))
+			{
+				if (city.leader != null && city.leader.Any())
+				{
+					actorsToAddItems.Add(city.leader);
+					NewFunction.LogNewMessage(kingdom, $"城市{city.data.name}装备已到达... ", "领主成功添加装备");
+				}
+
+			}
+
+			foreach (Actor act in actorsToAddItems)
+			{
+				if (act.Any())
+				{
+					foreach (ItemAsset item in AssetManager.items.list)
+					{
+						if (item.id[0] == '_' || ItemSettingsWindow.wrongItems.Contains(item.id) || item.materials.Count <= 0)
+						{
+							continue;
+						}
+
+						foreach (string material in item.materials)
+						{
+							string key = material.Length > 0 ? $"{item.id}_DA_{material}" : $"{item.id}_DA";
+							if (PowerButtons.CustomButtons.ContainsKey(key) && PowerButtons.GetToggleValue(key))
+							{
+								ItemData data = ItemGenerator.generateItem(item, material, World.world.mapStats.year, act.kingdom, act.getName(), 1, act);
+								data.modifiers.Clear();
+								// if (MoreWindows.itemModifiers.ContainsKey(key.ToString()))
+								// {
+								//       foreach (ItemAsset modifier in MoreWindows.itemModifiers["1"])
+								//       {
+								//             // ItemGenerator.tryToAddMod(data, modifier);
+								//             data.modifiers.Add(modifier.id);
+								//       }
+								// }
+								foreach (ItemAsset mod in AssetManager.items_modifiers.list)
+								{
+									if (PowerButtons.GetToggleValue($"{mod.id}_modifier_DA"))
+									{
+										data.modifiers.Add(mod.id);
+									}
+								}
+								ActorEquipmentSlot slot = act.equipment.getSlot(item.equipmentType);
+								slot.setItem(data);
+								act.setStatsDirty();
+								act.startShake(0.3f, 0.1f, true, true);
+								act.startColorEffect(ActorColorEffect.White);
+							}
+
+						}
+					}
+				}
+			}
+
+			return true;
+		}
+		public static bool tryToRemoveTraits(WorldTile pTile, string pPower)
+		{
+			if (pTile.zone.city == null)
+			{
+				return false;
+			}
+			var kingdom = Reflection.GetField(pTile.zone.city.GetType(), pTile.zone.city, "kingdom") as Kingdom;
+			List<string> pList = PlayerConfig.instance.data.trait_editor_gamma;
+			foreach (City city in kingdom.cities)
+			{
+				foreach (Actor act in city.professionsDict[UnitProfession.Warrior])
+				{
+					if (act.Any())
+					{
+						if (pList.Count == 0) { return false; }
+						int i = 0;
+						while (i < pList.Count)
+						{
+							string pID = pList[i];
+							if (AssetManager.traits.get(pID) == null) { pList.RemoveAt(i); }
+							else { i++; }
+						}
+						if (act.asset.can_edit_traits)
+						{
+							foreach (string pTrait in pList)
+							{
+								act.removeTrait(pTrait);
+							}
+							act.startShake(0.3f, 0.1f, true, true);
+							act.startColorEffect(ActorColorEffect.White);
+						}
+					}
+				}
+			}
+			NewFunction.LogNewMessage(kingdom, "国家军队", "成功删除特质");
+			return true;
+		}
+		public static bool tryToRemoveItem(WorldTile pTile, string pPower)
+		{
+			City city = pTile.zone.city;
+			if (city == null)
+			{
+				return false;
+			}
+			var kingdom = Reflection.GetField(pTile.zone.city.GetType(), pTile.zone.city, "kingdom") as Kingdom;
+			List<Actor> actorsToAddItems = new();
+			if (PowerButtons.GetToggleValue("ChooseCityWarrior"))
+			{
+				actorsToAddItems.AddRange(city.professionsDict[UnitProfession.Warrior]);
+				NewFunction.LogNewMessage(kingdom, $"城市{city.data.name}装备已到达... ", "士兵成功添加装备！");
+			}
+			else if (PowerButtons.GetToggleValue("ChooseAllWarrior"))
+			{
+				foreach (City c in kingdom.cities)
+				{
+					actorsToAddItems.AddRange(c.professionsDict[UnitProfession.Warrior]);
+				}
+				NewFunction.LogNewMessage(kingdom, "装备已到达...", "士兵成功添加装备");
+			}
+			else if (PowerButtons.GetToggleValue("ChooseCityGeneral"))
+			{
+				City c = pTile.zone.city;
+				if (c.army != null && c.army.alive && c.army.countUnits() > 0 && c.army.groupLeader != null)
+				{
+					actorsToAddItems.Add(c.army.groupLeader);
+					NewFunction.LogNewMessage(kingdom, $"城市{c.data.name}装备已到达... ", "将军成功添加装备");
+				}
+				else
+				{
+					NewFunction.LogNewMessage(kingdom, $"城市{c.data.name}装备已到达... ", "将军添加装备失败");
+				}
+
+			}
+			else if (PowerButtons.GetToggleValue("ChooseAllGeneral"))
+			{
+				foreach (City c in kingdom.cities)
+				{
+					if (c.army != null && c.army.alive && c.army.countUnits() > 0 && c.army.groupLeader != null)
+					{
+						actorsToAddItems.Add(c.army.groupLeader);
+					}
+				}
+				NewFunction.LogNewMessage(kingdom, "装备已到达... ", " 将军成功添加装备");
+			}
+			else if (PowerButtons.GetToggleValue("ChooseKing"))
+			{
+				if (kingdom.king != null && kingdom.king.Any())
+				{
+					actorsToAddItems.Add(kingdom.king);
+					NewFunction.LogNewMessage(kingdom, "装备已到达...", " 国王成功添加装备");
+				}
+
+			}
+			else if (PowerButtons.GetToggleValue("ChooseLeader"))
+			{
+				if (city.leader != null && city.leader.Any())
+				{
+					actorsToAddItems.Add(city.leader);
+					NewFunction.LogNewMessage(kingdom, $"城市{city.data.name}装备已到达... ", "领主成功添加装备");
+				}
+
+			}
+
+			foreach (Actor act in actorsToAddItems)
+			{
+				if (act.Any())
+				{
+					List<ActorEquipmentSlot> list = ActorEquipment.getList(act.equipment);
+					if (list == null)
+					{
+						continue;
+					}
+					for (int i = 0; i < list.Count; i++)
+					{
+						ActorEquipmentSlot actorEquipmentSlot = list[i];
+						if (actorEquipmentSlot.data != null)
+						{
+							if (PowerButtons.CustomButtons.ContainsKey($"{actorEquipmentSlot.data.id}_DA") && PowerButtons.GetToggleValue($"{actorEquipmentSlot.data.id}_DA"))
+							{
+								actorEquipmentSlot.emptySlot();
+								act.setStatsDirty();
+								act.dirty_sprite_item = true;
+								act.startShake(0.3f, 0.1f, true, true);
+								act.startColorEffect(ActorColorEffect.White);
+							}
+							else if (PowerButtons.CustomButtons.ContainsKey($"{actorEquipmentSlot.data.id}_DA_{actorEquipmentSlot.data.material}"))
+							{
+								if (PowerButtons.GetToggleValue($"{actorEquipmentSlot.data.id}_DA_{actorEquipmentSlot.data.material}"))
+								{
+									actorEquipmentSlot.emptySlot();
+									act.setStatsDirty();
+									act.dirty_sprite_item = true;
+									act.startShake(0.3f, 0.1f, true, true);
+									act.startColorEffect(ActorColorEffect.White);
+								}
+
+							}
+
+						}
+					}
+				}
+
+
+
+			}
+
+
+			NewFunction.LogNewMessage(kingdom, "国家军队", "成功删除装备");
+			return true;
 		}
 	}
 }

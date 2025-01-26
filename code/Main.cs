@@ -370,7 +370,7 @@ namespace Diplomacy_Army
             {
                 GUI.skin.label.fontSize = 13;
                 GUI.skin.label.fontStyle = FontStyle.Bold;
-                GUI.skin.label.alignment = TextAnchor.MiddleLeft;
+                GUI.skin.label.alignment = TextAnchor.LowerRight;
                 GUI.skin.label.normal.textColor = Color.black;
                 GUI.skin.label.normal.background = Texture2D.whiteTexture;
 
@@ -442,7 +442,7 @@ namespace Diplomacy_Army
 
                 GUI.skin.box.fontSize = 13;
                 GUI.skin.box.fontStyle = FontStyle.Bold;
-                GUI.skin.box.alignment = TextAnchor.MiddleLeft;
+                GUI.skin.box.alignment = TextAnchor.MiddleRight;
                 GUI.skin.box.normal.textColor = Color.white;
 
                 GUI.skin.scrollView.normal.background = Texture2D.blackTexture;
@@ -453,7 +453,7 @@ namespace Diplomacy_Army
             {
                 GUI.skin.box.fontSize = 13;
                 GUI.skin.box.fontStyle = FontStyle.Bold;
-                GUI.skin.box.alignment = TextAnchor.MiddleLeft;
+                GUI.skin.box.alignment = TextAnchor.MiddleRight;
                 GUI.skin.box.normal.textColor = Color.white;
 
                 GUI.skin.scrollView.normal.background = Texture2D.blackTexture;
@@ -580,46 +580,46 @@ namespace Diplomacy_Army
         #region patch
         public static void Patching(Harmony harmony)
         {
-            PVZTools.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(PowerButton), "unselectActivePower"), AccessTools.Method(typeof(Main), "unselectActivePower_Prefix"));
+            NewFunction.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(PowerButton), "unselectActivePower"), AccessTools.Method(typeof(Main), "unselectActivePower_Prefix"));
             Debug.Log("Prefix: PowerButton.unselectActivePower");
 
-            PVZTools.HarmonyPatching(harmony, "postfix", AccessTools.Method(typeof(ActorMove), "goTo"), AccessTools.Method(typeof(Main), "goTo_Postfix"));
+            NewFunction.HarmonyPatching(harmony, "postfix", AccessTools.Method(typeof(ActorMove), "goTo"), AccessTools.Method(typeof(Main), "goTo_Postfix"));
             Debug.Log("Postfix: ActorMove.goto");
 
-            PVZTools.HarmonyPatching(harmony, "postfix", AccessTools.Method(typeof(ScrollWindow), "setActive"), AccessTools.Method(typeof(Main), "setActive_Postfix"));
+            NewFunction.HarmonyPatching(harmony, "postfix", AccessTools.Method(typeof(ScrollWindow), "setActive"), AccessTools.Method(typeof(Main), "setActive_Postfix"));
             Debug.Log("Postfix: ScrollWindow.setActive");
 
-            PVZTools.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(Building), "clearCityZones"), AccessTools.Method(typeof(Main), "clearCityZones_Prefix"));
+            NewFunction.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(Building), "clearCityZones"), AccessTools.Method(typeof(Main), "clearCityZones_Prefix"));
             Debug.Log("Prefix: Building.clearZoneBuilding");
 
-            PVZTools.HarmonyPatching(harmony, "postfix", AccessTools.Method(typeof(BaseSimObject), "canAttackTarget"), AccessTools.Method(typeof(Main), "canAttackTarget_Postfix"));
+            NewFunction.HarmonyPatching(harmony, "postfix", AccessTools.Method(typeof(BaseSimObject), "canAttackTarget"), AccessTools.Method(typeof(Main), "canAttackTarget_Postfix"));
             Debug.Log("Postfix: BaseSimObject.canAttackTarget");
 
-            PVZTools.HarmonyPatching(harmony, "postfix", AccessTools.Method(typeof(UnitGroup), "addUnit"), AccessTools.Method(typeof(Main), "addUnit_Postfix"));
+            NewFunction.HarmonyPatching(harmony, "postfix", AccessTools.Method(typeof(UnitGroup), "addUnit"), AccessTools.Method(typeof(Main), "addUnit_Postfix"));
             Debug.Log("Postfix: UnitGroup.addUnit");
 
-            PVZTools.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(City), "setKingdom"), AccessTools.Method(typeof(Main), "setKingdom_Prefix"));
+            NewFunction.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(City), "setKingdom"), AccessTools.Method(typeof(Main), "setKingdom_Prefix"));
             Debug.Log("Prefix: City.setKingdom");
 
-            PVZTools.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(BehVerifierAttackZone), "execute"), AccessTools.Method(typeof(Main), "execute_BehVerifierAttackZone_Prefix"));
+            NewFunction.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(BehVerifierAttackZone), "execute"), AccessTools.Method(typeof(Main), "execute_BehVerifierAttackZone_Prefix"));
             Debug.Log("Prefix: BehVerifierAttackZone.execute");
 
-            PVZTools.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(City), "updateConquest"), AccessTools.Method(typeof(Main), "updateConquest_Prefix"));
+            NewFunction.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(City), "updateConquest"), AccessTools.Method(typeof(Main), "updateConquest_Prefix"));
             Debug.Log("Prefix: City.updateConquest");
 
-            // PVZTools.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(CityBehProduceUnit), "tryToProduceUnit"), AccessTools.Method(typeof(Main), "tryToProduceUnit_Prefix"));
+            // NewFunction.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(CityBehProduceUnit), "tryToProduceUnit"), AccessTools.Method(typeof(Main), "tryToProduceUnit_Prefix"));
             // Debug.Log("Prefix: KingdomManager.tryToProduceUnit");
 
-            // PVZTools.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(CityBehProduceUnit), "execute"), AccessTools.Method(typeof(Main), "execute_CityBehProduceUnit_Prefix"));
+            // NewFunction.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(CityBehProduceUnit), "execute"), AccessTools.Method(typeof(Main), "execute_CityBehProduceUnit_Prefix"));
             // Debug.Log("Prefix: CityBehProduceUnit.execute");
 
-            //PVZTools.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(CityBehBorderGrowth), "newGrowth"), AccessTools.Method(typeof(Main), "newGrowth_Prefix"));
+            //NewFunction.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(CityBehBorderGrowth), "newGrowth"), AccessTools.Method(typeof(Main), "newGrowth_Prefix"));
             //Debug.Log("Prefix: CityBehBorderGrowth.newGrowth");
 
-            PVZTools.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(CityBehBorderGrowth), "execute"), AccessTools.Method(typeof(Main), "execute_CityBehBorderGrowth_Prefix"));
+            NewFunction.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(CityBehBorderGrowth), "execute"), AccessTools.Method(typeof(Main), "execute_CityBehBorderGrowth_Prefix"));
             Debug.Log("Prefix: CityBehBorderGrowth.execute");
 
-            PVZTools.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(CityStorage), "change"), AccessTools.Method(typeof(Main), "change_Prefix"));
+            NewFunction.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(CityStorage), "change"), AccessTools.Method(typeof(Main), "change_Prefix"));
             Debug.Log("Prefix: Citystorage.change");
         }
 
