@@ -28,7 +28,6 @@ namespace Diplomacy_Army
 
         public static void init()
         {
-            ItemModWindow.init();
             KingdomWindow();
             MoreRules();
             MoreSettings();

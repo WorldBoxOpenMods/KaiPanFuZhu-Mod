@@ -99,7 +99,7 @@ namespace Diplomacy_Army
             };
 
             Main.NationalTraits.Add(traits.id, traits);
-            string filePath = $".\\Mods\\KaiPanFuZhu-Mod-main\\NationalTraits\\NationalTraits.json";
+            string filePath = $".\\Mods\\KaiPanFuZhu_Mod_main\\NationalTraits\\NationalTraits.json";
             DA_save.SaveToFile(filePath, Main.NationalTraits);
             WorldTip.showNow("创建成功", true, "top", 5f);
         }

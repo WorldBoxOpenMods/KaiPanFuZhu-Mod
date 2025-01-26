@@ -75,7 +75,7 @@ namespace Diplomacy_Army
         public static int numofyears = 1;
         public static Dictionary<string, Text> SettingsText = new();
         public static Dictionary<string, int> moreSettings = new() { { "村庄人口上限", 0 }, { "村庄人口下限", 0 }, { "村庄领土上限", 0 }, { "村庄资源上限", 0 } };
-        
+
         public static Dictionary<string, int> resourceSettings = new();
         public static Dictionary<string, Text> resourceText = new();
         public static Dictionary<string, NationalTraits> NationalTraits = new();
@@ -150,9 +150,9 @@ namespace Diplomacy_Army
                 };
                 File.WriteAllText(text0, JsonConvert.SerializeObject(NewStorage, Formatting.Indented));
             }
-            string filePath = $".\\Mods\\KaiPanFuZhu-Mod-main\\NationalTraits\\NationalTraits.json";
+            string filePath = $".\\Mods\\KaiPanFuZhu_Mod_main\\NationalTraits\\NationalTraits.json";
 
-            NationalTraits=DA_save.LoadFromFile(filePath);
+            NationalTraits = DA_save.LoadFromFile(filePath);
 
 
             Windows.CreateNewWindow("DAHelper", "");
@@ -172,6 +172,8 @@ namespace Diplomacy_Army
             harmony = new Harmony("10011011");
             translate.init();
             pvz_ui.NewTab("Diplomacy_Army", "icon", -462);
+            ItemSettingsWindow.init();
+            ResourcesSettingsWindow.init();
             NationalTraitsWindow.init();
             MoreWindows.init();
             DA_modder.init();
@@ -184,6 +186,7 @@ namespace Diplomacy_Army
             KingdomPowerWindow.init();
             CityPowerWindow.init();
             ArmyPowerWindow.init();
+
             Patching(harmony);
             resourceAsset = AssetManager.resources.list[0];
             resTotalNum = AssetManager.resources.list.Count;

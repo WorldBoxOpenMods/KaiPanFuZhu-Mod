@@ -50,6 +50,8 @@ namespace Diplomacy_Army
             easyTranslate("cz", "mod_damage", "攻击增加百分比");
             easyTranslate("en", "mod_knockback_reduction", "抗击退增加百分比");
             easyTranslate("cz", "mod_knockback_reduction", "抗击退增加百分比");
+            easyTranslate("en", "housing", "住房人口");
+            easyTranslate("cz", "housing", "住房人口");
             foreach (string setting in Main.moreSettings.Keys)
             {
                 easyTranslate($"{setting}MS", $"{setting} #" + Main.moreSettings[setting]);
