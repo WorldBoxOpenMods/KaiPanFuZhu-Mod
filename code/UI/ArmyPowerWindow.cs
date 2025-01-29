@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Reflection;
 using ReflectionUtility;
 using Diplomacy_Army;
-using Diplomacy_Army.Utils;
+
 
 namespace Diplomacy_Army
 {
@@ -60,18 +60,19 @@ namespace Diplomacy_Army
 			createTileButton(index++, content.transform, "边境防守", "边境防守", "全国军团前往最近的边境城市", new UnityAction(tryToHideWindow7));
 			createTileButton(index++, content.transform, "指定防守", "指定防守", "全国军团前往最近的与指定国家接壤的城市", new UnityAction(tryToHideWindow8));
 			createTileButton(index++, content.transform, "全面进攻", "全面进攻", "全国军团前往最近的指定国家的城市", new UnityAction(tryToHideWindow9));
+			createTileButton(index++, content.transform, "组建军团", "组建军团", "组建两个城市的军队成为一个军团", new UnityAction(tryToHideWindow10));
 			// createTileButton(index++, content.transform, "腐败的军队", "腐败的军队", "全国士兵战斗力大幅下降", new UnityAction(tryToHideWindow10));
 		}
 
 		private static void createTileButton(int index, Transform pParent, string powerID, string pSprite, string pDescription, UnityAction pCall = null)
 		{
-            GodPower godPower = new()
-            {
-                id = powerID,
-                name = powerID,
-                unselectWhenWindow = true
-            };
-            AssetManager.powers.add(godPower);
+			GodPower godPower = new()
+			{
+				id = powerID,
+				name = powerID,
+				unselectWhenWindow = true
+			};
+			AssetManager.powers.add(godPower);
 			NewFunction.CreateNewButtonOnWindow(NewFunction.getPositionByIndex(index), pParent, pSprite, godPower, pDescription, pCall, PowerButtonType.Active);
 		}
 
@@ -156,7 +157,7 @@ namespace Diplomacy_Army
 			ItemAsset wItemAsset = AssetManager.items.get("spear");
 			ItemAsset aItemAsset = AssetManager.items.get("armor");
 			string wMaterial = "bronze";
-            foreach (City city in kingdom.cities)
+			foreach (City city in kingdom.cities)
 			{
 				int num = city.professionsDict[UnitProfession.Unit].Count / 2;
 				if (num > 0)
@@ -221,7 +222,7 @@ namespace Diplomacy_Army
 			ItemAsset wItemAsset = AssetManager.items.get("spear");
 			ItemAsset aItemAsset = AssetManager.items.get("armor");
 			string wMaterial = "bronze";
-            int num = city.professionsDict[UnitProfession.Unit].Count / 2;
+			int num = city.professionsDict[UnitProfession.Unit].Count / 2;
 			if (num > 0)
 			{
 				foreach (Actor actor in city.professionsDict[UnitProfession.Unit])
@@ -608,6 +609,14 @@ namespace Diplomacy_Army
 			ScrollWindow.get(name).clickHide();
 			pbsInstance.clickPowerButton(powerButton);
 		}
+		public static void tryToHideWindow11()
+		{
+			power = Reflection.GetField(powerButton.GetType(), powerButton, "godPower") as GodPower;
+			power.click_action = null;
+			power.click_action = (PowerActionWithID)Delegate.Combine(power.click_action, new PowerActionWithID(tryToCombineArmy));
+			ScrollWindow.get(name).clickHide();
+			pbsInstance.clickPowerButton(powerButton);
+		}
 
 		public static void attackCity(Kingdom pKingdom, City tTarget)
 		{
@@ -750,6 +759,38 @@ namespace Diplomacy_Army
 			}
 			noBorders.Clear();
 			borders.Clear();
+		}
+		public static bool tryToCombineArmy(WorldTile pTile, string pPower)
+		{
+			if (pTile.zone.city == null)
+			{
+				return false;
+			}
+			City city = pTile.zone.city;
+			var kingdom = Reflection.GetField(pTile.zone.city.GetType(), pTile.zone.city, "kingdom") as Kingdom;
+			if (MoreGodPower.selected_city == null)
+			{
+				MoreGodPower.selected_city = city;
+				MoreGodPower.selected_kingdom = kingdom;
+				var data = MoreGodPower.selected_city.data;
+				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "国家", "想要在城市 " + data.name + " 组建军团");
+			}
+			else
+			{
+				if (kingdom != MoreGodPower.selected_kingdom)
+					return false;
+				var units = Reflection.GetField(MoreGodPower.selected_city.army.GetType(), MoreGodPower.selected_city.army, "units") as ActorContainer;
+				foreach (Actor actor in units.getSimpleList())
+				{
+					MoreGodPower.selected_city.army.removeUnit(actor);
+					city.army.addUnit(actor);
+				}
+				var data = MoreGodPower.selected_city.data;
+				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "国家", "组建了 " + data.name + " 军团");
+				MoreGodPower.selected_city = null;
+				MoreGodPower.selected_kingdom = null;
+			}
+			return true;
 		}
 	}
 }

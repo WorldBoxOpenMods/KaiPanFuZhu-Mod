@@ -9,6 +9,31 @@ namespace Diplomacy_Army
 {
     public class harmony_declare
     {
+        // [HarmonyPostfix]
+        // [HarmonyPatch(typeof(Kingdom), "Dispose")]
+        // public static void Dispose_Postfix(Kingdom __instance)
+        // {
+        //     RemoveVassals(__instance);
+        //     RemoveDeclare(__instance);
+        // }
+        // private static void RemoveVassals(Kingdom kingdom)
+        // {
+        //     foreach (var vassal in MoreGodPower.Vassals[kingdom])
+        //     {
+        //         vassal.data.set("Vassal", false);
+        //         vassal.data.set("suzerainID", "");
+        //     }
+        //     MoreGodPower.Vassals.Remove(kingdom);
+        // }
+        // private static void RemoveDeclare(Kingdom kingdom)
+        // {
+        //     foreach (var city in MoreGodPower.Declares[kingdom])
+        //     {
+        //         city.data.set("Declare", false);
+        //         city.data.set("DeclareKingdomID", "");
+        //     }
+        //     MoreGodPower.Declares.Remove(kingdom);
+        // }
         [HarmonyPostfix]
         [HarmonyPatch(typeof(WarManager), "newWar")]
         public static void warstart_Postfix(WarManager __instance, Kingdom pAttacker, Kingdom pDefender, WarTypeAsset pType, ref War __result)

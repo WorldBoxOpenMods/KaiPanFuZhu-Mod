@@ -6,7 +6,7 @@ using NCMS.Utils;
 using NCMS;
 using UnityEngine;
 using UnityEngine.UI;
-using Diplomacy_Army.Utils;
+
 using static Diplomacy_Army.Main;
 using Newtonsoft.Json;
 using System.IO;

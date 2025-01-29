@@ -9,45 +9,14 @@ using HarmonyLib;
 using NCMS.Utils;
 using UnityEngine;
 using UnityEngine.UI;
-using Diplomacy_Army.Utils;
+
 
 namespace Diplomacy_Army
 {
     public class harmony_NationalTraits
     {
         #region 政治意识形态及国家特性
-        //禁止自主联盟功能
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(ClanManager), "tryPlotJoinAlliance")]
-        public static bool tryPlotJoinAlliance_Prefix(Actor pActor, PlotAsset pPlotAsset, ref bool __result)
-        {
-            if (PowerButtons.GetToggleValue("禁止自主联盟"))
-            {
-                __result = false;
-                return false;
-            }
-            //保守主义者的效果，30%概率不向他人联盟
-            string personality = pActor.kingdom.king.s_personality.id;
-            if (personality == "Conservatism")
-            {
-                if (Toolbox.randomChance(0.3f))
-                {
-                    __result = false;
-                    return false;
-                }
-            }
-            return true;
-        }
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(ClanManager), "tryPlotNewAlliance")]
-        public static bool tryPlotNewAlliance_Prefix(Actor pActor, PlotAsset pPlotAsset)
-        {
-            if (PowerButtons.GetToggleValue("禁止自主联盟"))
-            {
-                return false;
-            }
-            return true;
-        }
+
         //改变军队的征招数量上限
         [HarmonyPrefix]
         [HarmonyPatch(typeof(City), "getArmyMaxTotalPercentage")]
@@ -209,7 +178,7 @@ namespace Diplomacy_Army
         [HarmonyPatch(typeof(MapText), "showTextKingdom")]
         public static bool showTextKingdom_Prefix(MapText __instance, Kingdom pKingdom)
         {
-
+            if(pKingdom==null)return false;
             if (PowerButtons.GetToggleValue("显示原版铭牌"))
             {
                 return true;
@@ -287,6 +256,7 @@ namespace Diplomacy_Army
         [HarmonyPatch(typeof(MapText), "showTextCity")]
         public static bool showTextCity(MapText __instance, City pCity)
         {
+            if(pCity==null)return false;
             if (PowerButtons.GetToggleValue("显示原版铭牌"))
             {
                 return true;

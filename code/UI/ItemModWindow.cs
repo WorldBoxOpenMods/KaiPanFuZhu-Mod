@@ -13,7 +13,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using ReflectionUtility;
 using Diplomacy_Army;
-using Diplomacy_Army.Utils;
+
 
 namespace Diplomacy_Army
 {

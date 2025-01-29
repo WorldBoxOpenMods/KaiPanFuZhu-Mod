@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Diplomacy_Army.Utils;
 using NCMS.Utils;
 using ReflectionUtility;
 using UnityEngine;
@@ -48,7 +47,7 @@ namespace Diplomacy_Army
                   PowerButtons.CreateButton("DA_显示交战", Sprites.LoadSprite($"{Mod.Info.Path}/Sprites/" + "关闭显示交战" + ".jpg"),
                   "关闭显示交战", "关闭显示交战", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
                   PowerButtons.CreateButton("DA_关闭显示附庸颜色", Sprites.LoadSprite($"{Mod.Info.Path}/Sprites/" + "关闭显示附庸" + ".jpg"),
-                  "关闭显示附庸颜色", "关闭显示附庸颜色", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
+                  "关闭显示附庸颜色", "关闭显示附庸颜色", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform, static () => MoreGodPower.UpdateVassals()); update();
                   PowerButtons.CreateButton("DA_显示条约", Sprites.LoadSprite($"{Mod.Info.Path}/Sprites/" + "显示条约" + ".jpg"),
                   "显示条约", "显示条约", new Vector2(x, y), ButtonType.Toggle, pvz_ui.CustomTabObjs["Diplomacy_Army"].transform); update();
                   PowerButtons.CreateButton("显示原版铭牌", Sprites.LoadSprite($"{Mod.Info.Path}/Sprites/" + "显示原版铭牌" + ".jpg"),

@@ -65,7 +65,7 @@ namespace Diplomacy_Army
 			createTileButton(index++, content.transform, "附庸", "附庸", "附庸", new UnityAction(tryToHideWindow7));
 			createTileButton(index++, content.transform, "取消附庸", "取消附庸", "取消附庸", new UnityAction(tryToHideWindow8));
 			createTileButton(index++, content.transform, "宣称战争", "宣称战争", "发动宣称战争,宣称战争将持续到拥有所宣称城市并且至少占领对方一座城市", new UnityAction(tryToHideWindow9));
-			PowerButtons.CreateButton("签订条约或撕毁", Sprites.LoadSprite($"{Mod.Info.Path}/Sprites/" + "签订或撕毁条约" + ".jpg"),
+			PowerButtons.CreateButton("签订条约或撕毁", Sprites.LoadSprite($".\\Mods\\KaiPanFuZhu_Mod_main\\Sprites\\" + "签订或撕毁条约" + ".jpg"),
 "签订条约或撕毁", "当按钮打开时是撕毁条约，关闭是签订条约,", NewFunction.getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
 
 
@@ -241,52 +241,67 @@ namespace Diplomacy_Army
 			}
 			else
 			{
+				//选择另一个国家
+				//不能附庸同个国家
 				if (kingdom == MoreGodPower.selected_kingdom)
 				{
 					return false;
 				}
-
+				//查看附庸状态
 				MoreGodPower.selected_kingdom.data.get("Vassal", out bool flag1, false);
 				kingdom.data.get("Vassal", out bool flag2, false);
 
+				//被附庸过不能再被附庸
 				if (flag1 || flag2 || (flag1 && flag2))
 				{
 					NewFunction.LogNewMessage(flag2 ? kingdom : MoreGodPower.selected_kingdom, "国家", "附庸失败");
 					MoreGodPower.selected_kingdom = null;
 					return false;
 				}
-
+				//查看附庸状态
 				MoreGodPower.selected_kingdom.data.get("suzerain", out bool suzerain1, false);
 				kingdom.data.get("suzerain", out bool suzerain2, false);
-
+				//宗主国不能被附庸
 				if (suzerain1)
 				{
 					NewFunction.LogNewMessage(suzerain2 ? kingdom : MoreGodPower.selected_kingdom, "国家", "是宗主国，无法被附庸");
 					MoreGodPower.selected_kingdom = null;
 					return false;
 				}
-
+				//附庸成功
 				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, kingdom, "国家", "被附庸");
+				//两个联盟，用于组建联盟
 				Alliance alliance;
 				Alliance alliance2;
+				//附庸后不能再开战
 				MoreGodPower.endWar(kingdom, MoreGodPower.selected_kingdom);
+				//标记附庸国和宗主国
 				kingdom.data.set("suzerain", true);
 				MoreGodPower.selected_kingdom.data.set("Vassal", true);
 				MoreGodPower.selected_kingdom.data.set("suzerainID", kingdom.id);
 				// MoreGodPower.selected_kingdom.updateColor(kingdom.kingdomColor);
-				MoreGodPower.selected_kingdom.data.set("oldColorID", MoreGodPower.selected_kingdom.data.colorID);
-				ColorAsset originalColor = MoreGodPower.selected_kingdom.getColor();
-				string oldColor = NewFunction.Serialize(originalColor);
+				//附庸颜色刷新
+				if (PowerButtons.GetToggleValue("DA_关闭显示附庸颜色") && MoreGodPower.selected_kingdom.data.colorID == kingdom.data.colorID)
+				{
+					NewFunction.UpdateColor(MoreGodPower.selected_kingdom);
+				}
+				else if (!PowerButtons.GetToggleValue("DA_关闭显示附庸颜色") && MoreGodPower.selected_kingdom.data.colorID != kingdom.data.colorID)
+				{
+					MoreGodPower.UpdateVassalToKingdomColor(MoreGodPower.selected_kingdom, kingdom);
+				}
+				// MoreGodPower.selected_kingdom.data.set("oldColorID", MoreGodPower.selected_kingdom.data.colorID);
+				// ColorAsset originalColor = MoreGodPower.selected_kingdom.getColor();
+				// string oldColor = NewFunction.Serialize(originalColor);
 
-				MoreGodPower.selected_kingdom.data.set("oldColor", oldColor);
+				// MoreGodPower.selected_kingdom.data.set("oldColor", oldColor);
 
-				MoreGodPower.selected_kingdom.data.colorID = kingdom.data.colorID;
-				ColorAsset kingdomcolor = kingdom.getColor();
-				MoreGodPower.selected_kingdom.updateColor(kingdomcolor);
-				World.world.zoneCalculator.setDrawnZonesDirty();
-				World.world.zoneCalculator.clearCurrentDrawnZones(true);
-				World.world.zoneCalculator.redrawZones();
-
+				// MoreGodPower.selected_kingdom.data.colorID = kingdom.data.colorID;
+				// ColorAsset kingdomcolor = kingdom.getColor();
+				// MoreGodPower.selected_kingdom.updateColor(kingdomcolor);
+				// World.world.zoneCalculator.setDrawnZonesDirty();
+				// World.world.zoneCalculator.clearCurrentDrawnZones(true);
+				// World.world.zoneCalculator.redrawZones();
+				//添加附庸进入附庸列表
 				if (MoreGodPower.Vassals.ContainsKey(kingdom))
 				{
 					MoreGodPower.Vassals[kingdom].Add(MoreGodPower.selected_kingdom);

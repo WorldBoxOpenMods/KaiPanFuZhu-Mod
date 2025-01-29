@@ -16,11 +16,15 @@ namespace Diplomacy_Army
         [HarmonyPatch(typeof(ClanManager), "checkActionKing")]
         public static bool checkActionKing(ClanManager __instance, Actor pActor)
         {
+
             if (pActor.isFighting())
             {
                 return false;
             }
-
+            if(MoreGodPower.KingdomsOwnedByPlayer.Contains(pActor.kingdom))
+            {
+                return false;
+            }
 
             if (CheckVassal(pActor.kingdom))
             {
@@ -65,7 +69,7 @@ namespace Diplomacy_Army
         [HarmonyPatch(typeof(DiplomacyManager), "startWar")]
         public static bool startWar_Prefix(Kingdom pAttacker, Kingdom pDefender, WarTypeAsset pAsset, bool pLog = true)
         {
-            if (CheckVassal(pAttacker)) return false;
+            if (CheckVassal(pAttacker)) {return false;}
             if (MoreGodPower.Vassals.ContainsKey(pAttacker) && MoreGodPower.Vassals[pAttacker].Contains(pDefender))
             {
                 // if (Toolbox.randomChance(0.99f))

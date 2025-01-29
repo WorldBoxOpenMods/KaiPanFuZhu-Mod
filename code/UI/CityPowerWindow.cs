@@ -55,6 +55,8 @@ namespace Diplomacy_Army
 			createTileButton(index++, content.transform, "扩张城市", "扩张城市", "将指定城市的领土向外扩张一圈", new UnityAction(tryToHideWindow4));
 			createTileButton(index++, content.transform, "建造城墙", "建造城墙", "在指定城市的外围建造一圈箭塔", new UnityAction(tryToHideWindow5));
 			createTileButton(index++, content.transform, "合并城市", "合并城市", "合并两座城市", new UnityAction(tryToHideWindow6));
+			createTileButton(index++, content.transform, "竖直分割城市", "竖直分割城市", "竖直分割城市", new UnityAction(tryToHideWindow9));
+			createTileButton(index++, content.transform, "水平分割城市", "水平分割城市", "水平分割城市", new UnityAction(tryToHideWindow10));
 			createTileButton(index++, content.transform, "宣称城市", "宣称城市", "指定国家获得该城市的宣称", new UnityAction(tryToHideWindow7));
 			createTileButton(index++, content.transform, "取消宣称", "取消宣称", "指定取消该城市的宣称", new UnityAction(tryToHideWindow8));
 
@@ -480,16 +482,16 @@ namespace Diplomacy_Army
 
 			if (MoreGodPower.selected_city != null)
 			{
-				Kingdom kingdom=harmony_declare.GetDeclareKingdom(city);
-				
+				Kingdom kingdom = harmony_declare.GetDeclareKingdom(city);
+
 				data.set("DeclareKingdomID", "");
 				data.set("Declare", false);
-				if(kingdom != null)
-				if (MoreGodPower.Declares.ContainsKey(kingdom))
-				{
-					MoreGodPower.Declares[kingdom].Remove(city);
-				}
-				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom,  "的城市 " + data.name + " 取消宣称");
+				if (kingdom != null)
+					if (MoreGodPower.Declares.ContainsKey(kingdom))
+					{
+						MoreGodPower.Declares[kingdom].Remove(city);
+					}
+				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "的城市 " + data.name + " 取消宣称");
 				MoreGodPower.selected_city = null;
 				MoreGodPower.selected_kingdom = null;
 			}
@@ -557,6 +559,22 @@ namespace Diplomacy_Army
 			power = Reflection.GetField(powerButton.GetType(), powerButton, "godPower") as GodPower;
 			power.click_action = null;
 			power.click_action = (PowerActionWithID)Delegate.Combine(power.click_action, new PowerActionWithID(tryToRemoveDeclareCity));
+			ScrollWindow.get(name).clickHide();
+			pbsInstance.clickPowerButton(powerButton);
+		}
+		public static void tryToHideWindow9()
+		{
+			power = Reflection.GetField(powerButton.GetType(), powerButton, "godPower") as GodPower;
+			power.click_action = null;
+			power.click_action = (PowerActionWithID)Delegate.Combine(power.click_action, new PowerActionWithID(tryToDivideCities_Vertical));
+			ScrollWindow.get(name).clickHide();
+			pbsInstance.clickPowerButton(powerButton);
+		}
+		public static void tryToHideWindow10()
+		{
+			power = Reflection.GetField(powerButton.GetType(), powerButton, "godPower") as GodPower;
+			power.click_action = null;
+			power.click_action = (PowerActionWithID)Delegate.Combine(power.click_action, new PowerActionWithID(tryToDivideCities_level));
 			ScrollWindow.get(name).clickHide();
 			pbsInstance.clickPowerButton(powerButton);
 		}
@@ -826,6 +844,141 @@ namespace Diplomacy_Army
 			worldTiles.Clear();
 			tiles.Clear();
 			NewFunction.LogNewMessage(kingdom, "国家", "城市 " + data.name + " 城墙建造完毕");
+		}
+		public static bool tryToDivideCities_Vertical(WorldTile pTile, string pPower)
+		{
+			if (pTile.zone.city == null)
+			{
+				return false;
+			}
+			City city = pTile.zone.city;
+			MoreGodPower.selected_city = city;
+				NewFunction.AddNewText("准备分割城市......", Toolbox.color_log_good, null);
+			
+
+			// 初始化坐标总和变量
+			float totalX = 0f;
+			float totalY = 0f;
+			List<TileZone> zones = city.zones;
+			// 计算所有区域的平均坐标
+			foreach (var zone in zones)
+			{
+				totalX += zone.x;
+				totalY += zone.y;
+			}
+			totalX /= zones.Count; // 计算平均 X 坐标
+								   // 将区域分为左右两半
+			List<TileZone> leftHalf = new();
+			List<TileZone> rightHalf = new();
+			// 根据平均 X 坐标将区域分类
+			foreach (var zone in zones)
+			{
+				if (zone.x < totalX) // 如果区域的 X 坐标小于平均值，则归入左半部分
+				{
+					leftHalf.Add(zone);
+				}
+				else // 否则归入右半部分
+				{
+					rightHalf.Add(zone);
+				}
+			}
+			// 如果左半部分包含多个区域，则创建新城市
+			if (leftHalf.Count > 1)
+			{
+				string name = NameGenerator.getName(city.race.name_template_city);
+				City newCity = World.world.cities.buildNewCity(leftHalf[0], city.race, city.kingdom);
+				newCity.data.name = name;
+				WorldLog.logNewCity(newCity);
+				migrate(city, leftHalf, newCity);
+				NewFunction.LogNewMessage(city.kingdom, "国家", "城市 " + city.data.name + " 分割完毕");
+			}
+			return true;
+		}
+
+		public static bool tryToDivideCities_level(WorldTile pTile, string pPowerID)
+		{
+			if (pTile.zone.city == null)
+			{
+				return false;
+			}
+			City city = pTile.zone.city;
+			MoreGodPower.selected_city = city;
+				NewFunction.AddNewText("准备分割城市......", Toolbox.color_log_good, null);
+			
+			//如上
+			float totalX = 0f;
+			float totalY = 0f;
+			List<TileZone> zones = city.zones;
+			foreach (var zone in zones)
+			{
+				totalX += zone.x;
+				totalY += zone.y;
+			}
+			totalY /= zones.Count;
+			List<TileZone> UpHalf = new();
+
+			foreach (var zone in zones)
+			{
+				if (zone.y < totalY)
+				{
+					UpHalf.Add(zone);
+				}
+			}
+			if (UpHalf.Count > 1)
+			{
+				string name = NameGenerator.getName(city.race.name_template_city);
+				City city2 = World.world.cities.buildNewCity(UpHalf[0], city.race, city.kingdom);
+				city2.data.name = name;
+				WorldLog.logNewCity(city2);
+				migrate(city, UpHalf, city2);
+				NewFunction.LogNewMessage(city.kingdom, "国家", "城市 " + city.data.name + " 分割完毕");
+			}
+
+			return true;
+		}
+
+		private static void migrate(City city, List<TileZone> Half, City city2)
+		{
+			List<Actor> unitsToRemove = new();
+			List<TileZone> TileZoneToAdd = new();
+			foreach (var zone in Half)
+			{
+				if (city == null || city?.zones.Count < 5 || city?.getPopulationUnits() < 10)
+				{
+					break;
+				}
+
+				TileZoneToAdd.Add(zone);
+
+				foreach (var t in zone.tiles)
+				{
+					foreach (var a in t._units)
+					{
+						if (a.isKing() || a == city?.leader)
+						{
+							continue;
+						}
+						if (a.city != city)
+						{
+							continue;
+						}
+						if (city2 == null || city == null)
+						{
+							break;
+						}
+						unitsToRemove.Add(a);
+					}
+				}
+			}
+			foreach (var add in TileZoneToAdd)
+			{
+				city?.removeZone(add);
+				city2?.addZone(add);
+			}
+			foreach (var unitToRemove in unitsToRemove)
+			{
+				unitToRemove.joinCity(city2);
+			}
 		}
 
 	}

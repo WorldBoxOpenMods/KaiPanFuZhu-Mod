@@ -310,38 +310,7 @@ namespace Diplomacy_Army
 			}
 		}
 
-		public static bool tryToCombineArmy(WorldTile pTile, string pPower)
-		{
-			if (pTile.zone.city == null)
-			{
-				return false;
-			}
-			City city = pTile.zone.city;
-			var kingdom = Reflection.GetField(pTile.zone.city.GetType(), pTile.zone.city, "kingdom") as Kingdom;
-			if (MoreGodPower.selected_city == null)
-			{
-				MoreGodPower.selected_city = city;
-				MoreGodPower.selected_kingdom = kingdom;
-				var data = MoreGodPower.selected_city.data;
-				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "国家", "想要在城市 " + data.name + " 组建军团");
-			}
-			else
-			{
-				if (kingdom != MoreGodPower.selected_kingdom)
-					return false;
-				var units = Reflection.GetField(MoreGodPower.selected_city.army.GetType(), MoreGodPower.selected_city.army, "units") as ActorContainer;
-				foreach (Actor actor in units.getSimpleList())
-				{
-					MoreGodPower.selected_city.army.removeUnit(actor);
-					city.army.addUnit(actor);
-				}
-				var data = MoreGodPower.selected_city.data;
-				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "国家", "组建了 " + data.name + " 军团");
-				MoreGodPower.selected_city = null;
-				MoreGodPower.selected_kingdom = null;
-			}
-			return true;
-		}
+		
 
 		public static void startWar(Kingdom attacker, Kingdom defender)
 		{
@@ -825,5 +794,97 @@ namespace Diplomacy_Army
 			NewFunction.LogNewMessage(kingdom, "国家军队", "成功删除装备");
 			return true;
 		}
+		#region 附庸颜色更新
+		//调用宗主国进行循环
+		public static void UpdateVassals()
+		{
+			var vassalsToRemove = new HashSet<Kingdom>();
+
+			foreach (var kingdom in MoreGodPower.Vassals.Keys.ToList())
+			{
+				if (kingdom == null || !kingdom.isAlive() || kingdom.data == null)
+				{
+					continue;
+				}
+
+
+				UpdateKingdomVassals(kingdom, vassalsToRemove);
+			}
+
+			// foreach (var kingdom in vassalsToRemove)
+			// {
+			//     RemoveVassals(kingdom);
+			// }
+		}
+		//调用宗主国的附庸出来进行循环
+		public static void UpdateKingdomVassals(Kingdom kingdom, HashSet<Kingdom> vassalsToRemove)
+		{
+			if (MoreGodPower.Vassals.TryGetValue(kingdom, out var vassals))
+			{
+				foreach (var vassal in vassals.ToList())
+				{
+					if (vassal == null || vassal.data == null)
+					{
+						vassals.Remove(vassal);
+						continue;
+					}
+					// UpdateVassalColor(kingdom);
+
+					if (PowerButtons.GetToggleValue("DA_关闭显示附庸颜色") && vassal.data.colorID == kingdom.data.colorID)
+					{
+						NewFunction.UpdateColor(vassal);
+					}
+					else if (!PowerButtons.GetToggleValue("DA_关闭显示附庸颜色") && vassal.data.colorID != kingdom.data.colorID)
+					{
+						UpdateVassalToKingdomColor(vassal, kingdom);
+					}
+					// UpdateVassalAlliance(vassal, kingdom);
+				}
+
+				if (vassals.Count == 0)
+				{
+					vassalsToRemove.Add(kingdom);
+				}
+			}
+		}
+
+		// public static void UpdateVassalColor(Kingdom kingdom)
+		// {
+		// 	var vassals = MoreGodPower.Vassals[kingdom].ToList();
+
+		// 	for (int i = 0; i < vassals.Count; i++)
+		// 	{
+		// 		var vassal = vassals[i];
+		// 		if (vassal == null || vassal.data == null)
+		// 		{
+		// 			MoreGodPower.Vassals[kingdom].Remove(vassal);
+		// 			continue;
+		// 		}
+
+		// 		// int oldColorID;
+		// 		// if (!vassal.data.get("oldColorID", out oldColorID))
+		// 		// {
+		// 		//     oldColorID = -1;
+		// 		// }
+
+		// 	}
+		// }
+		public static void UpdateVassalToKingdomColor(Kingdom vassal, Kingdom kingdom)
+		{
+
+			vassal.data.set("oldColorID", vassal.data.colorID);
+			ColorAsset originalColor = vassal.getColor();
+			string oldColor = NewFunction.Serialize(originalColor);
+
+			vassal.data.set("oldColor", oldColor);
+
+			vassal.data.colorID = kingdom.data.colorID;
+			ColorAsset kingdomcolor = kingdom.getColor();
+			vassal.updateColor(kingdomcolor);
+			World.world.zoneCalculator.setDrawnZonesDirty();
+			World.world.zoneCalculator.clearCurrentDrawnZones(true);
+			World.world.zoneCalculator.redrawZones();
+		}
+		#endregion
 	}
 }

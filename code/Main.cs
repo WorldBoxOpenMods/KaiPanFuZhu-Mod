@@ -8,10 +8,10 @@ using HarmonyLib;
 using ai;
 using ai.behaviours;
 using NCMS.Utils;
-using Diplomacy_Army.Utils;
 using Newtonsoft.Json;
 using System.IO;
 using System.Linq;
+using Diplomacy_Army.HarmonySpace;
 
 namespace Diplomacy_Army
 {
@@ -23,6 +23,7 @@ namespace Diplomacy_Army
         public static Kingdom kingdom;
         public static City city;
         public static DateTime GCtime = DateTime.MinValue;
+        public static DateTime UpDateTime = DateTime.MinValue;
 
 
 
@@ -192,6 +193,7 @@ namespace Diplomacy_Army
             resTotalNum = AssetManager.resources.list.Count;
             NewFunction.localizedText = (Dictionary<string, string>)Reflection.GetField(LocalizedTextManager.instance.GetType(), LocalizedTextManager.instance, "localizedText");
             Harmony.CreateAndPatchAll(typeof(Main));
+            Harmony.CreateAndPatchAll(typeof(diplomacy));
             Harmony.CreateAndPatchAll(typeof(harmony_vassal));
             Harmony.CreateAndPatchAll(typeof(harmony_declare));
             Harmony.CreateAndPatchAll(typeof(harmony_saves));
@@ -339,10 +341,14 @@ namespace Diplomacy_Army
         public void Update()
         {
             if (!Config.gameLoaded) { return; }
-            Diplomacy_Army.Update.updateTreaty();
-            Diplomacy_Army.Update.updateCities();
-            Diplomacy_Army.Update.UpdateVassals();
-            Diplomacy_Army.Update.UpdateDeclare();
+            // if (DateTime.Compare(UpDateTime, DateTime.Now.ToLocalTime()) < 0)
+            // {
+                Diplomacy_Army.Update.updateTreaty();
+                Diplomacy_Army.Update.updateCities();
+                Diplomacy_Army.Update.UpdateVassals();
+                Diplomacy_Army.Update.UpdateDeclare();
+                // UpdateTimeRefresh();
+            // }
             if (DateTime.Compare(GCtime, DateTime.Now.ToLocalTime()) < 0 && PowerButtons.GetToggleValue("DA_自动内存清理"))
             {
                 GCGame();
@@ -363,6 +369,12 @@ namespace Diplomacy_Army
             GC.Collect();
             GCtime = DateTime.Now.ToLocalTime().AddMinutes(3.0f);
         }
+        //刷新更新时间
+        // public static void UpdateTimeRefresh()
+        // {
+        //     GC.Collect();
+        //     GCtime = DateTime.Now.ToLocalTime().AddMinutes(1.0f);
+        // }
 
         public void OnGUI()
         {
@@ -470,7 +482,7 @@ namespace Diplomacy_Army
         {
             GUI.skin.box.fontSize = 13;
             GUI.skin.box.fontStyle = FontStyle.Bold;
-            GUI.skin.box.alignment = TextAnchor.MiddleLeft;
+            GUI.skin.box.alignment = TextAnchor.MiddleRight;
             GUI.skin.box.normal.textColor = Color.white;
 
             GUI.skin.scrollView.normal.background = Texture2D.blackTexture;
@@ -622,14 +634,14 @@ namespace Diplomacy_Army
             NewFunction.HarmonyPatching(harmony, "prefix", AccessTools.Method(typeof(CityStorage), "change"), AccessTools.Method(typeof(Main), "change_Prefix"));
             Debug.Log("Prefix: Citystorage.change");
         }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(Actor), "setProfession")]
-        public static bool setProfession(Actor __instance, UnitProfession pType, bool pCancelBeh = true)
-        {
-            if (__instance == null || __instance.data == null) { return false; }
-            return true;
-        }
+        //隔离检查，有报错事故过
+        // [HarmonyPrefix]
+        // [HarmonyPatch(typeof(Actor), "setProfession")]
+        // public static bool setProfession(Actor __instance, UnitProfession pType, bool pCancelBeh = true)
+        // {
+        //     if (__instance == null || __instance.data == null) { return false; }
+        //     return true;
+        // }
         [HarmonyPrefix]
         [HarmonyPatch(typeof(City), "updateCitizens")]
         public static bool updateCitizens(City __instance)
@@ -677,6 +689,7 @@ namespace Diplomacy_Army
                 NewFunction.AddNewText("已取消操作", Toolbox.color_log_neutral);
             }
         }
+        //封锁边境的功能
         public static void goTo_Postfix(Actor actor, ref ExecuteEvent __result, WorldTile target, bool pPathOnLiquid = false, bool pWalkOnBlocks = false)
         {
             if (__result == ExecuteEvent.True && actor.current_path.Count > 2 && actor.city != null && target.zone.city != null
@@ -721,6 +734,7 @@ namespace Diplomacy_Army
                 showWorldLow = false;
             }
         }
+        //领土完整的功能，但是似乎没用
         public static bool clearCityZones_Prefix()
         {
             if (PowerButtons.GetToggleValue("领土完整"))

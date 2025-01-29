@@ -50,7 +50,7 @@ namespace Diplomacy_Army
         {
             createTileButton(index++, content.transform, "合并国家", "合并国家", "将两个国家合并", new UnityAction(tryToHideWindow));
             createTileButton(index++, content.transform, "迁都", "迁都", "改变国家首都", new UnityAction(tryToHideWindow2));
-            createTileButton(index++, content.transform, "控制外交", "控制外交", "控制指定国家的外交随机性", new UnityAction(tryToHideWindow3));
+            createTileButton(index++, content.transform, "控制外交", "控制外交", "控制指定国家的外交随机性，然后便可使用军事通行等功能", new UnityAction(tryToHideWindow3));
 
         }
         private static void createTileButton(int index, Transform pParent, string powerID, string pSprite, string pDescription, UnityAction pCall = null)
