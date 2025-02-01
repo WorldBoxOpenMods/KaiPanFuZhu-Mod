@@ -189,7 +189,7 @@ namespace Diplomacy_Army
             MSText.transform.SetParent(CT.transform);
             var RSObjRTF = RSObj.GetComponent<RectTransform>();
             RSObjRTF.position = new Vector3(0, 0, 0);
-            RSObjRTF.localPosition = new Vector3(20f, NYJG * -0.5431562f - (Settingsbutton * 40f));
+            RSObjRTF.localPosition = new Vector3(-50f, NYJG * -0.5431562f - (Settingsbutton * 40f));
             Main.SettingsText.Add(id, MSText);
             NCMS.Utils.PowerButtons.CreateButton(id + "MSLeftButton", NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DALeft.png"),
             "数值 - 1", "按住Ctrl - 10,按住Shift - 100", BVC, ButtonType.Click, CT.transform, () => SetRSZ(id, -1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");

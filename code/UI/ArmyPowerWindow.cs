@@ -60,7 +60,7 @@ namespace Diplomacy_Army
 			createTileButton(index++, content.transform, "边境防守", "边境防守", "全国军团前往最近的边境城市", new UnityAction(tryToHideWindow7));
 			createTileButton(index++, content.transform, "指定防守", "指定防守", "全国军团前往最近的与指定国家接壤的城市", new UnityAction(tryToHideWindow8));
 			createTileButton(index++, content.transform, "全面进攻", "全面进攻", "全国军团前往最近的指定国家的城市", new UnityAction(tryToHideWindow9));
-			createTileButton(index++, content.transform, "组建军团", "组建军团", "组建两个城市的军队成为一个军团", new UnityAction(tryToHideWindow10));
+			createTileButton(index++, content.transform, "合并军队", "合并军队", "合并两个城市的军队", new UnityAction(tryToHideWindow10));
 			// createTileButton(index++, content.transform, "腐败的军队", "腐败的军队", "全国士兵战斗力大幅下降", new UnityAction(tryToHideWindow10));
 		}
 
@@ -605,18 +605,18 @@ namespace Diplomacy_Army
 		{
 			power = Reflection.GetField(powerButton.GetType(), powerButton, "godPower") as GodPower;
 			power.click_action = null;
-			power.click_action = (PowerActionWithID)Delegate.Combine(power.click_action, new PowerActionWithID(tryToCorruptArmy));
-			ScrollWindow.get(name).clickHide();
-			pbsInstance.clickPowerButton(powerButton);
-		}
-		public static void tryToHideWindow11()
-		{
-			power = Reflection.GetField(powerButton.GetType(), powerButton, "godPower") as GodPower;
-			power.click_action = null;
 			power.click_action = (PowerActionWithID)Delegate.Combine(power.click_action, new PowerActionWithID(tryToCombineArmy));
 			ScrollWindow.get(name).clickHide();
 			pbsInstance.clickPowerButton(powerButton);
 		}
+		// public static void tryToHideWindow11()
+		// {
+		// 	power = Reflection.GetField(powerButton.GetType(), powerButton, "godPower") as GodPower;
+		// 	power.click_action = null;
+		// 	power.click_action = (PowerActionWithID)Delegate.Combine(power.click_action, new PowerActionWithID(tryToCombineArmy));
+		// 	ScrollWindow.get(name).clickHide();
+		// 	pbsInstance.clickPowerButton(powerButton);
+		// }
 
 		public static void attackCity(Kingdom pKingdom, City tTarget)
 		{

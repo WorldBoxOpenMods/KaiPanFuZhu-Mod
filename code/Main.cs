@@ -107,6 +107,9 @@ namespace Diplomacy_Army
             { "DA_显示附庸", false}
 
         };
+        public static Dictionary<string, List<string>> ArmyGroup = new()
+        {
+        };
 
 
 

@@ -853,8 +853,8 @@ namespace Diplomacy_Army
 			}
 			City city = pTile.zone.city;
 			MoreGodPower.selected_city = city;
-				NewFunction.AddNewText("准备分割城市......", Toolbox.color_log_good, null);
-			
+			NewFunction.AddNewText("准备分割城市......", Toolbox.color_log_good, null);
+
 
 			// 初始化坐标总和变量
 			float totalX = 0f;
@@ -885,9 +885,9 @@ namespace Diplomacy_Army
 			// 如果左半部分包含多个区域，则创建新城市
 			if (leftHalf.Count > 1)
 			{
-				string name = NameGenerator.getName(city.race.name_template_city);
 				City newCity = World.world.cities.buildNewCity(leftHalf[0], city.race, city.kingdom);
-				newCity.data.name = name;
+				newCity.newCityEvent();
+				newCity.race = city.race;
 				WorldLog.logNewCity(newCity);
 				migrate(city, leftHalf, newCity);
 				NewFunction.LogNewMessage(city.kingdom, "国家", "城市 " + city.data.name + " 分割完毕");
@@ -903,8 +903,8 @@ namespace Diplomacy_Army
 			}
 			City city = pTile.zone.city;
 			MoreGodPower.selected_city = city;
-				NewFunction.AddNewText("准备分割城市......", Toolbox.color_log_good, null);
-			
+			NewFunction.AddNewText("准备分割城市......", Toolbox.color_log_good, null);
+
 			//如上
 			float totalX = 0f;
 			float totalY = 0f;
@@ -926,18 +926,18 @@ namespace Diplomacy_Army
 			}
 			if (UpHalf.Count > 1)
 			{
-				string name = NameGenerator.getName(city.race.name_template_city);
-				City city2 = World.world.cities.buildNewCity(UpHalf[0], city.race, city.kingdom);
-				city2.data.name = name;
-				WorldLog.logNewCity(city2);
-				migrate(city, UpHalf, city2);
+				City newCity = World.world.cities.buildNewCity(UpHalf[0], city.race, city.kingdom);
+				newCity.newCityEvent();
+				newCity.race = city.race;
+				WorldLog.logNewCity(newCity);
+				migrate(city, UpHalf, newCity);
 				NewFunction.LogNewMessage(city.kingdom, "国家", "城市 " + city.data.name + " 分割完毕");
 			}
 
 			return true;
 		}
 
-		private static void migrate(City city, List<TileZone> Half, City city2)
+		private static void migrate(City city, List<TileZone> Half, City newCity)
 		{
 			List<Actor> unitsToRemove = new();
 			List<TileZone> TileZoneToAdd = new();
@@ -962,7 +962,7 @@ namespace Diplomacy_Army
 						{
 							continue;
 						}
-						if (city2 == null || city == null)
+						if (newCity == null || city == null)
 						{
 							break;
 						}
@@ -973,11 +973,11 @@ namespace Diplomacy_Army
 			foreach (var add in TileZoneToAdd)
 			{
 				city?.removeZone(add);
-				city2?.addZone(add);
+				newCity?.addZone(add);
 			}
 			foreach (var unitToRemove in unitsToRemove)
 			{
-				unitToRemove.joinCity(city2);
+				unitToRemove.joinCity(newCity);
 			}
 		}
 
