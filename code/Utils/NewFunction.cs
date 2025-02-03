@@ -340,8 +340,9 @@ namespace Diplomacy_Army
 			{
 				return;
 			}
-			Reflection.SetField<TileZone>(pArmy.city, "target_attack_zone", pTile.zone);
-			var units = Reflection.GetField(pArmy.GetType(), pArmy, "units") as ActorContainer;
+			if (!PowerButtons.GetToggleValue("调遣军队前往目的地"))
+			{ pTile.zone = pArmy.city.target_attack_zone; }
+			var units = pArmy.units;
 			if (units.Count < pArmy.city.getArmy() * 2 / 3 && !isSettle)
 			{
 				foreach (Actor actor in pArmy.city.professionsDict[UnitProfession.Warrior])
@@ -360,7 +361,7 @@ namespace Diplomacy_Army
 					if (actor == null) { pArmy.city.units.Remove(actor); continue; }
 					actor.cancelAllBeh(null);
 					((AiSystemActor)Reflection.GetField(actor.GetType(), actor, "ai")).setJob("attacker");
-					Reflection.SetField<WorldTile>(actor, "beh_tile_target", pTile);
+					actor.beh_tile_target = pTile;
 					actor.goTo(pTile);
 					if (isSettle && pTile.zone.city != null)
 					{

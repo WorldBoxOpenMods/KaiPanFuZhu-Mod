@@ -98,6 +98,8 @@ namespace Diplomacy_Army
             { "异族统治", false},
             { "领土完整", false},
             { "禁止自主联盟", false},
+            { "调遣军队前往目的地", false},
+            { "动员无装备", false},
             // { "种族寿命统一70岁", false},
             { "国王装备禁用", false},
             { "城市士兵装备禁用", false},
@@ -154,7 +156,7 @@ namespace Diplomacy_Army
                 };
                 File.WriteAllText(text0, JsonConvert.SerializeObject(NewStorage, Formatting.Indented));
             }
-            string filePath = $".\\Mods\\KaiPanFuZhu_Mod_main\\NationalTraits\\NationalTraits.json";
+            string filePath = $"{Mod.Info.Path}\\NationalTraits\\NationalTraits.json";
 
             NationalTraits = DA_save.LoadFromFile(filePath);
 
@@ -346,11 +348,11 @@ namespace Diplomacy_Army
             if (!Config.gameLoaded) { return; }
             // if (DateTime.Compare(UpDateTime, DateTime.Now.ToLocalTime()) < 0)
             // {
-                Diplomacy_Army.Update.updateTreaty();
-                Diplomacy_Army.Update.updateCities();
-                Diplomacy_Army.Update.UpdateVassals();
-                Diplomacy_Army.Update.UpdateDeclare();
-                // UpdateTimeRefresh();
+            Diplomacy_Army.Update.updateTreaty();
+            Diplomacy_Army.Update.updateCities();
+            Diplomacy_Army.Update.UpdateVassals();
+            Diplomacy_Army.Update.UpdateDeclare();
+            // UpdateTimeRefresh();
             // }
             if (DateTime.Compare(GCtime, DateTime.Now.ToLocalTime()) < 0 && PowerButtons.GetToggleValue("DA_自动内存清理"))
             {
@@ -828,20 +830,28 @@ namespace Diplomacy_Army
         public static bool execute_CityBehBorderGrowth_Prefix(City pCity, ref BehResult __result)//领土限制
         {
             cityZones = pCity.zones;
-            if (Main.moreSettings["村庄领土上限"] != 0 && pCity.getPopulationTotal() > Main.moreSettings["村庄领土上限"])
+            pCity.data.get("村庄领土上限", out int __result2);
+            if (__result2 != 0 && cityZones.Count > Main.moreSettings["村庄领土上限"])
             {
                 __result = BehResult.Stop;
                 return false;
             }
+            if (Main.moreSettings["村庄领土上限"] != 0 && cityZones.Count > Main.moreSettings["村庄领土上限"])
+            {
+                __result = BehResult.Stop;
+                return false;
+            }
+            __result = BehResult.Continue;
             return true;
         }
         public static bool change_Prefix(string pRes, CityStorage __instance, ref int __result, int pAmount = 1)//资源限制
         {
-            if (Main.moreSettings["村庄资源上限"] != 0)
+            int ResourceLimit=Main.moreSettings["村庄资源上限"];
+            if (ResourceLimit != 0)
             {
                 if (DebugConfig.isOn(DebugOption.CityInfiniteResources))
                 {
-                    pAmount = Main.moreSettings["村庄资源上限"];
+                    pAmount = ResourceLimit;
                 }
                 if (!__instance.resources.ContainsKey(pRes))
                 {
@@ -851,9 +861,9 @@ namespace Diplomacy_Army
                 {
                     CityStorageSlot cityStorageSlot = __instance.resources[pRes];
                     cityStorageSlot.amount += pAmount;
-                    if (cityStorageSlot.amount > Main.moreSettings["村庄资源上限"])
+                    if (cityStorageSlot.amount > ResourceLimit)
                     {
-                        __instance.resources[pRes].amount = Main.moreSettings["村庄资源上限"];
+                        __instance.resources[pRes].amount =ResourceLimit;
                     }
                     __result = cityStorageSlot.amount;
                 }

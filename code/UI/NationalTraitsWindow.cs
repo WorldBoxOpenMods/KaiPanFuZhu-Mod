@@ -58,9 +58,9 @@ namespace Diplomacy_Army
 
 
 
-            NameInputs.Add("id", CreateInputOption("id", "id", "设置国家特质的id,用于储存,尽量用英文", 0, content, ""));
-            NameInputs.Add("name", CreateInputOption("name", "名字", "设置国家特质的名字", -70, content, ""));
-            NameInputs.Add("Description", CreateInputOption("Description", "说明", "设置国家特质的说明", -140, content, ""));
+            NameInputs.Add("id", CreateInputOption("id", "id", "设置国家特质的id,用于储存,尽量用英文", 100, content, ""));
+            NameInputs.Add("name", CreateInputOption("name", "名字", "设置国家特质的名字", 30, content, ""));
+            NameInputs.Add("Description", CreateInputOption("Description", "说明", "设置国家特质的说明", -40, content, ""));
 
             PowerButton button = PowerButtons.CreateButton(
                 "NationalTraitsCreate",
@@ -99,7 +99,7 @@ namespace Diplomacy_Army
             };
 
             Main.NationalTraits.Add(traits.id, traits);
-            string filePath = $".\\Mods\\KaiPanFuZhu_Mod_main\\NationalTraits\\NationalTraits.json";
+            string filePath = $"{Mod.Info.Path}\\NationalTraits\\NationalTraits.json";
             DA_save.SaveToFile(filePath, Main.NationalTraits);
             WorldTip.showNow("创建成功", true, "top", 5f);
         }
@@ -121,7 +121,7 @@ namespace Diplomacy_Army
             MSText.transform.SetParent(CT.transform);
             var RSObjRTF = RSObj.GetComponent<RectTransform>();
             RSObjRTF.position = new Vector3(0, 0, 0);
-            RSObjRTF.localPosition = new Vector3(0f, NYJG * -0.5431562f - (NTbutton * 40f) - 140f);
+            RSObjRTF.localPosition = new Vector3(40f, NYJG * -0.5431562f - (NTbutton * 40f) - 140f);
             NTText.Add(id, MSText);
             NCMS.Utils.PowerButtons.CreateButton(id + "NTTLeftButton", NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DALeft.png"),
             "数值 - 1", "按住Ctrl - 10,按住Shift - 100", BVC, ButtonType.Click, CT.transform, () => SetNT(id, -1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
@@ -143,34 +143,34 @@ namespace Diplomacy_Army
         }
         public static NameInput CreateInputOption(string objName, string title, string desc, int posY, GameObject parent, string textValue = "-1")
         {
-            GameObject statHolder = new("OptionHolder");
-            statHolder.transform.SetParent(parent.transform);
-            Image statImage = statHolder.AddComponent<Image>();
-            statImage.sprite = Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.windowInnerSliced.png");
-            RectTransform statHolderRect = statHolder.GetComponent<RectTransform>();
-            statHolderRect.localPosition = new Vector3(10, posY, 0);
-            statHolderRect.sizeDelta = new Vector2(400, 150);
+            // GameObject statHolder = new("OptionHolder");
+            // statHolder.transform.SetParent(parent.transform);
+            // Image statImage = statHolder.AddComponent<Image>();
+            // statImage.sprite = Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.windowInnerSliced.png");
+            // RectTransform statHolderRect = statHolder.GetComponent<RectTransform>();
+            // statHolderRect.localPosition = new Vector3(10, posY, 0);
+            // statHolderRect.sizeDelta = new Vector2(400, 150);
 
-            Text statText = addText(title, statHolder, 20, new Vector3(0, 110, 0), new Vector2(100, 0));
+            Text statText = addText(title, parent, 20, new Vector3(0, posY+60, 0), new Vector2(100, 0));
             RectTransform statTextRect = statText.gameObject.GetComponent<RectTransform>();
-            statTextRect.sizeDelta = new Vector2(statTextRect.sizeDelta.x + 50, 80);
+            statTextRect.sizeDelta = new Vector2(statTextRect.sizeDelta.x, 50);
 
-            Text descText = addText(desc, statHolder, 20, new Vector3(0, 60, 0), new Vector2(300, 0));
+            Text descText = addText(desc, parent, 20, new Vector3(0, posY+30, 0), new Vector2(300, 0));
             RectTransform descTextRect = descText.gameObject.GetComponent<RectTransform>();
-            descTextRect.sizeDelta = new Vector2(descTextRect.sizeDelta.x, 80);
+            descTextRect.sizeDelta = new Vector2(descTextRect.sizeDelta.x, 50);
 
             GameObject inputRef = NCMS.Utils.GameObjects.FindEvenInactive("NameInputElement");
 
-            GameObject inputField = GameObject.Instantiate(inputRef, statHolder.transform);
+            GameObject inputField = GameObject.Instantiate(inputRef,parent.transform);
             NameInput nameInputComp = inputField.GetComponent<NameInput>();
             nameInputComp.setText(textValue);
             RectTransform inputRect = inputField.GetComponent<RectTransform>();
-            inputRect.localPosition = new Vector3(0, -40, 0);
-            inputRect.sizeDelta += new Vector2(120, 40);
+            inputRect.localPosition = new Vector3(0, posY-40, 0);
+            inputRect.sizeDelta = new Vector2(100, 20);
 
             GameObject inputChild = inputField.transform.Find("InputField").gameObject;
-            RectTransform inputChildRect = inputChild.GetComponent<RectTransform>();
-            inputChildRect.sizeDelta *= 2;
+            // RectTransform inputChildRect = inputChild.GetComponent<RectTransform>();
+            // inputChildRect.sizeDelta *= 2;
             Text inputChildText = inputChild.GetComponent<Text>();
             inputChildText.resizeTextMaxSize = 20;
             return nameInputComp;
@@ -189,7 +189,7 @@ namespace Diplomacy_Army
             var textRect = textGo.GetComponent<RectTransform>();
             textRect.position = new Vector3(0, 0, 0);
             textRect.localPosition = pos + new Vector3(0, -50, 0);
-            textRect.sizeDelta = new Vector2(100, 100) + addSize;
+            textRect.sizeDelta = new Vector2(100, 100);
             textGo.AddComponent<GraphicRaycaster>();
             textComp.text = textString;
 

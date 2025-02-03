@@ -11,6 +11,8 @@ using static Diplomacy_Army.Main;
 using Newtonsoft.Json;
 using System.IO;
 using Diplomacy_Army;
+using UnityEngine.Events;
+using ReflectionUtility;
 
 namespace Diplomacy_Army
 {
@@ -19,12 +21,15 @@ namespace Diplomacy_Army
         public static GameObject content;
         private static Vector2 originalSize;
         public static Kingdom kingdom;
+        public static GodPower power;
+        public static PowerButton powerButton;
         public static int button = 0;
         public static int Settingsbutton = 0;
 
         public static Text MSText;
         public static float NYJG;
         public static Dictionary<string, List<ItemAsset>> itemModifiers = new();
+        internal static PowerButtonSelector pbsInstance;
 
         public static void init()
         {
@@ -45,7 +50,34 @@ namespace Diplomacy_Army
             pvz_ui.NewWindows(wid, 0, "null", true);
             wid.RTF();
             content = pvz_ui.CustomWindowObjects["MoreSettings"];
+            // Getting power button selector using reflections with ReflectionUtility
+            pbsInstance = Reflection.GetField(typeof(PowerButtonSelector), null, "instance") as PowerButtonSelector;
             foreach (string setting in Main.moreSettings.Keys) { MSSetB(setting, content); }
+            // power = new()
+            // {
+            //     id = "修改指向单独村庄开关",
+            //     name = "修改指向单独村庄开关",
+            //     unselectWhenWindow = true
+            // };
+            // AssetManager.powers.add(power);
+            // powerButton = PowerButtons.CreateButton(
+            //     "修改指向单独村庄开关",
+            //     Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
+            //     "修改指向单独村庄",
+            //     "修改指向单独村庄,修改等级高于指向全体村庄(修改村庄资源上限无效果)",
+            //     new Vector2(-118, -40),
+            //     ButtonType.GodPower,
+            //     content.transform,
+            //     new UnityAction(tryToHideWindow)
+            // );
+
+        }
+        public static void tryToHideWindow()
+        {
+            power.click_action = null;
+            power.click_action = (PowerActionWithID)Delegate.Combine(power.click_action, new PowerActionWithID(CityPowerWindow.TryToChangeDirectionToCity));
+            ScrollWindow.get("MoreSettings").clickHide();
+            pbsInstance.clickPowerButton(powerButton);
         }
         public static void MoreRules()
         {
@@ -64,6 +96,10 @@ namespace Diplomacy_Army
             "领土完整", "暂时没有效果", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
             PowerButtons.CreateButton("禁止自主联盟", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
             "禁止自主联盟", "禁止自主联盟", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
+            PowerButtons.CreateButton("动员无装备", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
+            "动员无装备", "动员无装备", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
+            PowerButtons.CreateButton("调遣军队前往目的地", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
+            "调遣军队前往目的地", "军队直接前往点击的坐标而不是前往国家或者村庄,但驻守无此作用", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
             // PowerButtons.CreateButton("种族寿命统一70岁", Mod.EmbededResources.LoadSprite($"{Mod.Info.Name}.Resources.UI.default.png"),
             // "种族寿命统一70岁", "种族寿命统一70岁", getPositionByIndex(index), ButtonType.Toggle, content.transform); index++;
         }
@@ -174,7 +210,7 @@ namespace Diplomacy_Army
         }
         public static void MSSetB(string id, GameObject CT)
         {
-            Settingsbutton++;
+
             GameObject UIG = NCMS.Utils.GameObjects.FindEvenInactive("DA_UIG");
             var neDAsmdmyIG1 = GameObject.Instantiate(UIG, CT.transform);
             neDAsmdmyIG1.transform.localPosition = new Vector2(0f, NYJG * 51.9125f - (Settingsbutton * 40f));
@@ -189,12 +225,13 @@ namespace Diplomacy_Army
             MSText.transform.SetParent(CT.transform);
             var RSObjRTF = RSObj.GetComponent<RectTransform>();
             RSObjRTF.position = new Vector3(0, 0, 0);
-            RSObjRTF.localPosition = new Vector3(-50f, NYJG * -0.5431562f - (Settingsbutton * 40f));
+            RSObjRTF.localPosition = new Vector3(30f, NYJG * -0.5431562f - (Settingsbutton * 40f));
             Main.SettingsText.Add(id, MSText);
             NCMS.Utils.PowerButtons.CreateButton(id + "MSLeftButton", NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DALeft.png"),
             "数值 - 1", "按住Ctrl - 10,按住Shift - 100", BVC, ButtonType.Click, CT.transform, () => SetRSZ(id, -1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
             NCMS.Utils.PowerButtons.CreateButton(id + "MSRightButton", NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DARight.png"),
             "数值 + 1", "按住Ctrl + 10,按住Shift + 100", BVC2, ButtonType.Click, CT.transform, () => SetRSZ(id, 1)).button.GetComponent<Image>().sprite = NCMS.Utils.Sprites.LoadSprite($"{Mod.Info.Path}/GameResources/ui/DAsmdmy.png");
+            Settingsbutton++;
         }
         public static void SetRSZ(string id, int i, int l = 1)
         {

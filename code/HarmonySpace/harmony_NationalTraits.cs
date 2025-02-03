@@ -523,13 +523,21 @@ namespace Diplomacy_Army
                     }
                 }
             }
-            if (Main.moreSettings["村庄人口上限"] != 0 && __instance.status.housingTotal > Main.moreSettings["村庄人口上限"])
+            int PopulationCap=Main.moreSettings["村庄人口上限"];
+            int LowerLimitOfPopulation=Main.moreSettings["村庄人口下限"];
+            __instance.data.get("村庄人口上限",out int __result);
+            __instance.data.get("村庄人口下限",out int __result2);
+            if(__result!=0)
+                PopulationCap=__result;
+            if(__result2!=0)
+                LowerLimitOfPopulation=__result2;    
+            if (PopulationCap != 0 && __instance.status.housingTotal > PopulationCap)
             {
-                __instance.status.housingTotal = Main.moreSettings["村庄人口上限"];
+                __instance.status.housingTotal = PopulationCap;
             }
-            if (Main.moreSettings["村庄人口下限"] != 0 && __instance.status.housingTotal < Main.moreSettings["村庄人口下限"])
+            if (LowerLimitOfPopulation != 0 && __instance.status.housingTotal < LowerLimitOfPopulation)
             {
-                __instance.status.housingTotal = Main.moreSettings["村庄人口下限"];
+                __instance.status.housingTotal = LowerLimitOfPopulation;
             }
             foreach (var key in Main.NationalTraits.Keys)
             {

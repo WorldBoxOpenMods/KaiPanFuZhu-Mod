@@ -79,12 +79,13 @@ namespace Diplomacy_Army
 
 		public static bool tryToAttack_Kingdom(WorldTile pTile, string pPower)
 		{
-			if (pTile.zone.city == null)
-			{
-				return false;
-			}
+
 			if (MoreGodPower.selected_kingdom == null)
 			{
+				if (pTile.zone.city == null)
+				{
+					return false;
+				}
 				var kingdom = Reflection.GetField(pTile.zone.city.GetType(), pTile.zone.city, "kingdom") as Kingdom;
 				MoreGodPower.selected_kingdom = kingdom;
 				NewFunction.LogNewMessage(kingdom, "国家", "想要发动一次集中进攻......");
@@ -95,7 +96,15 @@ namespace Diplomacy_Army
 				{
 					if (city.army != null && city.army.countUnits() > 0)
 					{
-						NewFunction.MoveArmy(city.army, pTile.zone.city.getTile());
+						if (!PowerButtons.GetToggleValue("调遣军队前往目的地"))
+						{
+							MoreGodPower.selected_city.army.city = city;
+							NewFunction.MoveArmy(MoreGodPower.selected_city.army, city.getTile());
+						}
+						else
+						{
+							NewFunction.MoveArmy(MoreGodPower.selected_city.army, pTile);
+						}
 					}
 				}
 				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "国家", "发动了一次集中进攻......");
@@ -105,13 +114,14 @@ namespace Diplomacy_Army
 		}
 		public static bool tryToAttack_City(WorldTile pTile, string pPower)
 		{
-			if (pTile.zone.city == null)
-			{
-				return false;
-			}
-			City city = pTile.zone.city;
+
 			if (MoreGodPower.selected_city == null)
 			{
+				if (pTile.zone.city == null)
+				{
+					return false;
+				}
+				City city = pTile.zone.city;
 				var kingdom = Reflection.GetField(city.GetType(), city, "kingdom") as Kingdom;
 				MoreGodPower.selected_city = city;
 				MoreGodPower.selected_kingdom = kingdom;
@@ -121,9 +131,22 @@ namespace Diplomacy_Army
 			{
 				if (MoreGodPower.selected_city.army != null && MoreGodPower.selected_city.army.countUnits() > 0)
 				{
-					MoreGodPower.selected_city.army.city = city;
-					NewFunction.MoveArmy(MoreGodPower.selected_city.army, city.getTile());
-					NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "国家", "发动了一次集中进攻......");
+
+					if (!PowerButtons.GetToggleValue("调遣军队前往目的地"))
+					{
+						if (pTile.zone.city == null)
+						{
+							return false;
+						}
+						City city = pTile.zone.city;
+						MoreGodPower.selected_city.army.city = city;
+						NewFunction.MoveArmy(MoreGodPower.selected_city.army, city.getTile());
+					}
+					else
+					{
+						NewFunction.MoveArmy(MoreGodPower.selected_city.army, pTile);
+					}
+					NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "国家", "发动了一次局部进攻......");
 				}
 				MoreGodPower.selected_city = null;
 				MoreGodPower.selected_kingdom = null;
@@ -141,7 +164,7 @@ namespace Diplomacy_Army
 			{
 				if (city.army != null && city.army.countUnits() > 0)
 				{
-					NewFunction.MoveArmy(city.army, city.getTile(), true);
+					NewFunction.MoveArmy(MoreGodPower.selected_city.army, city.getTile());
 				}
 			}
 			NewFunction.LogNewMessage(kingdom, "国家", "全军撤退");
@@ -167,37 +190,40 @@ namespace Diplomacy_Army
 						if (actor == null) continue;
 						actor.CallMethod("setProfession", UnitProfession.Warrior, true);
 						actor.ai.setJob("attacker");
-						ItemData itemData = ItemGenerator.generateItem(wItemAsset, wMaterial, MapBox.instance.mapStats.year - 10, null, null, 1, actor);
-						itemData.modifiers.Clear();
-						ActorEquipmentSlot slot = actor.equipment.getSlot(wItemAsset.equipmentType);
-						if (slot.data != null)
+						if (!PowerButtons.GetToggleValue("动员无装备"))
 						{
-							ItemTools.calcItemValues(slot.data);
-							float num2 = ItemTools.s_value;
-							ItemTools.calcItemValues(itemData);
-							if (ItemTools.s_value > num2)
+							ItemData itemData = ItemGenerator.generateItem(wItemAsset, wMaterial, MapBox.instance.mapStats.year - 10, null, null, 1, actor);
+							itemData.modifiers.Clear();
+							ActorEquipmentSlot slot = actor.equipment.getSlot(wItemAsset.equipmentType);
+							if (slot.data != null)
 							{
-								ItemData data = slot.data;
-								slot.setItem(itemData);
+								ItemTools.calcItemValues(slot.data);
+								float num2 = ItemTools.s_value;
+								ItemTools.calcItemValues(itemData);
+								if (ItemTools.s_value > num2)
+								{
+									ItemData data = slot.data;
+									slot.setItem(itemData);
+								}
 							}
-						}
-						slot.setItem(itemData);
+							slot.setItem(itemData);
 
-						itemData = ItemGenerator.generateItem(aItemAsset, wMaterial, MapBox.instance.mapStats.year - 10, null, null, 1, actor);
-						itemData.modifiers.Clear();
-						slot = actor.equipment.getSlot(aItemAsset.equipmentType);
-						if (slot.data != null)
-						{
-							ItemTools.calcItemValues(slot.data);
-							float num2 = ItemTools.s_value;
-							ItemTools.calcItemValues(itemData);
-							if (ItemTools.s_value > num2)
+							itemData = ItemGenerator.generateItem(aItemAsset, wMaterial, MapBox.instance.mapStats.year - 10, null, null, 1, actor);
+							itemData.modifiers.Clear();
+							slot = actor.equipment.getSlot(aItemAsset.equipmentType);
+							if (slot.data != null)
 							{
-								ItemData data = slot.data;
-								slot.setItem(itemData);
+								ItemTools.calcItemValues(slot.data);
+								float num2 = ItemTools.s_value;
+								ItemTools.calcItemValues(itemData);
+								if (ItemTools.s_value > num2)
+								{
+									ItemData data = slot.data;
+									slot.setItem(itemData);
+								}
 							}
+							slot.setItem(itemData);
 						}
-						slot.setItem(itemData);
 						actor.setStatsDirty();
 						num--;
 						if (num <= 0)
@@ -230,37 +256,40 @@ namespace Diplomacy_Army
 					if (actor == null) continue;
 					actor.CallMethod("setProfession", UnitProfession.Warrior, true);
 					actor.ai.setJob("attacker");
-					ItemData itemData = ItemGenerator.generateItem(wItemAsset, wMaterial, MapBox.instance.mapStats.year - 10, null, null, 1, actor);
-					itemData.modifiers.Clear();
-					ActorEquipmentSlot slot = actor.equipment.getSlot(wItemAsset.equipmentType);
-					if (slot.data != null)
+					if (!PowerButtons.GetToggleValue("动员无装备"))
 					{
-						ItemTools.calcItemValues(slot.data);
-						float num2 = ItemTools.s_value;
-						ItemTools.calcItemValues(itemData);
-						if (ItemTools.s_value > num2)
+						ItemData itemData = ItemGenerator.generateItem(wItemAsset, wMaterial, MapBox.instance.mapStats.year - 10, null, null, 1, actor);
+						itemData.modifiers.Clear();
+						ActorEquipmentSlot slot = actor.equipment.getSlot(wItemAsset.equipmentType);
+						if (slot.data != null)
 						{
-							ItemData data = slot.data;
-							slot.setItem(itemData);
+							ItemTools.calcItemValues(slot.data);
+							float num2 = ItemTools.s_value;
+							ItemTools.calcItemValues(itemData);
+							if (ItemTools.s_value > num2)
+							{
+								ItemData data = slot.data;
+								slot.setItem(itemData);
+							}
 						}
-					}
-					slot.setItem(itemData);
+						slot.setItem(itemData);
 
-					itemData = ItemGenerator.generateItem(aItemAsset, wMaterial, MapBox.instance.mapStats.year - 10, null, null, 1, actor);
-					itemData.modifiers.Clear();
-					slot = actor.equipment.getSlot(aItemAsset.equipmentType);
-					if (slot.data != null)
-					{
-						ItemTools.calcItemValues(slot.data);
-						float num2 = ItemTools.s_value;
-						ItemTools.calcItemValues(itemData);
-						if (ItemTools.s_value > num2)
+						itemData = ItemGenerator.generateItem(aItemAsset, wMaterial, MapBox.instance.mapStats.year - 10, null, null, 1, actor);
+						itemData.modifiers.Clear();
+						slot = actor.equipment.getSlot(aItemAsset.equipmentType);
+						if (slot.data != null)
 						{
-							ItemData data = slot.data;
-							slot.setItem(itemData);
+							ItemTools.calcItemValues(slot.data);
+							float num2 = ItemTools.s_value;
+							ItemTools.calcItemValues(itemData);
+							if (ItemTools.s_value > num2)
+							{
+								ItemData data = slot.data;
+								slot.setItem(itemData);
+							}
 						}
+						slot.setItem(itemData);
 					}
-					slot.setItem(itemData);
 					actor.setStatsDirty();
 					num--;
 					if (num <= 0)
@@ -311,21 +340,6 @@ namespace Diplomacy_Army
 				MoreGodPower.selected_city = null;
 				NewFunction.AddNewText("军团开始派驻", Toolbox.color_log_good, null);
 			}
-			return true;
-		}
-		public static bool tryToCorruptArmy(WorldTile pTile, string pPower)
-		{
-			if (pTile.zone.city == null)
-			{
-				return false;
-			}
-			if (pTile.zone.city == null)
-			{
-				return false;
-			}
-			var kingdom = Reflection.GetField(pTile.zone.city.GetType(), pTile.zone.city, "kingdom") as Kingdom;
-			kingdom.data.set("CorruptArmy", true);
-			NewFunction.LogNewMessage(kingdom, "国家", "全国军队变得腐败");
 			return true;
 		}
 
@@ -773,7 +787,7 @@ namespace Diplomacy_Army
 				MoreGodPower.selected_city = city;
 				MoreGodPower.selected_kingdom = kingdom;
 				var data = MoreGodPower.selected_city.data;
-				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "国家", "想要在城市 " + data.name + " 组建军团");
+				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "国家", "想要在城市 " + data.name + " 合并军队");
 			}
 			else
 			{
@@ -786,7 +800,7 @@ namespace Diplomacy_Army
 					city.army.addUnit(actor);
 				}
 				var data = MoreGodPower.selected_city.data;
-				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "国家", "组建了 " + data.name + " 军团");
+				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "国家", "合并了军队");
 				MoreGodPower.selected_city = null;
 				MoreGodPower.selected_kingdom = null;
 			}

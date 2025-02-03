@@ -445,7 +445,7 @@ namespace Diplomacy_Army
 				MoreGodPower.selected_city = city;
 				MoreGodPower.selected_kingdom = kingdom;
 				var data = MoreGodPower.selected_city.data;
-				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "国家", "想要转移城市 " + data.name + " 的宣称.....");
+				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "国家", "想要城市 " + data.name + " 的宣称.....");
 			}
 			else if (MoreGodPower.selected_city != null)
 			{
@@ -476,25 +476,39 @@ namespace Diplomacy_Army
 				return false;
 			}
 			City city = pTile.zone.city;
-			MoreGodPower.selected_city = city;
-			MoreGodPower.selected_kingdom = Reflection.GetField(MoreGodPower.selected_city.GetType(), MoreGodPower.selected_city, "kingdom") as Kingdom;
-			var data = MoreGodPower.selected_city.data;
 
-			if (MoreGodPower.selected_city != null)
+			var data = city.data;
+
+			Kingdom kingdom = harmony_declare.GetDeclareKingdom(city);
+
+			data.set("DeclareKingdomID", "");
+			data.set("Declare", false);
+			if (kingdom != null)
+				if (MoreGodPower.Declares.ContainsKey(kingdom))
+				{
+					MoreGodPower.Declares[kingdom].Remove(city);
+				}
+			NewFunction.LogNewMessage(city.kingdom, "的城市 " + data.name + " 取消宣称");
+			MoreGodPower.selected_city = null;
+
+			return true;
+		}
+		public static bool TryToChangeDirectionToCity(WorldTile pTile, string pPower)
+		{
+			if (pTile.zone.city == null)
 			{
-				Kingdom kingdom = harmony_declare.GetDeclareKingdom(city);
-
-				data.set("DeclareKingdomID", "");
-				data.set("Declare", false);
-				if (kingdom != null)
-					if (MoreGodPower.Declares.ContainsKey(kingdom))
-					{
-						MoreGodPower.Declares[kingdom].Remove(city);
-					}
-				NewFunction.LogNewMessage(MoreGodPower.selected_kingdom, "的城市 " + data.name + " 取消宣称");
-				MoreGodPower.selected_city = null;
-				MoreGodPower.selected_kingdom = null;
+				return false;
 			}
+			City city = pTile.zone.city;
+			var data = city.data;
+
+			Kingdom kingdom = city.kingdom;
+			data.set("村庄人口上限", Main.moreSettings["村庄人口上限"]);
+			data.set("村庄人口下限", Main.moreSettings["村庄人口下限"]);
+			data.set("村庄领土上限", Main.moreSettings["村庄领土上限"]);
+			// data.set("村庄资源上限",Main.moreSettings["村庄资源上限"]);
+			NewFunction.LogNewMessage(kingdom, "的城市 " + data.name + " 修改成功");
+
 			return true;
 		}
 
@@ -578,6 +592,7 @@ namespace Diplomacy_Army
 			ScrollWindow.get(name).clickHide();
 			pbsInstance.clickPowerButton(powerButton);
 		}
+
 
 
 		public static void AddUnitOfCity(City city, int num)
